@@ -1679,7 +1679,11 @@ socket.onopen = () => {
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
     console.log('Received from server:', data);
-};
+    
+    if (data.type === 'SYNC_STATE') {
+        console.log('Synced interval active:', data.activeInterval);
+        // Put your plane/odds synchronization code or UI updates here
+    }
     </script>
 </body>
 </html>
