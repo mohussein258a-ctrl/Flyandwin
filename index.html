@@ -1670,6 +1670,24 @@
                 animationFrameId = requestAnimationFrame(updateGameFrame);
             }, 3000);
         }
+        try {
+    const socket = new WebSocket('wss://site-sync-server.onrender.com');
+
+    socket.onopen = () => {
+        console.log('Connected to sync server!');
+    };
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('Received from server:', data);
+        
+        if (data.type === 'SYNC_STATE') {
+            console.log('Synced interval active:', data.activeInterval);
+        }
+    };
+} catch (error) {
+    console.log('WebSocket connection error:', error);
+        }
     </script>
 </body>
 </html>
