@@ -11,7 +11,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         body {
-            background-color: #0d1117;
+            background-color: #07090e;
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -23,17 +23,17 @@
             max-width: 420px;
             height: 100vh;
             max-height: 850px;
-            background-color: #121822;
+            background-color: #0d121b;
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
         }
         @media (min-width: 421px) {
             .app-container {
-                border-radius: 20px;
-                border: 1px solid #222b3d;
+                border-radius: 24px;
+                border: 1px solid #1f2b42;
             }
         }
         
@@ -45,7 +45,7 @@
             overflow-y: auto;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #121822;
+            background-color: #0d121b;
             z-index: 10;
         }
         .view.active {
@@ -57,20 +57,21 @@
             justify-content: center;
             align-items: center;
             padding: 24px;
-            background: radial-gradient(circle at center, #1b2438 0%, #0d1117 100%);
+            background: radial-gradient(circle at center, #151d2f 0%, #07090e 100%);
             z-index: 100;
         }
         .auth-card {
             width: 100%;
             max-width: 360px;
-            background-color: #161d2b;
-            border: 1px solid #232d42;
-            border-radius: 16px;
-            padding: 28px 20px;
+            background-color: #121824;
+            border: 1px solid #1f2b42;
+            border-radius: 20px;
+            padding: 32px 24px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .auth-logo {
             display: flex;
@@ -79,20 +80,24 @@
             gap: 6px;
         }
         .auth-logo svg {
-            width: 48px;
-            height: 48px;
-            fill: #ffffff;
+            width: 52px;
+            height: 52px;
+            fill: #ff9800;
+            filter: drop-shadow(0 0 10px rgba(255,152,0,0.4));
         }
         .auth-logo span {
             font-style: italic;
-            font-weight: 800;
-            font-size: 22px;
+            font-weight: 900;
+            font-size: 24px;
             letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff 30%, #ff9800 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         .auth-title {
-            color: #ff9800;
-            font-size: 22px;
-            font-weight: bold;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
             text-align: center;
         }
         .input-group {
@@ -104,30 +109,37 @@
         .input-group label {
             font-size: 12px;
             color: #8b9bb4;
+            font-weight: 600;
         }
         .input-group input {
-            background-color: #0e131d;
+            background-color: #080b11;
             border: 1px solid #222d42;
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 12px 14px;
             color: #ffffff;
             font-size: 14px;
             outline: none;
+            transition: border-color 0.2s;
         }
         .input-group input:focus {
             border-color: #ff9800;
+            box-shadow: 0 0 8px rgba(255,152,0,0.2);
         }
         .primary-btn {
             width: 100%;
-            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%);
             color: #ffffff;
             border: none;
             padding: 14px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(244,67,54,0.4);
+            box-shadow: 0 4px 15px rgba(229,57,53,0.4);
+            transition: transform 0.1s;
+        }
+        .primary-btn:active {
+            transform: scale(0.98);
         }
         .auth-switch {
             font-size: 13px;
@@ -142,12 +154,12 @@
 
         /* Top Header Bar */
         .top-bar {
-            background-color: #0f62fe;
+            background-color: #0b1322;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 16px;
-            border-bottom: 1px solid #1e6bfb;
+            padding: 12px 16px;
+            border-bottom: 1px solid #1a253a;
         }
         .top-brand {
             display: flex;
@@ -157,12 +169,13 @@
         .top-brand svg {
             width: 28px;
             height: 28px;
-            fill: #fff;
+            fill: #ff9800;
         }
         .top-brand span {
             font-style: italic;
             font-weight: 900;
             font-size: 18px;
+            letter-spacing: 0.5px;
         }
         .top-actions {
             display: flex;
@@ -170,9 +183,9 @@
             gap: 8px;
         }
         .sound-icon-btn {
-            background: rgba(0,0,0,0.2);
-            border: none;
-            border-radius: 6px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
             width: 32px;
             height: 32px;
             display: flex;
@@ -180,18 +193,25 @@
             align-items: center;
             color: #fff;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+        .sound-icon-btn.muted {
+            color: #ff5252;
+            border-color: rgba(255,82,82,0.3);
+            background: rgba(255,82,82,0.1);
         }
         .balance-pill, .balance-badge {
-            background: #0d1117;
+            background: #06090f;
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 13px;
-            font-weight: bold;
-            color: #ffffff;
-            border: 1px solid rgba(255,255,255,0.1);
+            font-weight: 800;
+            color: #00e676;
+            border: 1px solid rgba(0,230,118,0.2);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
         }
         .deposit-pill-btn {
-            background-color: #2e7d32;
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
             color: #ffffff;
             border: none;
             padding: 6px 14px;
@@ -202,11 +222,12 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            box-shadow: 0 2px 8px rgba(46,125,50,0.4);
         }
         .menu-toggle-btn {
-            background: rgba(255,255,255,0.15);
-            border: none;
-            border-radius: 6px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
             width: 34px;
             height: 34px;
             display: flex;
@@ -218,9 +239,10 @@
         }
         .menu-toggle-btn span {
             display: block;
-            width: 18px;
+            width: 16px;
             height: 2px;
             background-color: #fff;
+            border-radius: 2px;
         }
 
         /* Multiplier History Ribbon */
@@ -228,155 +250,175 @@
             display: flex;
             gap: 6px;
             padding: 8px 12px;
-            background-color: #0a0e14;
+            background-color: #06090f;
             overflow-x: auto;
             white-space: nowrap;
+            border-bottom: 1px solid #151d2f;
+        }
+        .multiplier-ribbon::-webkit-scrollbar {
+            display: none;
         }
         .multiplier-pill {
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 4px 10px;
+            border-radius: 14px;
             font-size: 11px;
-            font-weight: bold;
+            font-weight: 800;
             color: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
-        .pill-blue { background-color: #1976d2; }
-        .pill-purple { background-color: #7b1fa2; }
-        .pill-pink { background-color: #c2185b; }
+        .pill-blue { background: linear-gradient(135deg, #1976d2, #0d47a1); }
+        .pill-purple { background: linear-gradient(135deg, #7b1fa2, #4a148c); }
+        .pill-pink { background: linear-gradient(135deg, #c2185b, #880e4f); }
 
         /* Game Screen Area */
         .game-screen {
-            background-color: #090d13;
-            height: 180px;
+            background: radial-gradient(circle at center, #111a2e 0%, #060a12 100%);
+            height: 190px;
             position: relative;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border-bottom: 2px solid #1a2332;
+            border-bottom: 2px solid #1a253a;
             overflow: hidden;
         }
         .game-status-text {
             font-size: 12px;
-            letter-spacing: 2px;
+            letter-spacing: 2.5px;
             color: #8b9bb4;
             text-transform: uppercase;
-            font-weight: bold;
+            font-weight: 800;
             margin-bottom: 4px;
             z-index: 2;
         }
         .game-multiplier-display {
-            font-size: 42px;
+            font-size: 46px;
             font-weight: 900;
             color: #ffffff;
             letter-spacing: 1px;
             z-index: 2;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
         .plane-graphic {
             position: absolute;
             bottom: 20px;
             left: 20px;
-            font-size: 32px;
+            font-size: 34px;
             transform: rotate(-15deg);
             transition: transform 0.1s linear, bottom 0.1s linear, left 0.1s linear;
             z-index: 1;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
         }
 
         /* Betting Controls Panel */
         .betting-panels {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            padding: 8px;
-            background-color: #121822;
+            gap: 10px;
+            padding: 10px;
+            background-color: #0d121b;
             flex: 1;
             overflow-y: auto;
         }
         .bet-card {
-            background-color: #192231;
-            border-radius: 12px;
-            padding: 10px;
-            border: 1px solid #232d42;
+            background-color: #131a28;
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid #1f2b42;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .bet-tabs {
             display: flex;
-            background-color: #121822;
+            background-color: #080c14;
             border-radius: 20px;
             padding: 2px;
             width: 140px;
             margin: 0 auto;
+            border: 1px solid #1a253a;
         }
         .bet-tab {
             flex: 1;
             text-align: center;
             font-size: 11px;
-            font-weight: bold;
+            font-weight: 700;
             padding: 4px 0;
             border-radius: 18px;
             cursor: pointer;
             color: #8b9bb4;
+            transition: all 0.2s;
         }
         .bet-tab.active {
-            background-color: #232d42;
+            background-color: #1f2b42;
             color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
         .bet-controls-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .stake-adjuster {
-            background-color: #0e131d;
-            border: 1px solid #232d42;
+            background-color: #080c14;
+            border: 1px solid #1f2b42;
             border-radius: 30px;
             display: flex;
             align-items: center;
-            padding: 4px 10px;
+            padding: 4px 8px;
             flex: 1;
             justify-content: space-between;
         }
         .stake-adjuster button {
-            background: #232d42;
+            background: #1f2b42;
             border: none;
             color: #fff;
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+        .stake-adjuster button:active {
+            background: #2e3c58;
         }
         .stake-value {
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 800;
             color: #fff;
         }
         .action-bet-btn {
             flex: 1.2;
-            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            background: linear-gradient(135deg, #00e676 0%, #00c853 100%);
             border: none;
             border-radius: 12px;
             padding: 12px;
-            color: #ffffff;
-            font-weight: bold;
+            color: #05190b;
+            font-weight: 900;
             font-size: 15px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+            box-shadow: 0 4px 15px rgba(0,230,118,0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 2px;
+            transition: transform 0.1s;
+        }
+        .action-bet-btn:active {
+            transform: scale(0.98);
         }
         .action-bet-btn.cashout {
             background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-            box-shadow: 0 4px 12px rgba(255,152,0,0.3);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255,152,0,0.4);
         }
         .action-bet-btn.disabled-state {
-            background: #232d42;
+            background: #1f2b42;
             color: #8b9bb4;
             cursor: not-allowed;
             box-shadow: none;
@@ -391,46 +433,54 @@
         }
         .quick-amt-btn {
             flex: 1;
-            background-color: #121822;
-            border: 1px solid #232d42;
-            border-radius: 6px;
-            padding: 5px;
+            background-color: #080c14;
+            border: 1px solid #1f2b42;
+            border-radius: 8px;
+            padding: 6px;
             font-size: 11px;
             color: #8b9bb4;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-amt-btn:hover {
+            border-color: #ff9800;
+            color: #fff;
         }
 
         /* Live Bets Footer Tabs */
         .live-history-bar {
             display: flex;
-            background-color: #0e131d;
-            border-top: 1px solid #232d42;
-            padding: 6px 12px;
+            background-color: #080c14;
+            border-top: 1px solid #1f2b42;
+            padding: 8px 16px;
             justify-content: space-between;
             align-items: center;
         }
         .history-tabs {
             display: flex;
             gap: 4px;
-            background-color: #161d2b;
-            padding: 2px;
-            border-radius: 16px;
+            background-color: #121824;
+            padding: 3px;
+            border-radius: 18px;
+            border: 1px solid #1f2b42;
         }
         .history-tab {
-            padding: 4px 12px;
+            padding: 5px 14px;
             font-size: 11px;
-            font-weight: bold;
+            font-weight: 700;
             border-radius: 14px;
             color: #8b9bb4;
             cursor: pointer;
+            transition: all 0.2s;
         }
         .history-tab.active {
             background-color: #2e7d32;
             color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
         .chat-toggle-floating {
-            background-color: #f44336;
+            background: linear-gradient(135deg, #e53935, #b71c1c);
             border: none;
             width: 38px;
             height: 38px;
@@ -441,65 +491,66 @@
             color: #fff;
             cursor: pointer;
             position: relative;
-            box-shadow: 0 4px 10px rgba(244,67,54,0.4);
+            box-shadow: 0 4px 12px rgba(229,57,53,0.4);
         }
         .chat-badge {
             position: absolute;
             top: -2px;
             right: -2px;
-            background-color: #4caf50;
-            color: #fff;
+            background-color: #00e676;
+            color: #05190b;
             font-size: 9px;
-            padding: 1px 4px;
+            padding: 1px 5px;
             border-radius: 8px;
-            font-weight: bold;
+            font-weight: 900;
         }
-
         /* Slide-out Menu Drawer */
         .menu-drawer {
             position: absolute;
             top: 0; right: -280px;
             width: 280px;
             height: 100%;
-            background-color: #161d2b;
+            background-color: #131a28;
             z-index: 1000;
-            transition: right 0.3s ease;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
-            border-left: 1px solid #232d42;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            border-left: 1px solid #1f2b42;
+            box-shadow: -15px 0 40px rgba(0,0,0,0.7);
         }
         .menu-drawer.open {
             right: 0;
         }
         .menu-header {
             padding: 16px;
-            background-color: #0f62fe;
+            background-color: #0b1322;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #1f2b42;
         }
         .menu-items {
             display: flex;
             flex-direction: column;
-            padding: 10px 0;
+            padding: 8px 0;
         }
-        .menu-item {
+                .menu-item {
             padding: 14px 20px;
             display: flex;
             align-items: center;
             gap: 14px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             color: #ffffff;
             cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            transition: background 0.2s;
         }
         .menu-item:hover {
             background-color: rgba(255,255,255,0.03);
         }
         .menu-item.logout {
-            color: #f44336;
+            color: #ff5252;
         }
 
         /* Generic Sub-views */
@@ -507,18 +558,19 @@
             display: none;
             flex-direction: column;
             height: 100%;
-            background-color: #121822;
+            background-color: #0d121b;
             position: absolute;
             top: 0; left: 0; width: 100%;
             z-index: 200;
         }
         .sub-header {
-            background-color: #0f62fe;
+            background-color: #0b1322;
             padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             color: #fff;
+            border-bottom: 1px solid #1f2b42;
         }
         .sub-header-title {
             font-size: 16px;
@@ -531,6 +583,7 @@
             cursor: pointer;
             display: flex;
             align-items: center;
+            font-size: 18px;
         }
         .sub-content {
             padding: 16px;
@@ -541,40 +594,43 @@
             flex: 1;
         }
         .card-box {
-            background-color: #192231;
-            border: 1px solid #232d42;
-            border-radius: 12px;
-            padding: 16px;
+            background-color: #131a28;
+            border: 1px solid #1f2b42;
+            border-radius: 14px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .profile-hero {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             padding: 10px 0;
         }
         .profile-avatar {
-            width: 70px;
-            height: 70px;
+            width: 74px;
+            height: 74px;
             border-radius: 50%;
-            border: 2px solid #4caf50;
+            border: 2px solid #00e676;
             object-fit: cover;
+            box-shadow: 0 0 12px rgba(0,230,118,0.3);
         }
         
         /* Live Bets Inline Container Styles (Under second betting button) */
         .bets-list-container {
             width: 100%;
-            background: rgba(18, 24, 34, 0.98);
-            border: 1px solid #232d42;
+            background: rgba(13, 18, 27, 0.96);
+            border: 1px solid #1f2b42;
             border-radius: 12px;
             display: none;
             flex-direction: column;
             overflow-y: auto;
             max-height: 160px;
             margin-top: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
         .bets-list-container.active {
             display: flex;
@@ -585,21 +641,22 @@
             align-items: center;
             padding: 6px 12px;
             font-size: 11px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.02);
         }
         .bet-list-item span {
             color: #8b9bb4;
         }
         .bet-list-item .user-col {
             color: #fff;
-            font-weight: bold;
+            font-weight: 700;
         }
         .bet-list-item .stake-col {
             color: #ff9800;
+            font-weight: 600;
         }
         .bet-list-item .win-col {
-            color: #4caf50;
-            font-weight: bold;
+            color: #00e676;
+            font-weight: 800;
         }
     </style>
 </head>
@@ -648,8 +705,8 @@
                 <div class="auth-title">Welcome Back</div>
                 
                 <div class="input-group">
-                    <label>Name / Username</label>
-                    <input type="text" id="signInName" placeholder="Enter your name">
+                    <label>Phone Number</label>
+                    <input type="tel" id="signInPhone" placeholder="Enter your phone number">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
@@ -660,7 +717,8 @@
                 <div class="auth-switch">Don't have an account? <span onclick="showRegisterView()">Register</span></div>
             </div>
         </div>
-              <!-- 3. MAIN GAME VIEW -->
+
+        <!-- 3. MAIN GAME VIEW -->
         <div class="view" id="gameView">
             <!-- Top Bar -->
             <div class="top-bar">
@@ -669,8 +727,8 @@
                     <span>Aviator</span>
                 </div>
                 <div class="top-actions">
-                    <button class="sound-icon-btn" id="soundToggleBtn" onclick="toggleSoundFx()">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                    <button class="sound-icon-btn" id="soundToggleBtn" onclick="toggleSoundFx()" title="Toggle Sound">
+                        <svg id="soundIconSvg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
                     </button>
                     <div class="balance-badge" id="mainBalanceDisplay">0.00 KES</div>
                     <button class="deposit-pill-btn" onclick="openSubView('depositView')">
@@ -682,7 +740,7 @@
                 </div>
             </div>
 
-            <!-- Multiplier Ribbon History (Placed right below the top bar / on top) -->
+            <!-- Multiplier Ribbon History -->
             <div class="multiplier-ribbon" id="multiplierRibbon">
                 <div class="multiplier-pill pill-blue">1.06x</div>
                 <div class="multiplier-pill pill-purple">2.19x</div>
@@ -696,12 +754,17 @@
                 <div class="plane-graphic" id="planeGraphic">✈️</div>
             </div>
 
-            <!-- Betting Controls (2 Panels) & Live Bets Container placed below second betting button -->
+            <!-- Betting Controls (2 Panels) & Live Bets Container -->
             <div class="betting-panels">
                 <div class="bet-card">
                     <div class="bet-tabs">
-                        <div class="bet-tab active">Bet</div>
-                        <div class="bet-tab">Auto</div>
+                        <div class="bet-tab active" id="tabBet1" onclick="setAutoMode(1, false)">Bet</div>
+                        <div class="bet-tab" id="tabAuto1" onclick="setAutoMode(1, true)">Auto</div>
+                    </div>
+                    <!-- Auto Cashout Input -->
+                    <div id="autoControls1" style="display:none; justify-content:center; align-items:center; gap:8px; margin-top:8px;">
+                        <span style="font-size:12px; color:#8b9bb4;">Auto Cashout:</span>
+                        <input type="number" id="autoCashoutInp1" value="2.00" step="0.1" style="background:#080c14; border:1px solid #1f2b42; color:#fff; border-radius:8px; padding:4px 8px; width:70px; text-align:center; outline:none;">
                     </div>
                     <div class="bet-controls-row">
                         <div class="stake-adjuster">
@@ -724,8 +787,13 @@
 
                 <div class="bet-card">
                     <div class="bet-tabs">
-                        <div class="bet-tab active">Bet</div>
-                        <div class="bet-tab">Auto</div>
+                        <div class="bet-tab active" id="tabBet2" onclick="setAutoMode(2, false)">Bet</div>
+                        <div class="bet-tab" id="tabAuto2" onclick="setAutoMode(2, true)">Auto</div>
+                    </div>
+                    <!-- Auto Cashout Input -->
+                    <div id="autoControls2" style="display:none; justify-content:center; align-items:center; gap:8px; margin-top:8px;">
+                        <span style="font-size:12px; color:#8b9bb4;">Auto Cashout:</span>
+                        <input type="number" id="autoCashoutInp2" value="2.00" step="0.1" style="background:#080c14; border:1px solid #1f2b42; color:#fff; border-radius:8px; padding:4px 8px; width:70px; text-align:center; outline:none;">
                     </div>
                     <div class="bet-controls-row">
                         <div class="stake-adjuster">
@@ -748,7 +816,7 @@
 
                 <!-- Live Bets List Container positioned right under the second betting button -->
                 <div class="bets-list-container" id="betsListContainer">
-                    <div style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #161d2b; color: #8b9bb4; border-bottom: 1px solid #232d42;">Live Bets This Round</div>
+                    <div style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #121824; color: #8b9bb4; border-bottom: 1px solid #1f2b42;">Live Bets This Round</div>
                     <div id="liveBetsItemsList">
                         <!-- Populated dynamically -->
                     </div>
@@ -779,8 +847,9 @@
                 <div class="card-box">
                     <div style="font-weight: bold; font-size: 13px; color: #ff9800; line-height: 1.5; margin-bottom: 10px;">
                         How to Deposit:<br>
-                        1. Send buy goods till: <span style="color:#fff;">1586493  </span><br>
-                        2. Paste your M-Pesa confirmation code below.
+                        1. Send buy goods till: <span style="color:#fff;">1586493</span><br>
+                        2. Paste your M-Pesa confirmation code below.<br>
+                        <span style="color: #00e676; font-size: 12px; display: inline-block; margin-top: 6px;">ℹ️ Minimum Deposit: 500 KES</span>
                     </div>
                     <div class="input-group">
                         <label>Your Phone Number</label>
@@ -792,9 +861,9 @@
                     </div>
                     <div class="input-group">
                         <label>Amount Sent (KES)</label>
-                        <input type="number" id="depAmountInput" placeholder="Enter amount">
+                        <input type="number" id="depAmountInput" placeholder="Enter amount (Min: 500 KES)">
                     </div>
-                    <button class="primary-btn" style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); margin-top: 10px;" onclick="submitManualDeposit()">Verify & Credit Balance</button>
+                    <button class="primary-btn" style="background: linear-gradient(135deg, #00e676 0%, #00c853 100%); color: #05190b; margin-top: 10px;" onclick="submitManualDeposit()">Verify & Credit Balance</button>
                 </div>
             </div>
         </div>
@@ -809,13 +878,16 @@
             <div class="sub-content">
                 <div class="card-box">
                     <div style="font-weight: bold; font-size: 15px;">M-Pesa Withdrawal</div>
-                    <div style="background-color: #0e131d; padding: 12px; border-radius: 8px; border: 1px solid #232d42; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 11px; color: #8b9bb4; line-height: 1.4;">
+                        Min Withdrawal: <span style="color: #fff; font-weight: bold;">10,000 KES</span> | Max Withdrawal: <span style="color: #fff; font-weight: bold;">1,000,000 KES</span>
+                    </div>
+                    <div style="background-color: #080c14; padding: 12px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 12px; color: #8b9bb4;">Available Balance</span>
-                        <span style="font-size: 16px; font-weight: bold; color: #4caf50;" id="withAvailBal">0.00 KES</span>
+                        <span style="font-size: 16px; font-weight: bold; color: #00e676;" id="withAvailBal">0.00 KES</span>
                     </div>
                     <div class="input-group">
                         <label>Amount (KES)</label>
-                        <input type="number" id="withAmountInput" placeholder="Enter amount">
+                        <input type="number" id="withAmountInput" placeholder="Enter amount (10,000 - 1,000,000 KES)">
                     </div>
                     <button class="primary-btn" onclick="confirmWithdraw()">Withdraw to M-Pesa</button>
                 </div>
@@ -834,7 +906,7 @@
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" class="profile-avatar" alt="Avatar">
                     <div style="font-size: 18px; font-weight: bold;" id="profileNameDisplay">Mohammad</div>
                 </div>
-                <button class="primary-btn logout" style="background: rgba(244,67,54,0.15); color: #f44336; border: 1px solid #f44336;" onclick="handleLogout()">Logout</button>
+                <button class="primary-btn logout" style="background: rgba(229,57,53,0.15); color: #ff5252; border: 1px solid #ff5252;" onclick="handleLogout()">Logout</button>
             </div>
         </div>
 
@@ -852,21 +924,21 @@
             </div>
         </div>
 
-        <!-- LIVE CHAT DRAWER -->
-        <div class="chat-drawer" id="chatDrawer" style="display:none; position:absolute; bottom:0; left:0; width:100%; height:70%; background-color:#161d2b; border-top-left-radius:16px; border-top-right-radius:16px; z-index:300; flex-direction:column; border-top:1px solid #232d42;">
-            <div class="chat-header-bar" style="background-color:#f44336; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-top-left-radius:16px; border-top-right-radius:16px; font-weight:bold;">
+            <!-- LIVE CHAT DRAWER -->
+        <div class="chat-drawer" id="chatDrawer" style="display:none; position:absolute; bottom:0; left:0; width:100%; height:70%; background-color:#121824; border-top-left-radius:20px; border-top-right-radius:20px; z-index:300; flex-direction:column; border-top:1px solid #1f2b42; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);">
+            <div class="chat-header-bar" style="background-color:#0b1322; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-top-left-radius:20px; border-top-right-radius:20px; font-weight:bold; border-bottom:1px solid #1f2b42;">
                 <span>Live Chat</span>
                 <button class="back-btn" onclick="toggleChatDrawer(false)">✕</button>
             </div>
             <div class="chat-messages" id="chatMessagesList" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
-                <div class="chat-msg-bubble" style="background-color:#1e293b; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px;">
+                <div class="chat-msg-bubble" style="background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border: 1px solid #28354c;">
                     <span style="font-size: 10px; color: #ff9800; font-weight: bold;">Combos Man</span>
                     <span>Aviator ✈️</span>
                 </div>
             </div>
-            <div class="chat-input-bar" style="padding:10px; background-color:#0e131d; display:flex; gap:8px; align-items:center;">
-                <input type="text" id="chatInputMsg" placeholder="Type a message..." style="flex:1; background-color:#161d2b; border:1px solid #232d42; padding:10px; border-radius:8px; color:#fff; font-size:13px; outline:none;">
-                <button class="chat-send-btn" onclick="sendChatMessage()" style="background-color:#f44336; border:none; color:#fff; padding:10px 16px; border-radius:8px; font-weight:bold; cursor:pointer;">Send</button>
+            <div class="chat-input-bar" style="padding:10px; background-color:#0b1322; display:flex; gap:8px; align-items:center; border-top:1px solid #1f2b42;">
+                <input type="text" id="chatInputMsg" placeholder="Type a message..." style="flex:1; background-color:#080c14; border:1px solid #1f2b42; padding:10px; border-radius:8px; color:#fff; font-size:13px; outline:none;">
+                <button class="chat-send-btn" onclick="sendChatMessage()" style="background-color:#e53935; border:none; color:#fff; padding:10px 16px; border-radius:8px; font-weight:bold; cursor:pointer;">Send</button>
             </div>
         </div>
 
@@ -875,9 +947,14 @@
     <script>
         let balance = 0.00;
         let userName = "Mohammad";
+        let userPhone = "";
+        let registeredUsers = {}; 
         let stakes = { stake1: 10, stake2: 10 };
         let activeBets = { 1: false, 2: false };
         let hasPlacedBetCurrentRound = { 1: false, 2: false };
+        let autoMode = { 1: false, 2: false };
+        let autoBetActive = { 1: false, 2: false };
+        
         let gameRunning = false;
         let currentMultiplier = 1.00;
         let crashPoint = 1.50;
@@ -887,13 +964,20 @@
         let ambientSoundInterval = null;
         let botChatInterval = null;
 
-        // Data arrays for active round live bets simulation and history
         let currentRoundLiveBets = [];
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
         let recentOddsHistory = [1.06, 2.19, 5.51, 1.45, 3.20];
 
-        const botNames = ["Brian_Ke", "Amina99", "KevinOchieng", "Sharon_Cheptoo", "Juma_Mfalme", "MercyWanjiku", "Baraka_254", "FatmaHassan", "Otieno_G", "Cynthia_M"];
+        let scheduledSignalQueue = [];
+        let lastSignalEpochMinute = -1;
+
+        const botNames = [
+            "Brian_Ke", "Amina99", "KevinOchieng", "Sharon_Cheptoo", "Juma_Mfalme", 
+            "MercyWanjiku", "Baraka_254", "FatmaHassan", "Otieno_G", "Cynthia_M",
+            "Brian_W", "Diana_Chebt", "Alex_Maina", "Esther_W", "Mohamed_Ali",
+            "Victor_O", "Barack_T", "Collins_M", "Ian_J", "Hassan_A"
+        ];
         const botMessages = [
             "Easy money today! 🚀",
             "Anyone cashing out above 3x?",
@@ -964,9 +1048,14 @@
                 console.log("Audio play error:", e);
             }
         }
-
         function toggleAmbientSound(start) {
-            if (!soundEnabled) return;
+            if (!soundEnabled) {
+                if (ambientSoundInterval) {
+                    clearInterval(ambientSoundInterval);
+                    ambientSoundInterval = null;
+                }
+                return;
+            }
             try {
                 initAudioContext();
                 if (start && !ambientSoundInterval) {
@@ -983,7 +1072,6 @@
             }
         }
 
-        // Automated bot messaging every 3 seconds in the live chat
         function startBotChatLoop() {
             if (botChatInterval) clearInterval(botChatInterval);
             botChatInterval = setInterval(() => {
@@ -993,7 +1081,7 @@
                 let list = document.getElementById('chatMessagesList');
                 let bubble = document.createElement('div');
                 bubble.className = 'chat-msg-bubble';
-                bubble.style.cssText = "background-color:#1e293b; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px;";
+                bubble.style.cssText = "background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border:1px solid #28354c;";
                 bubble.innerHTML = `<span style="font-size: 10px; color: #ff9800; font-weight: bold;">${randomBot}</span><span>${randomMsg}</span>`;
                 list.appendChild(bubble);
                 list.scrollTop = list.scrollHeight;
@@ -1029,7 +1117,7 @@
             if(profBal) profBal.innerText = formatted;
         }
 
-                function showSignInView() {
+        function showSignInView() {
             document.getElementById('registerView').classList.remove('active');
             document.getElementById('signInView').classList.add('active');
         }
@@ -1050,50 +1138,47 @@
             let password = passwordInput ? passwordInput.value : "";
             let confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : "";
 
-            if (!name) {
-                alert("Please enter a name/username.");
-                return false;
-            }
-            if (!password || password.length < 6) {
-                alert("Password must be at least 6 characters long.");
-                return false;
-            }
-            if (password !== confirmPassword) {
-                alert("Passwords do not match. Please check and try again.");
-                return false;
-            }
+            if (!name) { alert("Please enter a name."); return false; }
+            if (!phone) { alert("Please enter a phone number."); return false; }
+            if (!password || password.length < 6) { alert("Password must be at least 6 characters long."); return false; }
+            if (password !== confirmPassword) { alert("Passwords do not match."); return false; }
 
+            registeredUsers[phone] = { name: name, password: password };
             userName = name;
+            userPhone = phone;
             localStorage.setItem('aviator_user', userName);
+            localStorage.setItem('aviator_phone', userPhone);
             
             let profileDisplay = document.getElementById('profileNameDisplay');
-            if (profileDisplay) {
-                profileDisplay.innerText = userName;
-            }
+            if (profileDisplay) profileDisplay.innerText = userName;
 
             goToGameApp();
             return true;
         }
 
         function handleSignIn() {
-            let nameInput = document.getElementById('signInName');
+            let phoneInput = document.getElementById('signInPhone');
             let passwordInput = document.getElementById('signInPass');
 
-            let name = nameInput ? nameInput.value.trim() : "";
+            let phone = phoneInput ? phoneInput.value.trim() : "";
             let password = passwordInput ? passwordInput.value : "";
 
-            if (!name) {
-                alert("Please enter your username or name.");
+            if (!phone) { alert("Please enter your phone number."); return false; }
+            if (!password) { alert("Please enter your password."); return false; }
+
+            let userRecord = registeredUsers[phone];
+            if (!userRecord || userRecord.password !== password) {
+                alert("Invalid phone number or password.");
                 return false;
             }
 
-            userName = name;
+            userName = userRecord.name;
+            userPhone = phone;
             localStorage.setItem('aviator_user', userName);
+            localStorage.setItem('aviator_phone', userPhone);
 
             let profileDisplay = document.getElementById('profileNameDisplay');
-            if (profileDisplay) {
-                profileDisplay.innerText = userName;
-            }
+            if (profileDisplay) profileDisplay.innerText = userName;
 
             goToGameApp();
             return true;
@@ -1121,18 +1206,9 @@
             else drawer.style.display = 'none';
         }
 
-        function openSubView(viewId) {
-            document.getElementById(viewId).style.display = 'flex';
-        }
-
-        function closeSubView(viewId) {
-            document.getElementById(viewId).style.display = 'none';
-        }
-
-        function openSubViewFromMenu(viewId) {
-            toggleMenuDrawer(false);
-            openSubView(viewId);
-        }
+        function openSubView(viewId) { document.getElementById(viewId).style.display = 'flex'; }
+        function closeSubView(viewId) { document.getElementById(viewId).style.display = 'none'; }
+        function openSubViewFromMenu(viewId) { toggleMenuDrawer(false); openSubView(viewId); }
 
         function handleLogout() {
             toggleMenuDrawer(false);
@@ -1145,9 +1221,29 @@
 
         function toggleSoundFx() {
             soundEnabled = !soundEnabled;
+            let btn = document.getElementById('soundToggleBtn');
+            let iconSvg = document.getElementById('soundIconSvg');
+            
             if (!soundEnabled) {
+                btn.classList.add('muted');
+                iconSvg.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
                 toggleAmbientSound(false);
+            } else {
+                btn.classList.remove('muted');
+                iconSvg.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+                if (gameRunning) {
+                    toggleAmbientSound(true);
+                }
             }
+        }
+        
+        function setAutoMode(panelNum, isAuto) {
+            autoMode[panelNum] = isAuto;
+            document.getElementById('tabBet' + panelNum).classList.toggle('active', !isAuto);
+            document.getElementById('tabAuto' + panelNum).classList.toggle('active', isAuto);
+            document.getElementById('autoControls' + panelNum).style.display = isAuto ? 'flex' : 'none';
+            if (!isAuto) autoBetActive[panelNum] = false; 
+            updateButtonStates();
         }
 
         function adjustStake(key, amount) {
@@ -1170,14 +1266,19 @@
                 let btnSub = document.getElementById('betSubText' + i);
 
                 if(activeBets[i]) {
-                    // Update cashout button to dynamically display money to cashout
                     let currentPayout = val * currentMultiplier;
                     btnText.innerText = "CASH OUT";
                     btnSub.innerText = currentPayout.toFixed(2) + " KES";
                 } else {
                     btnSub.innerText = val.toFixed(2) + " KES";
-                    if(gameRunning && !hasPlacedBetCurrentRound[i]) {
+                    if(autoMode[i] && autoBetActive[i]) {
+                        btn.classList.add('cashout');
+                        btn.classList.remove('disabled-state');
+                        btnText.innerText = "AUTO ON";
+                        btnSub.innerText = "Click to Stop";
+                    } else if(gameRunning && !hasPlacedBetCurrentRound[i]) {
                         btn.classList.add('disabled-state');
+                        btn.classList.remove('cashout');
                         btnText.innerText = "WAITING...";
                     } else if(!gameRunning) {
                         btn.classList.remove('disabled-state');
@@ -1201,6 +1302,10 @@
                 alert("Please enter a valid M-Pesa transaction code.");
                 return;
             }
+            if (amount < 500) {
+                alert("Minimum deposit is 500 KES.");
+                return;
+            }
 
             balance += amount;
             updateAllBalances();
@@ -1214,28 +1319,25 @@
 
         function confirmWithdraw() {
             let amt = parseFloat(document.getElementById('withAmountInput').value);
-            if(isNaN(amt) || amt <= 0) {
-                alert("Please enter a valid amount.");
-                return;
-            }
-            if(balance < amt) {
-                alert("Insufficient balance!");
-                return;
-            }
+            if(isNaN(amt) || amt <= 0) { alert("Please enter a valid amount."); return; }
+            if(amt < 10000) { alert("Minimum withdrawal is 10,000 KES."); return; }
+            if(amt > 1000000) { alert("Maximum withdrawal is 1,000,000 KES."); return; }
+            if(balance < amt) { alert("Insufficient balance!"); return; }
+            
             balance -= amt;
             updateAllBalances();
             alert(`Successfully withdrew ${amt.toFixed(2)} KES to M-Pesa!`);
             closeSubView('withdrawView');
         }
 
-        function sendChatMessage() {
+                function sendChatMessage() {
             let input = document.getElementById('chatInputMsg');
             let text = input.value.trim();
             if(!text) return;
             let list = document.getElementById('chatMessagesList');
             let bubble = document.createElement('div');
             bubble.className = 'chat-msg-bubble';
-            bubble.style.cssText = "background-color:#1e293b; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px;";
+            bubble.style.cssText = "background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border:1px solid #28354c;";
             bubble.innerHTML = `<span style="font-size: 10px; color: #ff9800; font-weight: bold;">${userName}</span><span>${text}</span>`;
             list.appendChild(bubble);
             input.value = '';
@@ -1272,7 +1374,7 @@
                 item.className = 'bet-list-item';
                 let statusText = bet.cashedOut ? `<span class="win-col">${bet.multiplier}x (${bet.winAmount.toFixed(2)} KES)</span>` : `<span>Playing...</span>`;
                 if(!bet.active && !bet.cashedOut) {
-                    statusText = `<span style="color:#f44336;">Crashed</span>`;
+                    statusText = `<span style="color:#ff5252;">Crashed</span>`;
                 }
                 item.innerHTML = `
                     <span class="user-col">${bet.user}</span>
@@ -1284,8 +1386,14 @@
         }
 
         function handleBetAction(panelNum) {
-            let stake = stakes['stake' + panelNum];
-            let btn = document.getElementById('betBtn' + panelNum);
+            if (autoMode[panelNum] && !activeBets[panelNum]) {
+                autoBetActive[panelNum] = !autoBetActive[panelNum];
+                if(autoBetActive[panelNum] && !gameRunning && !hasPlacedBetCurrentRound[panelNum]) {
+                    performBetPlacement(panelNum);
+                }
+                updateButtonStates();
+                return;
+            }
 
             if (gameRunning && !hasPlacedBetCurrentRound[panelNum] && !activeBets[panelNum]) {
                 alert("Bets are locked once the round has started!");
@@ -1293,60 +1401,119 @@
             }
 
             if(!activeBets[panelNum]) {
-                if(balance < stake) {
-                    alert("Insufficient balance! Please deposit.");
-                    return;
-                }
-                balance -= stake;
-                updateAllBalances();
-                activeBets[panelNum] = true;
-                hasPlacedBetCurrentRound[panelNum] = true;
-
-                btn.classList.add('cashout');
-
-                // Register bet into live/my history tracking
-                let userBetRecord = {
-                    id: Date.now() + Math.random(),
-                    user: userName,
-                    stake: stake,
-                    multiplier: 0,
-                    winAmount: 0,
-                    cashedOut: false,
-                    active: true,
-                    isUser: true
-                };
-                currentRoundLiveBets.push(userBetRecord);
-                myHistoricalBets.push(userBetRecord);
-                btn.dataset.betRecordId = userBetRecord.id;
-
-                document.getElementById('betsListContainer').classList.add('active');
-                renderLiveBetsList();
+                performBetPlacement(panelNum);
             } else {
-                let betRecordId = btn.dataset.betRecordId;
-                let record = currentRoundLiveBets.find(b => b.id == betRecordId) || myHistoricalBets.find(b => b.id == betRecordId);
+                executeCashout(panelNum, false);
+            }
+        }
+        
+        function performBetPlacement(panelNum) {
+            let stake = stakes['stake' + panelNum];
+            let btn = document.getElementById('betBtn' + panelNum);
+            
+            if(balance < stake) { 
+                alert("Insufficient balance! Please deposit."); 
+                if (autoBetActive[panelNum]) autoBetActive[panelNum] = false;
+                updateButtonStates();
+                return; 
+            }
+            
+            balance -= stake;
+            updateAllBalances();
+            activeBets[panelNum] = true;
+            hasPlacedBetCurrentRound[panelNum] = true;
 
-                if(gameRunning) {
-                    let winAmt = stake * currentMultiplier;
-                    balance += winAmt;
-                    updateAllBalances();
-                    playSound('cashout');
-                    
-                    if(record) {
-                        record.cashedOut = true;
-                        record.active = false;
-                        record.multiplier = parseFloat(currentMultiplier.toFixed(2));
-                        record.winAmount = winAmt;
-                    }
-                    alert(`Cashed out successfully! Won ${winAmt.toFixed(2)} KES`);
-                } else {
-                    balance += stake;
-                    updateAllBalances();
-                    if(record) record.active = false;
+            btn.classList.add('cashout');
+
+            let userBetRecord = {
+                id: Date.now() + Math.random(),
+                user: userName,
+                stake: stake,
+                multiplier: 0,
+                winAmount: 0,
+                cashedOut: false,
+                active: true,
+                isUser: true
+            };
+            currentRoundLiveBets.push(userBetRecord);
+            myHistoricalBets.push(userBetRecord);
+            btn.dataset.betRecordId = userBetRecord.id;
+
+            document.getElementById('betsListContainer').classList.add('active');
+            renderLiveBetsList();
+            updateButtonStates();
+        }
+        
+        function executeCashout(panelNum, isAuto) {
+            let stake = stakes['stake' + panelNum];
+            let btn = document.getElementById('betBtn' + panelNum);
+            let betRecordId = btn.dataset.betRecordId;
+            let record = currentRoundLiveBets.find(b => b.id == betRecordId) || myHistoricalBets.find(b => b.id == betRecordId);
+
+            if(gameRunning) {
+                let winAmt = stake * currentMultiplier;
+                balance += winAmt;
+                updateAllBalances();
+                playSound('cashout');
+                
+                if(record) {
+                    record.cashedOut = true;
+                    record.active = false;
+                    record.multiplier = parseFloat(currentMultiplier.toFixed(2));
+                    record.winAmount = winAmt;
                 }
-                activeBets[panelNum] = false;
-                hasPlacedBetCurrentRound[panelNum] = false;
-                btn.classList.remove('cashout');
-                renderLiveBetsList();
+                if (!isAuto) {
+                    alert(`Cashed out successfully! Won ${winAmt.toFixed(2)} KES`);
+                }
+            } else {
+                balance += stake;
+                updateAllBalances();
+                if(record) record.active = false;
+            }
+            
+            activeBets[panelNum] = false;
+            hasPlacedBetCurrentRound[panelNum] = false;
+            btn.classList.remove('cashout');
+            renderLiveBetsList();
+            updateButtonStates();
+        }
+
+        function getNextCrashPoint() {
+            let now = new Date();
+            let totalMinutes = now.getHours() * 60 + now.getMinutes();
+            let currentEpochInterval = Math.floor(totalMinutes / 20);
+
+            if (currentEpochInterval !== lastSignalEpochMinute) {
+                lastSignalEpochMinute = currentEpochInterval;
+                let patternType = currentEpochInterval % 3;
+
+                if (patternType === 0) {
+                    let v1, v2;
+                    do {
+                        v1 = parseFloat((70.01 + Math.random() * 20.0).toFixed(2));
+                        v2 = parseFloat((70.01 + Math.random() * 20.0).toFixed(2));
+                    } while (Math.abs(v1 - v2) < 0.5);
+                    scheduledSignalQueue = [v1, v2];
+                } else if (patternType === 1) {
+                    let v1, v2, v3;
+                    do {
+                        v1 = parseFloat((40.01 + Math.random() * 25.0).toFixed(2));
+                        v2 = parseFloat((40.01 + Math.random() * 25.0).toFixed(2));
+                        v3 = parseFloat((40.01 + Math.random() * 25.0).toFixed(2));
+                    } while (v1 === v2 || v2 === v3 || v1 === v3);
+                    scheduledSignalQueue = [v1, v2, v3];
+                } else {
+                    let v1 = parseFloat((90.01 + Math.random() * 20.0).toFixed(2));
+                    scheduledSignalQueue = [v1];
+                }
+            }
+            if (scheduledSignalQueue.length > 0) {
+                return scheduledSignalQueue.shift();
+            } else {
+                let rand = Math.random();
+                if (rand < 0.65) return parseFloat((1.01 + Math.random() * 0.99).toFixed(2));
+                if (rand < 0.90) return parseFloat((2.00 + Math.random() * 5.00).toFixed(2));
+                return parseFloat((7.00 + Math.random() * 25.00).toFixed(2));
             }
         }
 
@@ -1356,11 +1523,23 @@
             let plane = document.getElementById('planeGraphic');
 
             gameRunning = false;
+            
+            for(let i=1; i<=2; i++) {
+                if(autoMode[i] && autoBetActive[i] && !activeBets[i]) {
+                    performBetPlacement(i);
+                }
+            }
+            
             hasPlacedBetCurrentRound = { 1: false, 2: false };
-            currentRoundLiveBets = []; // Reset round bets
+            for(let i=1; i<=2; i++) {
+                if(activeBets[i]) {
+                    hasPlacedBetCurrentRound[i] = true;
+                }
+            }
+            
+            currentRoundLiveBets = [];
 
-            // Generate synthetic bot bets for this round history
-            let numBots = 4 + Math.floor(Math.random() * 4);
+            let numBots = 8 + Math.floor(Math.random() * 7);
             for(let i=0; i<numBots; i++) {
                 let randomBotName = botNames[Math.floor(Math.random() * botNames.length)];
                 let randomStake = [10, 50, 100, 200, 500][Math.floor(Math.random() * 5)];
@@ -1376,13 +1555,7 @@
                 });
             }
 
-            for(let i=1; i<=2; i++) {
-                if(activeBets[i]) {
-                    hasPlacedBetCurrentRound[i] = true;
-                }
-            }
-
-            statusText.innerText = "WAITING...";
+                    statusText.innerText = "WAITING...";
             multDisplay.innerText = "1.00x";
             currentMultiplier = 1.00;
             plane.style.bottom = "20px";
@@ -1402,7 +1575,7 @@
                 toggleAmbientSound(true);
 
                 statusText.innerText = "";
-                crashPoint = parseFloat((1.1 + Math.random() * 3).toFixed(2));
+                crashPoint = getNextCrashPoint();
 
                 for(let i=1; i<=2; i++) {
                     let btn = document.getElementById('betBtn' + i);
@@ -1414,10 +1587,19 @@
                 }
                 
                 gameTimer = setInterval(() => {
-                    currentMultiplier += 0.04;
+                    let step = crashPoint > 50 ? 0.4 : 0.04;
+                    currentMultiplier += step;
                     multDisplay.innerText = currentMultiplier.toFixed(2) + "x";
+                    
+                    for(let i=1; i<=2; i++) {
+                        if (activeBets[i] && autoMode[i]) {
+                            let autoVal = parseFloat(document.getElementById('autoCashoutInp' + i).value);
+                            if (currentMultiplier >= autoVal) {
+                                executeCashout(i, true);
+                            }
+                        }
+                    }
 
-                    // Simulate random bot cashouts during flight
                     currentRoundLiveBets.forEach(b => {
                         if(!b.isUser && b.active && !b.cashedOut) {
                             let botTarget = 1.2 + Math.random() * 2.5;
@@ -1450,7 +1632,6 @@
                         multDisplay.innerText = `${crashPoint.toFixed(2)}x`;
                         plane.style.transform = "rotate(45deg) scale(0.8)";
 
-                        // Push crash point to recent odds history
                         recentOddsHistory.push(crashPoint);
                         updateMultiplierRibbon();
 
