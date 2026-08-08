@@ -1670,9 +1670,8 @@
                 animationFrameId = requestAnimationFrame(updateGameFrame);
             }, 3000);
         }
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <script>
-      const socket = io("https://game-backend-service.onrender.com");
+        <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script> 
+    const socket = io("https://game-backend-service.onrender.com");
       socket.on("game_state", (data) => {
         console.log("Live Sync State:", data);
         const multiplierElement = document.getElementById("multiplier");
@@ -1683,8 +1682,8 @@
             multiplierElement.innerText = "Next round in " + data.countdown + "s";
           } else if (data.gameState === "CRASHED") {
             multiplierElement.innerText = "Crashed at " + data.currentMultiplier + "x";
+          }
         }
       });
-    </script>
 </body>
 </html>
