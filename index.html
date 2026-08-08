@@ -3,12 +3,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aviator</title>
+    <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+    <script>
+        const socket = io("https://aviator-backend-server.onrender.com");
+    </script>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         body {
             background-color: #07090e;
@@ -521,7 +525,7 @@
         .menu-drawer.open {
             right: 0;
         }
-                .menu-header {
+        .menu-header {
             padding: 16px;
             background-color: #0b1322;
             display: flex;
@@ -619,7 +623,7 @@
             box-shadow: 0 0 12px rgba(0,230,118,0.3);
         }
         
-        /* Live Bets Inline Container Styles (Under second betting button) */
+        /* Live Bets Inline Container Styles */
         .bets-list-container {
             width: 100%;
             background: rgba(13, 18, 27, 0.96);
@@ -664,7 +668,7 @@
 
     <div class="app-container">
 
-        <!-- 1. REGISTER VIEW -->
+         <!-- 1. REGISTER VIEW -->
         <div class="view active" id="registerView">
             <div class="auth-card">
                 <div class="auth-logo">
@@ -813,13 +817,10 @@
                         <button class="quick-amt-btn" onclick="setStake('stake2', 500)">500</button>
                     </div>
                 </div>
-
-                <!-- Live Bets List Container positioned right under the second betting button -->
+                <!-- Live Bets List Container -->
                 <div class="bets-list-container" id="betsListContainer">
                     <div style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #121824; color: #8b9bb4; border-bottom: 1px solid #1f2b42;">Live Bets This Round</div>
-                    <div id="liveBetsItemsList">
-                        <!-- Populated dynamically -->
-                    </div>
+                    <div id="liveBetsItemsList"></div>
                 </div>
             </div>
 
@@ -835,7 +836,8 @@
                 </button>
             </div>
         </div>
-                <!-- DEPOSIT VIEW -->
+
+        <!-- DEPOSIT VIEW -->
         <div class="sub-view" id="depositView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('depositView')">✕</button>
@@ -866,6 +868,7 @@
                 </div>
             </div>
         </div>
+
         <!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
@@ -942,7 +945,13 @@
 
     </div>
 
+    <!-- Socket.io Library Link -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+
     <script>
+        // Connect to your global Render backend service
+        const socket = io("https://game-backend-service.onrender.com");
+
         let balance = 0.00;
         let userName = "Mohammad";
         let userPhone = "";
@@ -962,112 +971,125 @@
         let botChatInterval = null;
 
         let totalRoundsPlayed = 0;
-
         let currentRoundLiveBets = [];
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
         let recentOddsHistory = [1.06, 2.19, 5.51, 1.45, 3.20];
 
         let animationFrameId = null;
-        let roundStartTime = 0;
 
         const botNames = [
             "Brian_Ke", "Amina99", "KevinOchieng", "Sharon_Cheptoo", "Juma_Mfalme", 
-            "MercyWanjiku", "Baraka_254", "FatmaHassan", "Otieno_G", "Cynthia_M",
-            "Brian_W", "Diana_Chebt", "Alex_Maina", "Esther_W", "Mohamed_Ali",
-            "Victor_O", "Barack_T", "Collins_M", "Ian_J", "Hassan_A"
+            "MercyWanjiku", "Baraka_254", "FatmaHassan", "Otieno_G", "Cynthia_M"
         ];
         const botMessages = [
-            "Easy money today! 🚀",
-            "Anyone cashing out above 3x?",
-            "This game is crazy man 🔥",
-            "Just recovered my losses!",
-            "Waiting for high multipliers",
-            "M-Pesa deposit received instantly 💯",
-            "Who else is in this round?",
-            "Let's gooo ✈️",
-            "Smart cashout at 2x is the key",
-            "Combos Man strategy works!"
+            "Easy money today! 🚀", "Anyone cashing out above 3x?", "This game is crazy man 🔥", 
+            "Just recovered my losses!", "Waiting for high multipliers", "Let's gooo ✈️"
         ];
+
+        // WebSocket Sync Listeners
+        socket.on("sync", (state) => {
+            if (state && state.isFlying) {
+                gameRunning = true;
+                currentMultiplier = parseFloat(state.currentOdd);
+            }
+        });
+
+        socket.on("takeoff", () => {
+            gameRunning = true;
+            document.getElementById('gameStatusText').innerText = "";
+            toggleAmbientSound(true);
+        });
+
+        socket.on("tick", (data) => {
+            currentMultiplier = parseFloat(data.currentOdd);
+            let multDisplay = document.getElementById('gameMultiplierDisplay');
+            if(multDisplay) multDisplay.innerText = currentMultiplier.toFixed(2) + "x";
+            
+                        // Handle auto cashouts
+            for(let i=1; i<=2; i++) {
+                if (activeBets[i] && autoMode[i]) {
+                    let autoVal = parseFloat(document.getElementById('autoCashoutInp' + i).value);
+                    if (currentMultiplier >= autoVal) {
+                        executeCashout(i, true);
+                    }
+                }
+            }
+            updateButtonStates();
+        });
+
+        socket.on("crash", (data) => {
+            crashPoint = parseFloat(data.finalOdd);
+            gameRunning = false;
+            toggleAmbientSound(false);
+            playSound('crash');
+            
+            let statusText = document.getElementById('gameStatusText');
+            if(statusText) statusText.innerText = `CRASHED @ ${crashPoint.toFixed(2)}x`;
+            
+            recentOddsHistory.push(crashPoint);
+            updateMultiplierRibbon();
+
+            for(let i=1; i<=2; i++) {
+                if(activeBets[i]) {
+                    activeBets[i] = false;
+                    hasPlacedBetCurrentRound[i] = false;
+                    let btn = document.getElementById('betBtn' + i);
+                    let btnText = document.getElementById('betBtnText' + i);
+                    btn.classList.remove('cashout');
+                    btnText.innerText = "BET NEXT";
+                }
+            }
+        });
 
         function initAudioContext() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
         }
-
         function playSound(type) {
             if (!soundEnabled) return;
             try {
                 initAudioContext();
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
+                if (audioCtx.state === 'suspended') { audioCtx.resume(); }
                 let now = audioCtx.currentTime;
-
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                
                 if (type === 'vocal_beat') {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(180, now);
                     osc.frequency.exponentialRampToValueAtTime(60, now + 0.15);
                     gain.gain.setValueAtTime(0.2, now);
                     gain.gain.linearRampToValueAtTime(0.001, now + 0.15);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.15);
                 } else if (type === 'cashout') {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(523.25, now);
-                    osc.frequency.setValueAtTime(659.25, now + 0.1);
-                    osc.frequency.setValueAtTime(783.99, now + 0.2);
                     gain.gain.setValueAtTime(0.15, now);
                     gain.gain.linearRampToValueAtTime(0.001, now + 0.35);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.35);
                 } else if (type === 'crash') {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
                     osc.type = 'sawtooth';
                     osc.frequency.setValueAtTime(220, now);
                     osc.frequency.exponentialRampToValueAtTime(40, now + 0.4);
                     gain.gain.setValueAtTime(0.3, now);
                     gain.gain.linearRampToValueAtTime(0.001, now + 0.4);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.4);
                 }
-            } catch(e) {
-                console.log("Audio play error:", e);
-            }
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + (type === 'crash' ? 0.4 : 0.15));
+            } catch(e) {}
         }
         function toggleAmbientSound(start) {
             if (!soundEnabled) {
-                if (ambientSoundInterval) {
-                    clearInterval(ambientSoundInterval);
-                    ambientSoundInterval = null;
-                }
+                if (ambientSoundInterval) { clearInterval(ambientSoundInterval); ambientSoundInterval = null; }
                 return;
             }
-            try {
-                initAudioContext();
-                if (start && !ambientSoundInterval) {
-                    ambientSoundInterval = setInterval(() => {
-                        if (!soundEnabled || !gameRunning) return;
-                        playSound('vocal_beat');
-                    }, 300);
-                } else if (!start && ambientSoundInterval) {
-                    clearInterval(ambientSoundInterval);
-                    ambientSoundInterval = null;
-                }
-            } catch(e) {
-                console.log("Ambient sound error:", e);
+            if (start && !ambientSoundInterval) {
+                ambientSoundInterval = setInterval(() => { if (gameRunning) playSound('vocal_beat'); }, 300);
+            } else if (!start && ambientSoundInterval) {
+                clearInterval(ambientSoundInterval);
+                ambientSoundInterval = null;
             }
         }
 
@@ -1076,10 +1098,9 @@
             botChatInterval = setInterval(() => {
                 let randomBot = botNames[Math.floor(Math.random() * botNames.length)];
                 let randomMsg = botMessages[Math.floor(Math.random() * botMessages.length)];
-                
                 let list = document.getElementById('chatMessagesList');
+                if (!list) return;
                 let bubble = document.createElement('div');
-                bubble.className = 'chat-msg-bubble';
                 bubble.style.cssText = "background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border:1px solid #28354c;";
                 bubble.innerHTML = `<span style="font-size: 10px; color: #ff9800; font-weight: bold;">${randomBot}</span><span>${randomMsg}</span>`;
                 list.appendChild(bubble);
@@ -1089,6 +1110,7 @@
 
         function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
+            if (!ribbon) return;
             ribbon.innerHTML = '';
             recentOddsHistory.slice(-10).forEach(odd => {
                 let pill = document.createElement('div');
@@ -1104,68 +1126,45 @@
 
         function updateAllBalances() {
             let formatted = balance.toFixed(2) + " KES";
-            let mainBal = document.getElementById('mainBalanceDisplay');
-            if(mainBal) mainBal.innerText = formatted;
-            let depBal = document.getElementById('depositBalDisplay');
-            if(depBal) depBal.innerText = formatted;
-            let withBal = document.getElementById('withdrawBalDisplay');
-            if(withBal) withBal.innerText = formatted;
-            let availBal = document.getElementById('withAvailBal');
-            if(availBal) availBal.innerText = formatted;
-            let profBal = document.getElementById('profileBalDisplay');
-            if(profBal) profBal.innerText = formatted;
+            ['mainBalanceDisplay', 'depositBalDisplay', 'withdrawBalDisplay', 'withAvailBal', 'profileBalDisplay'].forEach(id => {
+                let el = document.getElementById(id);
+                if(el) el.innerText = formatted;
+            });
         }
 
         function showSignInView() {
             document.getElementById('registerView').classList.remove('active');
             document.getElementById('signInView').classList.add('active');
         }
-
         function showRegisterView() {
             document.getElementById('signInView').classList.remove('active');
             document.getElementById('registerView').classList.add('active');
         }
 
         function handleRegister() {
-            let nameInput = document.getElementById('regName');
-            let phoneInput = document.getElementById('regPhone');
-            let passwordInput = document.getElementById('regPass');
-            let confirmPasswordInput = document.getElementById('regConfirmPass');
+            let name = document.getElementById('regName').value.trim();
+            let phone = document.getElementById('regPhone').value.trim();
+            let password = document.getElementById('regPass').value;
+            let confirmPassword = document.getElementById('regConfirmPass').value;
 
-            let name = nameInput ? nameInput.value.trim() : "";
-            let phone = phoneInput ? phoneInput.value.trim() : "";
-            let password = passwordInput ? passwordInput.value : "";
-            let confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : "";
-
-            if (!name) { alert("Please enter a name."); return false; }
-            if (!phone) { alert("Please enter a phone number."); return false; }
-            if (!password || password.length < 6) { alert("Password must be at least 6 characters long."); return false; }
-            if (password !== confirmPassword) { alert("Passwords do not match."); return false; }
+            if (!name || !phone || password.length < 6 || password !== confirmPassword) {
+                alert("Please check your input fields and password match.");
+                return false;
+            }
 
             registeredUsers[phone] = { name: name, password: password };
             userName = name;
             userPhone = phone;
-            localStorage.setItem('aviator_user', userName);
-            localStorage.setItem('aviator_phone', userPhone);
-            
-            let profileDisplay = document.getElementById('profileNameDisplay');
-            if (profileDisplay) profileDisplay.innerText = userName;
-
+            document.getElementById('profileNameDisplay').innerText = userName;
             goToGameApp();
             return true;
         }
 
         function handleSignIn() {
-            let phoneInput = document.getElementById('signInPhone');
-            let passwordInput = document.getElementById('signInPass');
-
-            let phone = phoneInput ? phoneInput.value.trim() : "";
-            let password = passwordInput ? passwordInput.value : "";
-
-            if (!phone) { alert("Please enter your phone number."); return false; }
-            if (!password) { alert("Please enter your password."); return false; }
-
+            let phone = document.getElementById('signInPhone').value.trim();
+            let password = document.getElementById('signInPass').value;
             let userRecord = registeredUsers[phone];
+            
             if (!userRecord || userRecord.password !== password) {
                 alert("Invalid phone number or password.");
                 return false;
@@ -1173,25 +1172,18 @@
 
             userName = userRecord.name;
             userPhone = phone;
-            localStorage.setItem('aviator_user', userName);
-            localStorage.setItem('aviator_phone', userPhone);
-
-            let profileDisplay = document.getElementById('profileNameDisplay');
-            if (profileDisplay) profileDisplay.innerText = userName;
-
+            document.getElementById('profileNameDisplay').innerText = userName;
             goToGameApp();
             return true;
         }
 
         function goToGameApp() {
-            totalRoundsPlayed = 0;
             document.getElementById('registerView').classList.remove('active');
             document.getElementById('signInView').classList.remove('active');
             document.getElementById('gameView').classList.add('active');
             updateAllBalances();
             updateMultiplierRibbon();
             startBotChatLoop();
-            startCrashGameLoop();
         }
 
         function toggleMenuDrawer(open) {
@@ -1218,20 +1210,15 @@
             document.getElementById('signInView').classList.remove('active');
             document.getElementById('registerView').classList.add('active');
         }
-                        function toggleSoundFx() {
+
+        function toggleSoundFx() {
             soundEnabled = !soundEnabled;
             let btn = document.getElementById('soundToggleBtn');
-            let iconSvg = document.getElementById('soundIconSvg');
             if (!soundEnabled) {
                 btn.classList.add('muted');
-                iconSvg.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
                 toggleAmbientSound(false);
             } else {
                 btn.classList.remove('muted');
-                iconSvg.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
-                if (gameRunning) {
-                    toggleAmbientSound(true);
-                }
             }
         }
         
@@ -1269,18 +1256,11 @@
                     btnSub.innerText = currentPayout.toFixed(2) + " KES";
                 } else {
                     btnSub.innerText = val.toFixed(2) + " KES";
-                    if(autoMode[i] && autoBetActive[i]) {
-                        btn.classList.add('cashout');
-                        btn.classList.remove('disabled-state');
-                        btnText.innerText = "AUTO ON";
-                        btnSub.innerText = "Click to Stop";
-                    } else if(gameRunning && !hasPlacedBetCurrentRound[i]) {
+                    if(gameRunning) {
                         btn.classList.add('disabled-state');
-                        btn.classList.remove('cashout');
                         btnText.innerText = "WAITING...";
-                    } else if(!gameRunning) {
+                    } else {
                         btn.classList.remove('disabled-state');
-                        btn.classList.remove('cashout');
                         btnText.innerText = "BET NEXT";
                     }
                 }
@@ -1288,43 +1268,20 @@
         }
 
         function submitManualDeposit() {
-            let phone = document.getElementById('depPhoneInput').value.trim();
-            let code = document.getElementById('depCodeInput').value.trim().toUpperCase();
             let amount = parseFloat(document.getElementById('depAmountInput').value);
-
-            if (!phone || !code || isNaN(amount) || amount <= 0) {
-                alert("Please fill in all deposit fields correctly.");
-                return;
-            }
-            if (code.length < 8) {
-                alert("Please enter a valid M-Pesa transaction code.");
-                return;
-            }
-            if (amount < 500) {
-                alert("Minimum deposit is 500 KES.");
-                return;
-            }
-
+            if(isNaN(amount) || amount < 500) { alert("Minimum deposit is 500 KES."); return; }
             balance += amount;
             updateAllBalances();
             alert(`Deposit of KES ${amount.toFixed(2)} successful!`);
             closeSubView('depositView');
-
-            document.getElementById('depPhoneInput').value = '';
-            document.getElementById('depCodeInput').value = '';
-            document.getElementById('depAmountInput').value = '';
         }
 
         function confirmWithdraw() {
             let amt = parseFloat(document.getElementById('withAmountInput').value);
-            if(isNaN(amt) || amt <= 0) { alert("Please enter a valid amount."); return; }
-            if(amt < 10000) { alert("Minimum withdrawal is 10,000 KES."); return; }
-            if(amt > 1000000) { alert("Maximum withdrawal is 1,000,000 KES."); return; }
-            if(balance < amt) { alert("Insufficient balance!"); return; }
-            
+            if(isNaN(amt) || amt < 10000 || balance < amt) { alert("Check withdrawal limits or balance."); return; }
             balance -= amt;
             updateAllBalances();
-            alert(`Successfully withdrew ${amt.toFixed(2)} KES to M-Pesa!`);
+            alert(`Withdrew ${amt.toFixed(2)} KES successfully!`);
             closeSubView('withdrawView');
         }
 
@@ -1334,7 +1291,6 @@
             if(!text) return;
             let list = document.getElementById('chatMessagesList');
             let bubble = document.createElement('div');
-            bubble.className = 'chat-msg-bubble';
             bubble.style.cssText = "background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border:1px solid #28354c;";
             bubble.innerHTML = `<span style="font-size: 10px; color: #ff9800; font-weight: bold;">${userName}</span><span>${text}</span>`;
             list.appendChild(bubble);
@@ -1344,335 +1300,37 @@
 
         function switchHistoryTab(tab) {
             currentHistoryTab = tab;
-            let allTab = document.getElementById('allBetsTabBtn');
-            let myTab = document.getElementById('myBetsTabBtn');
-            if(tab === 'all') {
-                allTab.classList.add('active');
-                myTab.classList.remove('active');
-            } else {
-                myTab.classList.add('active');
-                allTab.classList.remove('active');
-            }
+            document.getElementById('allBetsTabBtn').classList.toggle('active', tab === 'all');
+            document.getElementById('myBetsTabBtn').classList.toggle('active', tab === 'my');
             renderLiveBetsList();
         }
 
         function renderLiveBetsList() {
             let container = document.getElementById('liveBetsItemsList');
-            container.innerHTML = '';
-            
-            let dataset = (currentHistoryTab === 'all') ? currentRoundLiveBets : myHistoricalBets;
-            
-            if(dataset.length === 0) {
-                container.innerHTML = `<div style="padding: 10px; text-align: center; color: #8b9bb4; font-size: 11px;">No bets recorded yet for this view.</div>`;
-                return;
-            }
-
-            dataset.slice().reverse().forEach(bet => {
-                let item = document.createElement('div');
-                item.className = 'bet-list-item';
-                let statusText = bet.cashedOut ? `<span class="win-col">${bet.multiplier}x (${bet.winAmount.toFixed(2)} KES)</span>` : `<span>Playing...</span>`;
-                if(!bet.active && !bet.cashedOut) {
-                    statusText = `<span style="color:#ff5252;">Crashed</span>`;
-                }
-                item.innerHTML = `
-                    <span class="user-col">${bet.user}</span>
-                    <span class="stake-col">${bet.stake.toFixed(2)} KES</span>
-                    <span>${statusText}</span>
-                `;
-                container.appendChild(item);
-            });
+            if(!container) return;
+            container.innerHTML = `<div style="padding: 10px; text-align: center; color: #8b9bb4; font-size: 11px;">Live Multiplayer Active</div>`;
         }
 
         function handleBetAction(panelNum) {
-            if (autoMode[panelNum] && !activeBets[panelNum]) {
-                autoBetActive[panelNum] = !autoBetActive[panelNum];
-                if(autoBetActive[panelNum] && !gameRunning && !hasPlacedBetCurrentRound[panelNum]) {
-                    performBetPlacement(panelNum);
-                }
-                updateButtonStates();
-                return;
-            }
-
-            if (gameRunning && !hasPlacedBetCurrentRound[panelNum] && !activeBets[panelNum]) {
-                alert("Bets are locked once the round has started!");
-                return;
-            }
-
+            let stake = stakes['stake' + panelNum];
+            let btn = document.getElementById('betBtn' + panelNum);
+            
             if(!activeBets[panelNum]) {
-                performBetPlacement(panelNum);
+                if(balance < stake) { alert("Insufficient balance!"); return; }
+                balance -= stake;
+                updateAllBalances();
+                activeBets[panelNum] = true;
+                btn.classList.add('cashout');
             } else {
-                executeCashout(panelNum, false);
-            }
-        }
-        
-        function performBetPlacement(panelNum) {
-            let stake = stakes['stake' + panelNum];
-            let btn = document.getElementById('betBtn' + panelNum);
-            
-            if(balance < stake) { 
-                alert("Insufficient balance! Please deposit."); 
-                if (autoBetActive[panelNum]) autoBetActive[panelNum] = false;
-                updateButtonStates();
-                return; 
-            }
-            
-            balance -= stake;
-            updateAllBalances();
-            activeBets[panelNum] = true;
-            hasPlacedBetCurrentRound[panelNum] = true;
-
-            btn.classList.add('cashout');
-
-            let userBetRecord = {
-                id: Date.now() + Math.random(),
-                user: userName,
-                stake: stake,
-                multiplier: 0,
-                winAmount: 0,
-                cashedOut: false,
-                active: true,
-                isUser: true
-            };
-            currentRoundLiveBets.push(userBetRecord);
-            myHistoricalBets.push(userBetRecord);
-            btn.dataset.betRecordId = userBetRecord.id;
-
-            document.getElementById('betsListContainer').classList.add('active');
-            renderLiveBetsList();
-            updateButtonStates();
-        }
-        
-        function executeCashout(panelNum, isAuto) {
-            let stake = stakes['stake' + panelNum];
-            let btn = document.getElementById('betBtn' + panelNum);
-            let betRecordId = btn.dataset.betRecordId;
-            let record = currentRoundLiveBets.find(b => b.id == betRecordId) || myHistoricalBets.find(b => b.id == betRecordId);
-
-            if(gameRunning) {
                 let winAmt = stake * currentMultiplier;
                 balance += winAmt;
                 updateAllBalances();
                 playSound('cashout');
-                
-                if(record) {
-                    record.cashedOut = true;
-                    record.active = false;
-                    record.multiplier = parseFloat(currentMultiplier.toFixed(2));
-                    record.winAmount = winAmt;
-                }
-                if (!isAuto) {
-                    alert(`Cashed out successfully! Won ${winAmt.toFixed(2)} KES`);
-                }
-            } else {
-                balance += stake;
-                updateAllBalances();
-                if(record) record.active = false;
-            }
-            
-            activeBets[panelNum] = false;
-            hasPlacedBetCurrentRound[panelNum] = false;
-            btn.classList.remove('cashout');
-            renderLiveBetsList();
-            updateButtonStates();
-        }
-
-        function seededRandom(seed) {
-            let x = Math.sin(seed++) * 10000;
-            return x - Math.floor(x);
-        }
-
-        function getNextCrashPoint() {
-            let now = new Date();
-            let minutesIntoHour = now.getMinutes() + (now.getSeconds() / 60);
-
-            if (minutesIntoHour < 20) {
-                if (totalRoundsPlayed % 20 === 0) return 65.00;
-                if (totalRoundsPlayed % 20 === 1) return 75.50;
-                if (totalRoundsPlayed % 20 === 2) return 82.00;
-            } else if (minutesIntoHour >= 20 && minutesIntoHour < 40) {
-                if (totalRoundsPlayed % 20 === 3) return 45.00;
-                if (totalRoundsPlayed % 20 === 4) return 52.00;
-                if (totalRoundsPlayed % 20 === 5) return 48.50;
-                if (totalRoundsPlayed % 20 === 6) return 60.00;
-            } else if (minutesIntoHour >= 40 && minutesIntoHour < 60) {
-                if (totalRoundsPlayed % 20 === 7) return 95.00;
-                if (totalRoundsPlayed % 20 === 8) return 110.00;
-            }
-
-            let roundSeed = Math.floor(Date.now() / 4000);
-            let rand = seededRandom(roundSeed);
-            let crash = 1.00 + (rand * 2.5);
-            if (rand < 0.05) crash = 1.00;
-            return parseFloat(crash.toFixed(2));
-        }
-
-        function startCrashGameLoop() {
-            let statusText = document.getElementById('gameStatusText');
-            let multDisplay = document.getElementById('gameMultiplierDisplay');
-            let plane = document.getElementById('planeGraphic');
-
-            gameRunning = false;
-            
-            for(let i=1; i<=2; i++) {
-                if(autoMode[i] && autoBetActive[i] && !activeBets[i]) {
-                    performBetPlacement(i);
-                }
-            }
-            
-            hasPlacedBetCurrentRound = { 1: false, 2: false };
-            for(let i=1; i<=2; i++) {
-                if(activeBets[i]) {
-                    hasPlacedBetCurrentRound[i] = true;
-                }
-            }
-            
-            currentRoundLiveBets = [];
-
-            let numBots = 8 + Math.floor(Math.random() * 7);
-            for(let i=0; i<numBots; i++) {
-                let randomBotName = botNames[Math.floor(Math.random() * botNames.length)];
-                let randomStake = [10, 50, 100, 200, 500][Math.floor(Math.random() * 5)];
-                currentRoundLiveBets.push({
-                    id: Math.random(),
-                    user: randomBotName,
-                    stake: randomStake,
-                    multiplier: 0,
-                    winAmount: 0,
-                    cashedOut: false,
-                    active: true,
-                    isUser: false
-                });
-            }
-
-            statusText.innerText = "WAITING...";
-            multDisplay.innerText = "1.00x";
-            currentMultiplier = 1.00;
-            
-            let gameScreenBox = document.getElementById('gameScreenBox');
-            let screenWidth = gameScreenBox ? gameScreenBox.clientWidth : 300;
-            let screenHeight = gameScreenBox ? gameScreenBox.clientHeight : 300;
-            
-            plane.style.bottom = (screenHeight * 0.15) + "px";
-            plane.style.left = (screenWidth * 0.05) + "px";
-            plane.style.transform = "rotate(-15deg)";
-            
-            if(currentRoundLiveBets.length > 0) {
-                document.getElementById('betsListContainer').classList.add('active');
-                renderLiveBetsList();
-            } else {
-                document.getElementById('betsListContainer').classList.remove('active');
+                activeBets[panelNum] = false;
+                btn.classList.remove('cashout');
             }
             updateButtonStates();
-
-            setTimeout(() => {
-                gameRunning = true;
-                toggleAmbientSound(true);
-
-                statusText.innerText = "";
-                crashPoint = getNextCrashPoint();
-                roundStartTime = performance.now();
-
-                for(let i=1; i<=2; i++) {
-                    let btn = document.getElementById('betBtn' + i);
-                    if(activeBets[i]) {
-                        btn.classList.add('cashout');
-                    } else {
-                        btn.classList.add('disabled-state');
-                    }
-                }
-                
-                function updateGameFrame(timestamp) {
-                    if (!gameRunning) return;
-
-                    let elapsedSeconds = (timestamp - roundStartTime) / 1000;
-                    
-                    let growthSpeed = crashPoint > 10 ? 0.4 : 0.12;
-                    currentMultiplier = parseFloat((1.00 + Math.pow(elapsedSeconds, 1.6) * growthSpeed).toFixed(2));
-                    
-                    if (currentMultiplier >= crashPoint) {
-                        currentMultiplier = crashPoint;
-                        multDisplay.innerText = `${currentMultiplier.toFixed(2)}x`;
-                        
-                        gameRunning = false;
-                        toggleAmbientSound(false);
-                        playSound('crash');
-
-                        statusText.innerText = `CRASHED @ ${crashPoint.toFixed(2)}x`;
-                        plane.style.transform = "rotate(45deg) scale(0.8)";
-
-                        recentOddsHistory.push(crashPoint);
-                        updateMultiplierRibbon();
-
-                        totalRoundsPlayed++;
-
-                        currentRoundLiveBets.forEach(b => {
-                            if(b.active) {
-                                b.active = false;
-                                b.cashedOut = false;
-                            }
-                        });
-                        renderLiveBetsList();
-
-                        for(let i=1; i<=2; i++) {
-                            if(activeBets[i]) {
-                                activeBets[i] = false;
-                                hasPlacedBetCurrentRound[i] = false;
-                                let btn = document.getElementById('betBtn' + i);
-                                let btnText = document.getElementById('betBtnText' + i);
-                                btn.classList.remove('cashout');
-                                btnText.innerText = "BET NEXT";
-                            }
-                        }
-
-                        setTimeout(startCrashGameLoop, 3500);
-                        return;
-                    }
-
-                    multDisplay.innerText = currentMultiplier.toFixed(2) + "x";
-                    
-                    for(let i=1; i<=2; i++) {
-                        if (activeBets[i] && autoMode[i]) {
-                            let autoVal = parseFloat(document.getElementById('autoCashoutInp' + i).value);
-                            if (currentMultiplier >= autoVal) {
-                                executeCashout(i, true);
-                            }
-                        }
-                    }
-
-                    currentRoundLiveBets.forEach(b => {
-                        if(!b.isUser && b.active && !b.cashedOut) {
-                            let botTarget = 1.2 + Math.random() * 2.5;
-                            if(currentMultiplier >= botTarget && botTarget < crashPoint) {
-                                b.cashedOut = true;
-                                b.active = false;
-                                b.multiplier = parseFloat(botTarget.toFixed(2));
-                                b.winAmount = b.stake * b.multiplier;
-                            }
-                        }
-                    });
-                    renderLiveBetsList();
-                    updateButtonStates();
-
-                    let targetWidth = gameScreenBox ? gameScreenBox.clientWidth : 300;
-                    let targetHeight = gameScreenBox ? gameScreenBox.clientHeight : 300;
-
-                    let progress = Math.min(1, (currentMultiplier - 1.00) / Math.max(2, crashPoint - 1));
-                    let targetLeft = targetWidth * 0.05 + progress * (targetWidth * 0.70);
-                    let targetBottom = targetHeight * 0.15 + progress * (targetHeight * 0.60);
-
-                    plane.style.left = targetLeft + "px";
-                    plane.style.bottom = targetBottom + "px";
-                    plane.style.transform = `rotate(${ -15 + progress * 35 }deg)`;
-
-                    animationFrameId = requestAnimationFrame(updateGameFrame);
-                }
-
-                animationFrameId = requestAnimationFrame(updateGameFrame);
-            }, 3000);
         }
-      </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
-<script src="sync.js"></script>
-    
+    </script>
 </body>
 </html>
