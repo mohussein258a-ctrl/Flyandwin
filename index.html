@@ -1678,18 +1678,27 @@
     };
 
     socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log('Received from server:', data);
+    const data = JSON.parse(event.data);
+    console.log('Received from server:', data);
+    
+    if (data.type === 'SYNC_STATE') {
+        console.log('Synced interval active:', data.activeInterval);
         
-        if (data.type === 'SYNC_STATE') {
-            console.log('Synced interval active:', data.activeInterval);
+        // Check what phase the server says the game is currently in
+        if (data.status === 'flying' && typeof updateGameFrame === 'function') {
+            // If the plane is already flying, instantly jump to the server's current multiplier
+            if (typeof currentMultiplier !== 'undefined') {
+                currentMultiplier = data.multiplier;
+            }
+        } else if (data.status === 'waiting') {
+            // Handle waiting/countdown state sync if your server tracks it
         }
-    };
+    }
+};
+            
 } catch (error) {
     console.log('WebSocket connection error:', error);
         }
     </script>
 </body>
 </html>
-
-    
