@@ -1670,34 +1670,26 @@
                 animationFrameId = requestAnimationFrame(updateGameFrame);
             }, 3000);
         }
-        socket.onmessage = (event) => {
-    try {
-        const data = JSON.parse(event.data);
-        console.log('Received from server:', data);
-        
-        // Check if the server sent a game state update
-        if (data.type === 'SYNC_STATE' || data.status) {
-            // If the server says the plane is flying, sync the multiplier and trigger the flight UI
-            if (data.status === 'flying' || data.multiplier > 1.00) {
-                if (typeof currentMultiplier !== 'undefined') {
-                    currentMultiplier = data.multiplier;
-                }
-                
-                // Update the multiplier display text on screen immediately
-                const multiplierElement = document.querySelector('.multiplier-display') || document.querySelector('h1, h2');
-                if (multiplierElement) {
-                    multiplierElement.innerText = Number(data.multiplier).toFixed(2) + 'x';
-                }
-            } 
-            // If the server says it's waiting, show the waiting state
-            else if (data.status === 'waiting') {
-                console.log('Server is in waiting phase');
-            }
+            <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+      const socket = io("https://game-backend-service.onrender.com");
+
+      socket.on("game_state", (data) => {
+        console.log("Live Sync State:", data);
+
+        const multiplierElement = document.getElementById("multiplier");
+        if (multiplierElement) {
+          if (data.gameState === "RUNNING") {
+            multiplierElement.innerText = data.currentMultiplier + "x";
+          } else if (data.gameState === "WAITING") {
+            multiplierElement.innerText = "Next round in " + data.countdown + "s";
+          } else if (data.gameState === "CRASHED") {
+            multiplierElement.innerText = "Crashed at " + data.currentMultiplier + "x";
+          }
         }
-    } catch (err) {
-        console.log('Error parsing incoming socket message:', err);
-    }
-};
+      });
+    </script>
+    
     </script>
 </body>
 </html>
