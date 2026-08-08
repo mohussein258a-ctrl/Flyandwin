@@ -1670,35 +1670,34 @@
                 animationFrameId = requestAnimationFrame(updateGameFrame);
             }, 3000);
         }
-        try {
-    const socket = new WebSocket('wss://site-sync-server.onrender.com');
-
-    socket.onopen = () => {
-        console.log('Connected to sync server!');
-    };
-
-    socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    console.log('Received from server:', data);
-    
-    if (data.type === 'SYNC_STATE') {
-        console.log('Synced interval active:', data.activeInterval);
+        socket.onmessage = (event) => {
+    try {
+        const data = JSON.parse(event.data);
+        console.log('Received from server:', data);
         
-        // Check what phase the server says the game is currently in
-        if (data.status === 'flying' && typeof updateGameFrame === 'function') {
-            // If the plane is already flying, instantly jump to the server's current multiplier
-            if (typeof currentMultiplier !== 'undefined') {
-                currentMultiplier = data.multiplier;
+        // Check if the server sent a game state update
+        if (data.type === 'SYNC_STATE' || data.status) {
+            // If the server says the plane is flying, sync the multiplier and trigger the flight UI
+            if (data.status === 'flying' || data.multiplier > 1.00) {
+                if (typeof currentMultiplier !== 'undefined') {
+                    currentMultiplier = data.multiplier;
+                }
+                
+                // Update the multiplier display text on screen immediately
+                const multiplierElement = document.querySelector('.multiplier-display') || document.querySelector('h1, h2');
+                if (multiplierElement) {
+                    multiplierElement.innerText = Number(data.multiplier).toFixed(2) + 'x';
+                }
+            } 
+            // If the server says it's waiting, show the waiting state
+            else if (data.status === 'waiting') {
+                console.log('Server is in waiting phase');
             }
-        } else if (data.status === 'waiting') {
-            // Handle waiting/countdown state sync if your server tracks it
         }
+    } catch (err) {
+        console.log('Error parsing incoming socket message:', err);
     }
 };
-            
-} catch (error) {
-    console.log('WebSocket connection error:', error);
-        }
     </script>
 </body>
 </html>
