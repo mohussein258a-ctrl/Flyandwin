@@ -643,7 +643,7 @@
             </div>
         </div>
 
-                <!-- 2. SIGN IN VIEW -->
+                                <!-- 2. SIGN IN VIEW -->
         <div class="view" id="signInView">
             <div class="auth-card">
                 <div class="auth-logo">
@@ -686,9 +686,7 @@
             </div>
 
             <div class="multiplier-ribbon" id="multiplierRibbon">
-                <div class="multiplier-pill pill-blue">1.06x</div>
-                <div class="multiplier-pill pill-purple">2.19x</div>
-                <div class="multiplier-pill pill-pink">5.51x</div>
+                <!-- Will be populated by JS based on server history -->
             </div>
 
             <div class="game-screen" id="gameScreenBox">
@@ -725,7 +723,6 @@
                         <button class="quick-amt-btn" onclick="setStake('stake1', 500)">500</button>
                     </div>
                 </div>
-
                 <div class="bet-card">
                     <div class="bet-tabs">
                         <div class="bet-tab active" id="tabBet2" onclick="setAutoMode(2, false)">Bet</div>
@@ -808,8 +805,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- WITHDRAW VIEW -->
+<!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('withdrawView')">✕</button>
@@ -833,9 +829,8 @@
                     <button class="primary-btn" onclick="confirmWithdraw()">Withdraw to M-Pesa</button>
                 </div>
             </div>
-        </div>
-
-        <!-- PROFILE VIEW -->
+                </div>
+                            <!-- PROFILE VIEW -->
         <div class="sub-view" id="profileView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('profileView')">✕</button>
@@ -879,7 +874,6 @@
         </div>
 
     </div>
-
     <script>
         // ----------------------------------------------------
         // 1. WEBSOCKET REAL-TIME CONNECTION TO RENDER
@@ -906,21 +900,8 @@
         let liveBetsData = [];
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
-        let recentOddsHistory = [1.06, 2.19, 5.51, 1.45, 3.20];
+        let recentOddsHistory = []; // Initialize empty, server handles this now!
        
-        const chatForm = document.getElementById("chat-form");     // Update with your actual form ID
-const chatInput = document.getElementById("chat-input");   // Update with your actual input ID
-
-if (chatForm && chatInput) {
-    chatForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        if (chatInput.value.trim() !== "") {
-            socket.emit("chat message", chatInput.value);
-            chatInput.value = "";
-        }
-    });
-}
-
         // ----------------------------------------------------
         // 2. SOCKET EVENT LISTENERS
         // ----------------------------------------------------
@@ -936,11 +917,20 @@ if (chatForm && chatInput) {
         socket.on("sync", (gameState) => {
             gameRunning = gameState.isFlying;
             currentMultiplier = gameState.currentOdd || 1.00;
+            
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
             document.getElementById('gameStatusText').innerText = gameRunning ? "" : "WAITING...";
+            
+            // Sync history from server
+            if (gameState.history) {
+                recentOddsHistory = gameState.history;
+                updateMultiplierRibbon();
+            }
+
             if (gameRunning) updatePlanePosition();
         });
-                               socket.on("takeoff", () => {
+
+        socket.on("takeoff", () => {
             gameRunning = true;
             currentMultiplier = 1.00;
             
@@ -954,7 +944,6 @@ if (chatForm && chatInput) {
                 plane.style.left = "20px";
                 plane.style.bottom = "20px";
             }
-
             // Generate live bot bets for active table
             generateLiveBets();
             renderLiveBetsList();
@@ -975,16 +964,6 @@ if (chatForm && chatInput) {
             currentMultiplier = data.currentOdd;
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
           
-            socket.on("chat message", (msg) => {
-    const chatBox = document.getElementById("chat-messages"); // Update with your actual chat box container ID
-    if (chatBox) {
-        const messageElement = document.createElement("div");
-        messageElement.innerText = msg;
-        chatBox.appendChild(messageElement);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-});
-
             // Update physical plane animation coordinates
             updatePlanePosition();
 
@@ -1009,8 +988,7 @@ if (chatForm && chatInput) {
                 }
             }
         });
-
-        socket.on("crash", (data) => {
+                socket.on("crash", (data) => {
             gameRunning = false;
             currentMultiplier = data.finalOdd;
             
@@ -1022,6 +1000,9 @@ if (chatForm && chatInput) {
             playSound('crash');
 
             recentOddsHistory.push(currentMultiplier);
+            if (recentOddsHistory.length > 10) {
+                recentOddsHistory.shift(); // keep array length at 10 to match server
+            }
             updateMultiplierRibbon();
 
             for (let i = 1; i <= 2; i++) {
@@ -1032,7 +1013,45 @@ if (chatForm && chatInput) {
         });
 
         // ----------------------------------------------------
-        // 3. PLANE ANIMATION & LIVE BETS RENDERERS
+        // 3. CHAT IMPLEMENTATION
+        // ----------------------------------------------------
+        
+        socket.on("chat message", (msg) => {
+            const chatBox = document.getElementById("chatMessagesList");
+            if (chatBox) {
+                const messageElement = document.createElement("div");
+                messageElement.style.backgroundColor = "#1f2b42";
+                messageElement.style.padding = "8px 12px";
+                messageElement.style.borderRadius = "8px";
+                messageElement.style.fontSize = "12px";
+                messageElement.style.color = "#fff";
+                messageElement.innerText = msg;
+                chatBox.appendChild(messageElement);
+                // Auto-scroll to the bottom
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+
+        function sendChatMessage() {
+            const input = document.getElementById("chatInputMsg");
+            const msg = input.value.trim();
+            if (msg !== "") {
+                socket.emit("chat message", `${userName}: ${msg}`);
+                input.value = ""; // Clear input after sending
+            }
+        }
+
+        // Allow pressing "Enter" to send
+        document.getElementById("chatInputMsg").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        });
+
+
+        // ----------------------------------------------------
+        // 4. PLANE ANIMATION & LIVE BETS RENDERERS
         // ----------------------------------------------------
         function updatePlanePosition() {
             let screenBox = document.getElementById('gameScreenBox');
@@ -1117,9 +1136,8 @@ if (chatForm && chatInput) {
             document.getElementById('myBetsTabBtn').classList.toggle('active', tab === 'my');
             renderLiveBetsList();
         }
-
-        // ----------------------------------------------------
-        // 4. AUDIO ENGINE & UI CONTROLS
+                // ----------------------------------------------------
+        // 5. AUDIO ENGINE & UI CONTROLS
         // ----------------------------------------------------
         function initAudioContext() {
             if (!audioCtx) {
@@ -1193,10 +1211,11 @@ if (chatForm && chatInput) {
                 }
             } catch(e) {}
         }
-                function updateMultiplierRibbon() {
+
+        function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
             ribbon.innerHTML = '';
-            recentOddsHistory.slice(-10).forEach(odd => {
+            recentOddsHistory.forEach(odd => {
                 let pill = document.createElement('div');
                 let colorClass = 'pill-blue';
                 if(odd >= 2.0 && odd < 5.0) colorClass = 'pill-purple';
@@ -1243,8 +1262,7 @@ if (chatForm && chatInput) {
             document.getElementById('profileNameDisplay').innerText = userName;
             goToGameApp();
         }
-
-        function handleSignIn() {
+                function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
 
@@ -1398,7 +1416,8 @@ if (chatForm && chatInput) {
                 executeCashout(panelNum, false);
             }
         }
-                function performBetPlacement(panelNum) {
+
+        function performBetPlacement(panelNum) {
             let stake = stakes['stake' + panelNum];
             if(balance < stake) { 
                 alert("Insufficient balance."); 
@@ -1413,7 +1432,6 @@ if (chatForm && chatInput) {
             hasPlacedBetCurrentRound[panelNum] = true;
 
             myHistoricalBets.push({ stake: stake, win: 0 });
-
             document.getElementById('betBtn' + panelNum).classList.add('cashout');
             updateButtonStates();
         }
