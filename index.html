@@ -8,7 +8,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         body {
             background-color: #07090e;
@@ -37,7 +37,6 @@
             }
         }
         
-        /* Views */
         .view {
             display: none;
             flex-direction: column;
@@ -52,7 +51,6 @@
             display: flex;
         }
 
-        /* Register / Auth Screen */
         #registerView, #signInView {
             justify-content: center;
             align-items: center;
@@ -152,7 +150,6 @@
             font-weight: bold;
         }
 
-        /* Top Header Bar */
         .top-bar {
             background-color: #0b1322;
             display: flex;
@@ -245,7 +242,6 @@
             border-radius: 2px;
         }
 
-        /* Multiplier History Ribbon */
         .multiplier-ribbon {
             display: flex;
             gap: 6px;
@@ -270,7 +266,6 @@
         .pill-purple { background: linear-gradient(135deg, #7b1fa2, #4a148c); }
         .pill-pink { background: linear-gradient(135deg, #c2185b, #880e4f); }
 
-        /* Game Screen Area */
         .game-screen {
             background: radial-gradient(circle at center, #111a2e 0%, #060a12 100%);
             height: 190px;
@@ -310,7 +305,6 @@
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
         }
 
-        /* Betting Controls Panel */
         .betting-panels {
             display: flex;
             flex-direction: column;
@@ -448,7 +442,6 @@
             color: #fff;
         }
 
-        /* Live Bets Footer Tabs */
         .live-history-bar {
             display: flex;
             background-color: #080c14;
@@ -504,7 +497,6 @@
             border-radius: 8px;
             font-weight: 900;
         }
-        /* Slide-out Menu Drawer */
         .menu-drawer {
             position: absolute;
             top: 0; right: -280px;
@@ -553,7 +545,6 @@
             color: #ff5252;
         }
 
-        /* Generic Sub-views */
         .sub-view {
             display: none;
             flex-direction: column;
@@ -619,7 +610,6 @@
             box-shadow: 0 0 12px rgba(0,230,118,0.3);
         }
         
-        /* Live Bets Inline Container Styles */
         .bets-list-container {
             width: 100%;
             background: rgba(13, 18, 27, 0.96);
@@ -659,19 +649,19 @@
             font-weight: 800;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
-
     <div class="app-container">
 
-         <!-- 1. REGISTER VIEW -->
+        <!-- 1. REGISTER VIEW -->
         <div class="view active" id="registerView">
             <div class="auth-card">
                 <div class="auth-logo">
                     <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
                     <span>Aviator</span>
                 </div>
-                <div class="auth-title">Create Account</div>
+                              <div class="auth-title">Create Account</div>
                 
                 <div class="input-group">
                     <label>Name</label>
@@ -720,7 +710,6 @@
 
         <!-- 3. MAIN GAME VIEW -->
         <div class="view" id="gameView">
-            <!-- Top Bar -->
             <div class="top-bar">
                 <div class="top-brand">
                     <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
@@ -740,28 +729,24 @@
                 </div>
             </div>
 
-            <!-- Multiplier Ribbon History -->
             <div class="multiplier-ribbon" id="multiplierRibbon">
                 <div class="multiplier-pill pill-blue">1.06x</div>
                 <div class="multiplier-pill pill-purple">2.19x</div>
                 <div class="multiplier-pill pill-pink">5.51x</div>
             </div>
 
-            <!-- Game Animation Screen -->
             <div class="game-screen" id="gameScreenBox">
                 <div class="game-status-text" id="gameStatusText">WAITING...</div>
                 <div class="game-multiplier-display" id="gameMultiplierDisplay">1.00x</div>
                 <div class="plane-graphic" id="planeGraphic">✈️</div>
             </div>
 
-            <!-- Betting Controls (2 Panels) & Live Bets Container -->
             <div class="betting-panels">
                 <div class="bet-card">
                     <div class="bet-tabs">
                         <div class="bet-tab active" id="tabBet1" onclick="setAutoMode(1, false)">Bet</div>
                         <div class="bet-tab" id="tabAuto1" onclick="setAutoMode(1, true)">Auto</div>
                     </div>
-                    <!-- Auto Cashout Input -->
                     <div id="autoControls1" style="display:none; justify-content:center; align-items:center; gap:8px; margin-top:8px;">
                         <span style="font-size:12px; color:#8b9bb4;">Auto Cashout:</span>
                         <input type="number" id="autoCashoutInp1" value="2.00" step="0.1" style="background:#080c14; border:1px solid #1f2b42; color:#fff; border-radius:8px; padding:4px 8px; width:70px; text-align:center; outline:none;">
@@ -790,7 +775,6 @@
                         <div class="bet-tab active" id="tabBet2" onclick="setAutoMode(2, false)">Bet</div>
                         <div class="bet-tab" id="tabAuto2" onclick="setAutoMode(2, true)">Auto</div>
                     </div>
-                    <!-- Auto Cashout Input -->
                     <div id="autoControls2" style="display:none; justify-content:center; align-items:center; gap:8px; margin-top:8px;">
                         <span style="font-size:12px; color:#8b9bb4;">Auto Cashout:</span>
                         <input type="number" id="autoCashoutInp2" value="2.00" step="0.1" style="background:#080c14; border:1px solid #1f2b42; color:#fff; border-radius:8px; padding:4px 8px; width:70px; text-align:center; outline:none;">
@@ -813,14 +797,12 @@
                         <button class="quick-amt-btn" onclick="setStake('stake2', 500)">500</button>
                     </div>
                 </div>
-                <!-- Live Bets List Container -->
-                <div class="bets-list-container" id="betsListContainer">
+                              <div class="bets-list-container" id="betsListContainer">
                     <div style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #121824; color: #8b9bb4; border-bottom: 1px solid #1f2b42;">Live Bets This Round</div>
                     <div id="liveBetsItemsList"></div>
                 </div>
             </div>
 
-            <!-- Bottom Footer Bar -->
             <div class="live-history-bar">
                 <div class="history-tabs">
                     <div class="history-tab active" id="allBetsTabBtn" onclick="switchHistoryTab('all')">All Bets</div>
@@ -901,7 +883,7 @@
             <div class="sub-content">
                 <div class="card-box profile-hero">
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" class="profile-avatar" alt="Avatar">
-                    <div style="font-size: 18px; font-weight: bold;" id="profileNameDisplay">Mohammad</div>
+                    <div style="font-size: 18px; font-weight: bold;" id="profileNameDisplay">User</div>
                 </div>
                 <button class="primary-btn logout" style="background: rgba(229,57,53,0.15); color: #ff5252; border: 1px solid #ff5252;" onclick="handleLogout()">Logout</button>
             </div>
@@ -941,15 +923,12 @@
 
     </div>
 
-    <!-- Socket.io Library Link -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
-
     <script>
-        // Connect to your global Render backend service
-        const socket = io("https://game-backend-service.onrender.com");
+        // Socket.io Connection to Render Backend
+        const socket = io("https://aviator-backend-server.onrender.com");
 
         let balance = 0.00;
-        let userName = "Mohammad";
+        let userName = "User";
         let userPhone = "";
         let registeredUsers = {}; 
         let stakes = { stake1: 10, stake2: 10 };
@@ -960,7 +939,6 @@
         
         let gameRunning = false;
         let currentMultiplier = 1.00;
-        let crashPoint = 1.50;
         let soundEnabled = true;
         let audioCtx = null;
         let ambientSoundInterval = null;
@@ -972,121 +950,180 @@
         let currentHistoryTab = 'all';
         let recentOddsHistory = [1.06, 2.19, 5.51, 1.45, 3.20];
 
-        let animationFrameId = null;
-
         const botNames = [
             "Brian_Ke", "Amina99", "KevinOchieng", "Sharon_Cheptoo", "Juma_Mfalme", 
             "MercyWanjiku", "Baraka_254", "FatmaHassan", "Otieno_G", "Cynthia_M"
         ];
         const botMessages = [
-            "Easy money today! 🚀", "Anyone cashing out above 3x?", "This game is crazy man 🔥", 
-            "Just recovered my losses!", "Waiting for high multipliers", "Let's gooo ✈️"
+            "Easy money today! 🚀", "Anyone cashing out above 3x?", "This game is crazy man 🔥",
+            "Just recovered my losses!", "Waiting for high multipliers", "M-Pesa deposit received instantly 💯",
+            "Let's gooo ✈️", "Smart cashout at 2x is the key"
         ];
 
-        // WebSocket Sync Listeners
-        socket.on("sync", (state) => {
-            if (state && state.isFlying) {
-                gameRunning = true;
-                currentMultiplier = parseFloat(state.currentOdd);
-            }
+        socket.on("connect", () => {
+            console.log("Connected to synchronized Render backend!");
         });
 
-        socket.on("takeoff", () => {
-            gameRunning = true;
-            document.getElementById('gameStatusText').innerText = "";
-            toggleAmbientSound(true);
+        socket.on("waiting", () => {
+            gameRunning = false;
+            currentMultiplier = 1.00;
+
+            document.getElementById("gameStatusText").innerText = "WAITING...";
+            document.getElementById("gameMultiplierDisplay").innerText = "1.00x";
+
+            let plane = document.getElementById("planeGraphic");
+            let gameScreenBox = document.getElementById("gameScreenBox");
+            let screenWidth = gameScreenBox ? gameScreenBox.clientWidth : 300;
+            let screenHeight = gameScreenBox ? gameScreenBox.clientHeight : 300;
+
+            plane.style.bottom = (screenHeight * 0.15) + "px";
+            plane.style.left = (screenWidth * 0.05) + "px";
+            plane.style.transform = "rotate(-15deg)";
+
+            hasPlacedBetCurrentRound = { 1: false, 2: false };
+
+            for (let i = 1; i <= 2; i++) {
+                if (autoMode[i] && autoBetActive[i] && !activeBets[i]) {
+                    performBetPlacement(i);
+                }
+            }
+
+            updateButtonStates();
         });
 
         socket.on("tick", (data) => {
-            currentMultiplier = parseFloat(data.currentOdd);
-            let multDisplay = document.getElementById('gameMultiplierDisplay');
-            if(multDisplay) multDisplay.innerText = currentMultiplier.toFixed(2) + "x";
-            
-                        // Handle auto cashouts
-            for(let i=1; i<=2; i++) {
+            if (!gameRunning) {
+                gameRunning = true;
+                document.getElementById("gameStatusText").innerText = "";
+                toggleAmbientSound(true);
+            }
+
+            currentMultiplier = parseFloat(data.multiplier);
+            document.getElementById("gameMultiplierDisplay").innerText = currentMultiplier.toFixed(2) + "x";
+
+            for (let i = 1; i <= 2; i++) {
                 if (activeBets[i] && autoMode[i]) {
-                    let autoVal = parseFloat(document.getElementById('autoCashoutInp' + i).value);
+                    let autoVal = parseFloat(document.getElementById("autoCashoutInp" + i).value);
                     if (currentMultiplier >= autoVal) {
                         executeCashout(i, true);
                     }
                 }
             }
+                    let plane = document.getElementById("planeGraphic");
+            let gameScreenBox = document.getElementById("gameScreenBox");
+            let targetWidth = gameScreenBox ? gameScreenBox.clientWidth : 300;
+            let targetHeight = gameScreenBox ? gameScreenBox.clientHeight : 300;
+
+            let progress = Math.min(1, (currentMultiplier - 1.00) / 10);
+            let targetLeft = targetWidth * 0.05 + progress * (targetWidth * 0.70);
+            let targetBottom = targetHeight * 0.15 + progress * (targetHeight * 0.60);
+
+            plane.style.left = targetLeft + "px";
+            plane.style.bottom = targetBottom + "px";
+            plane.style.transform = `rotate(${-15 + progress * 35}deg)`;
+
             updateButtonStates();
         });
 
         socket.on("crash", (data) => {
-            crashPoint = parseFloat(data.finalOdd);
             gameRunning = false;
+            let finalCrash = parseFloat(data.multiplier);
+
             toggleAmbientSound(false);
-            playSound('crash');
-            
-            let statusText = document.getElementById('gameStatusText');
-            if(statusText) statusText.innerText = `CRASHED @ ${crashPoint.toFixed(2)}x`;
-            
-            recentOddsHistory.push(crashPoint);
+            playSound("crash");
+
+            document.getElementById("gameStatusText").innerText = `CRASHED @ ${finalCrash.toFixed(2)}x`;
+
+            let plane = document.getElementById("planeGraphic");
+            plane.style.transform = "rotate(45deg) scale(0.8)";
+
+            recentOddsHistory.push(finalCrash);
             updateMultiplierRibbon();
 
-            for(let i=1; i<=2; i++) {
-                if(activeBets[i]) {
+            for (let i = 1; i <= 2; i++) {
+                if (activeBets[i]) {
                     activeBets[i] = false;
                     hasPlacedBetCurrentRound[i] = false;
-                    let btn = document.getElementById('betBtn' + i);
-                    let btnText = document.getElementById('betBtnText' + i);
-                    btn.classList.remove('cashout');
+                    let btn = document.getElementById("betBtn" + i);
+                    let btnText = document.getElementById("betBtnText" + i);
+                    btn.classList.remove("cashout");
                     btnText.innerText = "BET NEXT";
                 }
             }
+            updateButtonStates();
         });
 
         function initAudioContext() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
+
         function playSound(type) {
             if (!soundEnabled) return;
             try {
                 initAudioContext();
-                if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
                 let now = audioCtx.currentTime;
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                
+
                 if (type === 'vocal_beat') {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(180, now);
                     osc.frequency.exponentialRampToValueAtTime(60, now + 0.15);
                     gain.gain.setValueAtTime(0.2, now);
                     gain.gain.linearRampToValueAtTime(0.001, now + 0.15);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
                 } else if (type === 'cashout') {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
                     gain.gain.setValueAtTime(0.15, now);
                     gain.gain.linearRampToValueAtTime(0.001, now + 0.35);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
                 } else if (type === 'crash') {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
                     osc.type = 'sawtooth';
                     osc.frequency.setValueAtTime(220, now);
                     osc.frequency.exponentialRampToValueAtTime(40, now + 0.4);
                     gain.gain.setValueAtTime(0.3, now);
                     gain.gain.linearRampToValueAtTime(0.001, now + 0.4);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
                 }
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now);
-                osc.stop(now + (type === 'crash' ? 0.4 : 0.15));
-            } catch(e) {}
+            } catch (e) {
+                console.log("Audio error:", e);
+            }
         }
+
         function toggleAmbientSound(start) {
             if (!soundEnabled) {
-                if (ambientSoundInterval) { clearInterval(ambientSoundInterval); ambientSoundInterval = null; }
+                if (ambientSoundInterval) clearInterval(ambientSoundInterval);
                 return;
             }
-            if (start && !ambientSoundInterval) {
-                ambientSoundInterval = setInterval(() => { if (gameRunning) playSound('vocal_beat'); }, 300);
-            } else if (!start && ambientSoundInterval) {
-                clearInterval(ambientSoundInterval);
-                ambientSoundInterval = null;
-            }
+            try {
+                initAudioContext();
+                if (start && !ambientSoundInterval) {
+                    ambientSoundInterval = setInterval(() => {
+                        if (!soundEnabled || !gameRunning) return;
+                        playSound('vocal_beat');
+                    }, 300);
+                } else if (!start && ambientSoundInterval) {
+                    clearInterval(ambientSoundInterval);
+                    ambientSoundInterval = null;
+                }
+            } catch (e) {}
         }
 
         function startBotChatLoop() {
@@ -1094,9 +1131,10 @@
             botChatInterval = setInterval(() => {
                 let randomBot = botNames[Math.floor(Math.random() * botNames.length)];
                 let randomMsg = botMessages[Math.floor(Math.random() * botMessages.length)];
+                
                 let list = document.getElementById('chatMessagesList');
-                if (!list) return;
                 let bubble = document.createElement('div');
+                bubble.className = 'chat-msg-bubble';
                 bubble.style.cssText = "background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border:1px solid #28354c;";
                 bubble.innerHTML = `<span style="font-size: 10px; color: #ff9800; font-weight: bold;">${randomBot}</span><span>${randomMsg}</span>`;
                 list.appendChild(bubble);
@@ -1106,13 +1144,12 @@
 
         function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
-            if (!ribbon) return;
             ribbon.innerHTML = '';
             recentOddsHistory.slice(-10).forEach(odd => {
                 let pill = document.createElement('div');
                 let colorClass = 'pill-blue';
-                if(odd >= 2.0 && odd < 5.0) colorClass = 'pill-purple';
-                else if(odd >= 5.0) colorClass = 'pill-pink';
+                if (odd >= 2.0 && odd < 5.0) colorClass = 'pill-purple';
+                else if (odd >= 5.0) colorClass = 'pill-pink';
                 pill.className = `multiplier-pill ${colorClass}`;
                 pill.innerText = odd.toFixed(2) + 'x';
                 ribbon.appendChild(pill);
@@ -1122,29 +1159,36 @@
 
         function updateAllBalances() {
             let formatted = balance.toFixed(2) + " KES";
-            ['mainBalanceDisplay', 'depositBalDisplay', 'withdrawBalDisplay', 'withAvailBal', 'profileBalDisplay'].forEach(id => {
-                let el = document.getElementById(id);
-                if(el) el.innerText = formatted;
-            });
+            document.getElementById('mainBalanceDisplay').innerText = formatted;
+            document.getElementById('depositBalDisplay').innerText = formatted;
+            document.getElementById('withdrawBalDisplay').innerText = formatted;
+            document.getElementById('withAvailBal').innerText = formatted;
+            document.getElementById('profileBalDisplay').innerText = formatted;
         }
 
         function showSignInView() {
             document.getElementById('registerView').classList.remove('active');
             document.getElementById('signInView').classList.add('active');
         }
+
         function showRegisterView() {
             document.getElementById('signInView').classList.remove('active');
             document.getElementById('registerView').classList.add('active');
         }
 
         function handleRegister() {
-            let name = document.getElementById('regName').value.trim();
-            let phone = document.getElementById('regPhone').value.trim();
-            let password = document.getElementById('regPass').value;
-            let confirmPassword = document.getElementById('regConfirmPass').value;
+            let nameInput = document.getElementById('regName');
+            let phoneInput = document.getElementById('regPhone');
+            let passwordInput = document.getElementById('regPass');
+            let confirmPasswordInput = document.getElementById('regConfirmPass');
 
-            if (!name || !phone || password.length < 6 || password !== confirmPassword) {
-                alert("Please check your input fields and password match.");
+            let name = nameInput ? nameInput.value.trim() : "";
+            let phone = phoneInput ? phoneInput.value.trim() : "";
+            let password = passwordInput ? passwordInput.value : "";
+            let confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : "";
+
+            if (!name || !phone || !password || password !== confirmPassword) {
+                alert("Please verify registration fields.");
                 return false;
             }
 
@@ -1152,6 +1196,7 @@
             userName = name;
             userPhone = phone;
             document.getElementById('profileNameDisplay').innerText = userName;
+
             goToGameApp();
             return true;
         }
@@ -1159,16 +1204,17 @@
         function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
+
             let userRecord = registeredUsers[phone];
-            
             if (!userRecord || userRecord.password !== password) {
-                alert("Invalid phone number or password.");
+                alert("Invalid phone or password.");
                 return false;
             }
 
             userName = userRecord.name;
             userPhone = phone;
             document.getElementById('profileNameDisplay').innerText = userName;
+
             goToGameApp();
             return true;
         }
@@ -1183,15 +1229,11 @@
         }
 
         function toggleMenuDrawer(open) {
-            let drawer = document.getElementById('menuDrawer');
-            if(open) drawer.classList.add('open');
-            else drawer.classList.remove('open');
+            document.getElementById('menuDrawer').classList.toggle('open', open);
         }
 
         function toggleChatDrawer(open) {
-            let drawer = document.getElementById('chatDrawer');
-            if(open) drawer.style.display = 'flex';
-            else drawer.style.display = 'none';
+            document.getElementById('chatDrawer').style.display = open ? 'flex' : 'none';
         }
 
         function openSubView(viewId) { document.getElementById(viewId).style.display = 'flex'; }
@@ -1200,7 +1242,7 @@
 
         function handleLogout() {
             toggleMenuDrawer(false);
-            if(botChatInterval) clearInterval(botChatInterval);
+            if (botChatInterval) clearInterval(botChatInterval);
             document.querySelectorAll('.sub-view').forEach(v => v.style.display = 'none');
             document.getElementById('gameView').classList.remove('active');
             document.getElementById('signInView').classList.remove('active');
@@ -1210,14 +1252,10 @@
         function toggleSoundFx() {
             soundEnabled = !soundEnabled;
             let btn = document.getElementById('soundToggleBtn');
-            if (!soundEnabled) {
-                btn.classList.add('muted');
-                toggleAmbientSound(false);
-            } else {
-                btn.classList.remove('muted');
-            }
+            btn.classList.toggle('muted', !soundEnabled);
+            toggleAmbientSound(soundEnabled && gameRunning);
         }
-        
+
         function setAutoMode(panelNum, isAuto) {
             autoMode[panelNum] = isAuto;
             document.getElementById('tabBet' + panelNum).classList.toggle('active', !isAuto);
@@ -1238,25 +1276,31 @@
             document.getElementById(key + 'Val').innerText = stakes[key];
             updateButtonStates();
         }
-
-        function updateButtonStates() {
-            for(let i=1; i<=2; i++) {
+               function updateButtonStates() {
+            for (let i = 1; i <= 2; i++) {
                 let val = stakes['stake' + i];
                 let btn = document.getElementById('betBtn' + i);
                 let btnText = document.getElementById('betBtnText' + i);
                 let btnSub = document.getElementById('betSubText' + i);
 
-                if(activeBets[i]) {
+                if (activeBets[i]) {
                     let currentPayout = val * currentMultiplier;
                     btnText.innerText = "CASH OUT";
                     btnSub.innerText = currentPayout.toFixed(2) + " KES";
                 } else {
                     btnSub.innerText = val.toFixed(2) + " KES";
-                    if(gameRunning) {
-                        btn.classList.add('disabled-state');
-                        btnText.innerText = "WAITING...";
-                    } else {
+                    if (autoMode[i] && autoBetActive[i]) {
+                        btn.classList.add('cashout');
                         btn.classList.remove('disabled-state');
+                        btnText.innerText = "AUTO ON";
+                        btnSub.innerText = "Click to Stop";
+                    } else if (gameRunning && !hasPlacedBetCurrentRound[i]) {
+                        btn.classList.add('disabled-state');
+                        btn.classList.remove('cashout');
+                        btnText.innerText = "WAITING...";
+                    } else if (!gameRunning) {
+                        btn.classList.remove('disabled-state');
+                        btn.classList.remove('cashout');
                         btnText.innerText = "BET NEXT";
                     }
                 }
@@ -1264,8 +1308,15 @@
         }
 
         function submitManualDeposit() {
+            let phone = document.getElementById('depPhoneInput').value.trim();
+            let code = document.getElementById('depCodeInput').value.trim().toUpperCase();
             let amount = parseFloat(document.getElementById('depAmountInput').value);
-            if(isNaN(amount) || amount < 500) { alert("Minimum deposit is 500 KES."); return; }
+
+            if (!phone || !code || isNaN(amount) || amount < 500) {
+                alert("Deposit minimum is KES 500.");
+                return;
+            }
+
             balance += amount;
             updateAllBalances();
             alert(`Deposit of KES ${amount.toFixed(2)} successful!`);
@@ -1274,7 +1325,10 @@
 
         function confirmWithdraw() {
             let amt = parseFloat(document.getElementById('withAmountInput').value);
-            if(isNaN(amt) || amt < 10000 || balance < amt) { alert("Check withdrawal limits or balance."); return; }
+            if (isNaN(amt) || amt < 10000 || amt > balance) {
+                alert("Invalid withdrawal amount.");
+                return;
+            }
             balance -= amt;
             updateAllBalances();
             alert(`Withdrew ${amt.toFixed(2)} KES successfully!`);
@@ -1284,9 +1338,10 @@
         function sendChatMessage() {
             let input = document.getElementById('chatInputMsg');
             let text = input.value.trim();
-            if(!text) return;
+            if (!text) return;
             let list = document.getElementById('chatMessagesList');
             let bubble = document.createElement('div');
+            bubble.className = 'chat-msg-bubble';
             bubble.style.cssText = "background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border:1px solid #28354c;";
             bubble.innerHTML = `<span style="font-size: 10px; color: #ff9800; font-weight: bold;">${userName}</span><span>${text}</span>`;
             list.appendChild(bubble);
@@ -1294,43 +1349,64 @@
             list.scrollTop = list.scrollHeight;
         }
 
-        function switchHistoryTab(tab) {
-            currentHistoryTab = tab;
-            document.getElementById('allBetsTabBtn').classList.toggle('active', tab === 'all');
-            document.getElementById('myBetsTabBtn').classList.toggle('active', tab === 'my');
-            renderLiveBetsList();
-        }
-
-        function renderLiveBetsList() {
-            let container = document.getElementById('liveBetsItemsList');
-            if(!container) return;
-            container.innerHTML = `<div style="padding: 10px; text-align: center; color: #8b9bb4; font-size: 11px;">Live Multiplayer Active</div>`;
-        }
-
         function handleBetAction(panelNum) {
-            let stake = stakes['stake' + panelNum];
-            let btn = document.getElementById('betBtn' + panelNum);
-            
-            if(!activeBets[panelNum]) {
-                if(balance < stake) { alert("Insufficient balance!"); return; }
-                balance -= stake;
-                updateAllBalances();
-                activeBets[panelNum] = true;
-                btn.classList.add('cashout');
+            if (autoMode[panelNum] && !activeBets[panelNum]) {
+                autoBetActive[panelNum] = !autoBetActive[panelNum];
+                if (autoBetActive[panelNum] && !gameRunning && !hasPlacedBetCurrentRound[panelNum]) {
+                    performBetPlacement(panelNum);
+                }
+                updateButtonStates();
+                return;
+            }
+
+            if (gameRunning && !hasPlacedBetCurrentRound[panelNum] && !activeBets[panelNum]) {
+                alert("Bets locked after round starts!");
+                return;
+            }
+
+            if (!activeBets[panelNum]) {
+                performBetPlacement(panelNum);
             } else {
+                executeCashout(panelNum, false);
+            }
+        }
+        
+        function performBetPlacement(panelNum) {
+            let stake = stakes['stake' + panelNum];
+            if (balance < stake) { 
+                alert("Insufficient balance!"); 
+                if (autoBetActive[panelNum]) autoBetActive[panelNum] = false;
+                updateButtonStates();
+                return; 
+            }
+            
+            balance -= stake;
+            updateAllBalances();
+            activeBets[panelNum] = true;
+            hasPlacedBetCurrentRound[panelNum] = true;
+
+            document.getElementById('betBtn' + panelNum).classList.add('cashout');
+            updateButtonStates();
+        }
+        
+        function executeCashout(panelNum, isAuto) {
+            let stake = stakes['stake' + panelNum];
+            if (gameRunning) {
                 let winAmt = stake * currentMultiplier;
                 balance += winAmt;
                 updateAllBalances();
                 playSound('cashout');
-                activeBets[panelNum] = false;
-                btn.classList.remove('cashout');
+                if (!isAuto) alert(`Won ${winAmt.toFixed(2)} KES!`);
+            } else {
+                balance += stake;
+                updateAllBalances();
             }
+            
+            activeBets[panelNum] = false;
+            hasPlacedBetCurrentRound[panelNum] = false;
+            document.getElementById('betBtn' + panelNum).classList.remove('cashout');
             updateButtonStates();
         }
     </script>
-    <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
-<script>
-  const socket = io("https://aviator-backend-server.onrender.com");
-</script>
 </body>
 </html>
