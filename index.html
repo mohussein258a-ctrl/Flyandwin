@@ -907,6 +907,19 @@
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
         let recentOddsHistory = [1.06, 2.19, 5.51, 1.45, 3.20];
+       
+        const chatForm = document.getElementById("chat-form");     // Update with your actual form ID
+const chatInput = document.getElementById("chat-input");   // Update with your actual input ID
+
+if (chatForm && chatInput) {
+    chatForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (chatInput.value.trim() !== "") {
+            socket.emit("chat message", chatInput.value);
+            chatInput.value = "";
+        }
+    });
+}
 
         // ----------------------------------------------------
         // 2. SOCKET EVENT LISTENERS
@@ -961,6 +974,16 @@
             if (!gameRunning) return;
             currentMultiplier = data.currentOdd;
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
+          
+            socket.on("chat message", (msg) => {
+    const chatBox = document.getElementById("chat-messages"); // Update with your actual chat box container ID
+    if (chatBox) {
+        const messageElement = document.createElement("div");
+        messageElement.innerText = msg;
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+});
 
             // Update physical plane animation coordinates
             updatePlanePosition();
