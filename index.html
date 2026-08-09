@@ -278,13 +278,14 @@
             overflow: hidden;
         }
         .game-status-text {
-            font-size: 12px;
-            letter-spacing: 2.5px;
+            font-size: 11px;
+            letter-spacing: 1.5px;
             color: #8b9bb4;
             text-transform: uppercase;
             font-weight: 800;
             margin-bottom: 4px;
             z-index: 2;
+            text-align: center;
         }
         .game-multiplier-display {
             font-size: 46px;
@@ -300,7 +301,7 @@
             left: 20px;
             font-size: 34px;
             transform: rotate(-15deg);
-            transition: transform 0.1s linear, bottom 0.1s linear, left 0.1s linear;
+            transition: left 0.15s linear, bottom 0.15s linear;
             z-index: 1;
         }
 
@@ -474,6 +475,45 @@
             border-radius: 8px;
             font-weight: 900;
         }
+        
+        .bets-list-container {
+            width: 100%;
+            background: #121824;
+            border: 1px solid #1f2b42;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            max-height: 180px;
+        }
+        .bets-list-header {
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            background: #0b1322;
+            color: #8b9bb4;
+            border-bottom: 1px solid #1f2b42;
+            display: flex;
+            justify-content: space-between;
+        }
+        .bets-list-body {
+            overflow-y: auto;
+            max-height: 140px;
+            display: flex;
+            flex-direction: column;
+        }
+        .bet-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            font-size: 11px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .bet-list-item .user-col { color: #fff; font-weight: 700; }
+        .bet-list-item .stake-col { color: #ff9800; font-weight: 600; }
+        .bet-list-item .win-col { color: #00e676; font-weight: 800; }
+
         .menu-drawer {
             position: absolute;
             top: 0; right: -280px;
@@ -486,9 +526,7 @@
             flex-direction: column;
             border-left: 1px solid #1f2b42;
         }
-        .menu-drawer.open {
-            right: 0;
-        }
+        .menu-drawer.open { right: 0; }
         .menu-header {
             padding: 16px;
             background-color: #0b1322;
@@ -497,11 +535,7 @@
             align-items: center;
             border-bottom: 1px solid #1f2b42;
         }
-        .menu-items {
-            display: flex;
-            flex-direction: column;
-            padding: 8px 0;
-        }
+        .menu-items { display: flex; flex-direction: column; padding: 8px 0; }
         .menu-item {
             padding: 14px 20px;
             display: flex;
@@ -513,9 +547,7 @@
             cursor: pointer;
             border-bottom: 1px solid rgba(255,255,255,0.02);
         }
-        .menu-item.logout {
-            color: #ff5252;
-        }
+        .menu-item.logout { color: #ff5252; }
 
         .sub-view {
             display: none;
@@ -535,10 +567,7 @@
             color: #fff;
             border-bottom: 1px solid #1f2b42;
         }
-        .sub-header-title {
-            font-size: 16px;
-            font-weight: bold;
-        }
+        .sub-header-title { font-size: 16px; font-weight: bold; }
         .back-btn {
             background: none;
             border: none;
@@ -578,44 +607,6 @@
             border-radius: 50%;
             border: 2px solid #00e676;
             object-fit: cover;
-        }
-        
-        .bets-list-container {
-            width: 100%;
-            background: rgba(13, 18, 27, 0.96);
-            border: 1px solid #1f2b42;
-            border-radius: 12px;
-            display: none;
-            flex-direction: column;
-            overflow-y: auto;
-            max-height: 160px;
-            margin-top: 4px;
-        }
-        .bets-list-container.active {
-            display: flex;
-        }
-        .bet-list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 12px;
-            font-size: 11px;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-        }
-        .bet-list-item span {
-            color: #8b9bb4;
-        }
-        .bet-list-item .user-col {
-            color: #fff;
-            font-weight: 700;
-        }
-        .bet-list-item .stake-col {
-            color: #ff9800;
-            font-weight: 600;
-        }
-        .bet-list-item .win-col {
-            color: #00e676;
-            font-weight: 800;
         }
     </style>
 </head>
@@ -701,7 +692,7 @@
             </div>
 
             <div class="game-screen" id="gameScreenBox">
-                <div class="game-status-text" id="gameStatusText">WAITING...</div>
+                <div class="game-status-text" id="gameStatusText">CONNECTING TO SERVER...</div>
                 <div class="game-multiplier-display" id="gameMultiplierDisplay">1.00x</div>
                 <div class="plane-graphic" id="planeGraphic">✈️</div>
             </div>
@@ -763,9 +754,14 @@
                     </div>
                 </div>
 
+                <!-- Live Bets List Container -->
                 <div class="bets-list-container" id="betsListContainer">
-                    <div style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #121824; color: #8b9bb4; border-bottom: 1px solid #1f2b42;">Live Bets This Round</div>
-                    <div id="liveBetsItemsList"></div>
+                    <div class="bets-list-header">
+                        <span>User</span>
+                        <span>Stake</span>
+                        <span>Cashout</span>
+                    </div>
+                    <div class="bets-list-body" id="liveBetsItemsList"></div>
                 </div>
             </div>
 
@@ -907,16 +903,21 @@
         let audioCtx = null;
         let ambientSoundInterval = null;
 
-        let currentRoundLiveBets = [];
+        let liveBetsData = [];
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
         let recentOddsHistory = [1.06, 2.19, 5.51, 1.45, 3.20];
 
         // ----------------------------------------------------
-        // 2. SOCKET EVENT LISTENERS (CONNECTED TO BACKEND)
+        // 2. SOCKET EVENT LISTENERS
         // ----------------------------------------------------
         socket.on("connect", () => {
-            console.log("Connected to Render backend service successfully.");
+            console.log("Connected to Render backend service.");
+            document.getElementById('gameStatusText').innerText = "CONNECTED";
+        });
+
+        socket.on("disconnect", () => {
+            document.getElementById('gameStatusText').innerText = "WAKING BACKEND... (30s)";
         });
 
         socket.on("sync", (gameState) => {
@@ -924,9 +925,9 @@
             currentMultiplier = gameState.currentOdd || 1.00;
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
             document.getElementById('gameStatusText').innerText = gameRunning ? "" : "WAITING...";
+            if (gameRunning) updatePlanePosition();
         });
-
-        socket.on("takeoff", () => {
+                               socket.on("takeoff", () => {
             gameRunning = true;
             currentMultiplier = 1.00;
             
@@ -934,9 +935,20 @@
             document.getElementById('gameMultiplierDisplay').innerText = "1.00x";
             document.getElementById('gameMultiplierDisplay').style.color = "#ffffff";
             
+            // Reset plane graphics
+            let plane = document.getElementById('planeGraphic');
+            if(plane) {
+                plane.style.left = "20px";
+                plane.style.bottom = "20px";
+            }
+
+            // Generate live bot bets for active table
+            generateLiveBets();
+            renderLiveBetsList();
+
             toggleAmbientSound(true);
 
-            // Execute auto-bets if configured
+            // Execute auto-bets
             for (let i = 1; i <= 2; i++) {
                 if (autoMode[i] && autoBetActive[i] && !activeBets[i]) {
                     performBetPlacement(i);
@@ -950,13 +962,19 @@
             currentMultiplier = data.currentOdd;
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
 
-            // Live Payout updates for placed bets
+            // Update physical plane animation coordinates
+            updatePlanePosition();
+
+            // Update live payouts for user bets
             if (activeBets[1]) {
                 document.getElementById('betSubText1').innerText = (stakes.stake1 * currentMultiplier).toFixed(2) + " KES";
             }
             if (activeBets[2]) {
                 document.getElementById('betSubText2').innerText = (stakes.stake2 * currentMultiplier).toFixed(2) + " KES";
             }
+
+            // Update live bets cashout simulations
+            updateBotCashouts();
 
             // Auto cashout checks
             for (let i = 1; i <= 2; i++) {
@@ -990,8 +1008,95 @@
             updateButtonStates();
         });
 
-                // ----------------------------------------------------
-        // 3. AUDIO ENGINE & UI CONTROL
+        // ----------------------------------------------------
+        // 3. PLANE ANIMATION & LIVE BETS RENDERERS
+        // ----------------------------------------------------
+        function updatePlanePosition() {
+            let screenBox = document.getElementById('gameScreenBox');
+            let plane = document.getElementById('planeGraphic');
+            if (!screenBox || !plane) return;
+
+            let w = screenBox.clientWidth || 300;
+            let h = screenBox.clientHeight || 190;
+
+            // Normalize flight progress: 1.00x -> 10.00x maps to 0% -> 100% boundary
+            let progress = Math.min((currentMultiplier - 1) / 5, 1);
+            let moveX = 20 + progress * (w - 80);
+            let moveY = 20 + progress * (h - 75);
+
+            plane.style.left = moveX + "px";
+            plane.style.bottom = moveY + "px";
+        }
+
+        function generateLiveBets() {
+            const sampleNames = ["Alex_88", "Kipchumba", "Mwangi", "Sarah_M", "Brian_K", "Wanjiku", "David_O"];
+            liveBetsData = [];
+            
+            let count = Math.floor(Math.random() * 4) + 4;
+            for(let i=0; i<count; i++) {
+                let name = sampleNames[Math.floor(Math.random()*sampleNames.length)];
+                let stake = [10, 20, 50, 100, 200, 500][Math.floor(Math.random()*6)];
+                let target = 1.10 + (Math.random() * 4.0);
+                liveBetsData.push({ name, stake, target, cashedOut: false, winAmt: 0 });
+            }
+        }
+
+        function updateBotCashouts() {
+            let changed = false;
+            liveBetsData.forEach(b => {
+                if(!b.cashedOut && currentMultiplier >= b.target) {
+                    b.cashedOut = true;
+                    b.winAmt = (b.stake * currentMultiplier).toFixed(2);
+                    changed = true;
+                }
+            });
+            if(changed) renderLiveBetsList();
+        }
+
+        function renderLiveBetsList() {
+            let container = document.getElementById('liveBetsItemsList');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if (currentHistoryTab === 'my') {
+                if(myHistoricalBets.length === 0) {
+                    container.innerHTML = `<div class="bet-list-item"><span style="color:#8b9bb4;">No bets placed yet</span></div>`;
+                    return;
+                }
+                myHistoricalBets.slice(-10).reverse().forEach(b => {
+                    let div = document.createElement('div');
+                    div.className = 'bet-list-item';
+                    div.innerHTML = `
+                        <span class="user-col">You</span>
+                        <span class="stake-col">${b.stake} KES</span>
+                        <span class="win-col">${b.win ? '+' + b.win + ' KES' : 'LOST'}</span>
+                    `;
+                    container.appendChild(div);
+                });
+                return;
+            }
+
+            liveBetsData.forEach(b => {
+                let div = document.createElement('div');
+                div.className = 'bet-list-item';
+                div.innerHTML = `
+                    <span class="user-col">${b.name}</span>
+                    <span class="stake-col">${b.stake} KES</span>
+                    <span class="win-col">${b.cashedOut ? b.winAmt + ' KES' : 'flying...'}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function switchHistoryTab(tab) {
+            currentHistoryTab = tab;
+            document.getElementById('allBetsTabBtn').classList.toggle('active', tab === 'all');
+            document.getElementById('myBetsTabBtn').classList.toggle('active', tab === 'my');
+            renderLiveBetsList();
+        }
+
+        // ----------------------------------------------------
+        // 4. AUDIO ENGINE & UI CONTROLS
         // ----------------------------------------------------
         function initAudioContext() {
             if (!audioCtx) {
@@ -1044,17 +1149,12 @@
                     osc.start(now);
                     osc.stop(now + 0.4);
                 }
-            } catch(e) {
-                console.log("Audio play error:", e);
-            }
+            } catch(e) {}
         }
 
         function toggleAmbientSound(start) {
             if (!soundEnabled) {
-                if (ambientSoundInterval) {
-                    clearInterval(ambientSoundInterval);
-                    ambientSoundInterval = null;
-                }
+                if (ambientSoundInterval) { clearInterval(ambientSoundInterval); ambientSoundInterval = null; }
                 return;
             }
             try {
@@ -1068,12 +1168,9 @@
                     clearInterval(ambientSoundInterval);
                     ambientSoundInterval = null;
                 }
-            } catch(e) {
-                console.log("Ambient sound error:", e);
-            }
+            } catch(e) {}
         }
-
-        function updateMultiplierRibbon() {
+                function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
             ribbon.innerHTML = '';
             recentOddsHistory.slice(-10).forEach(odd => {
@@ -1145,16 +1242,11 @@
             document.getElementById('gameView').classList.add('active');
             updateAllBalances();
             updateMultiplierRibbon();
+            renderLiveBetsList();
         }
 
-        function toggleMenuDrawer(open) {
-            document.getElementById('menuDrawer').classList.toggle('open', open);
-        }
-
-        function toggleChatDrawer(open) {
-            document.getElementById('chatDrawer').style.display = open ? 'flex' : 'none';
-        }
-
+        function toggleMenuDrawer(open) { document.getElementById('menuDrawer').classList.toggle('open', open); }
+        function toggleChatDrawer(open) { document.getElementById('chatDrawer').style.display = open ? 'flex' : 'none'; }
         function openSubView(viewId) { document.getElementById(viewId).style.display = 'flex'; }
         function closeSubView(viewId) { document.getElementById(viewId).style.display = 'none'; }
         function openSubViewFromMenu(viewId) { toggleMenuDrawer(false); openSubView(viewId); }
@@ -1283,8 +1375,7 @@
                 executeCashout(panelNum, false);
             }
         }
-        
-        function performBetPlacement(panelNum) {
+                function performBetPlacement(panelNum) {
             let stake = stakes['stake' + panelNum];
             if(balance < stake) { 
                 alert("Insufficient balance."); 
@@ -1298,6 +1389,8 @@
             activeBets[panelNum] = true;
             hasPlacedBetCurrentRound[panelNum] = true;
 
+            myHistoricalBets.push({ stake: stake, win: 0 });
+
             document.getElementById('betBtn' + panelNum).classList.add('cashout');
             updateButtonStates();
         }
@@ -1309,6 +1402,9 @@
                 balance += winAmt;
                 updateAllBalances();
                 playSound('cashout');
+                if(myHistoricalBets.length > 0) {
+                    myHistoricalBets[myHistoricalBets.length - 1].win = winAmt.toFixed(2);
+                }
                 if (!isAuto) alert(`Cashed out KES ${winAmt.toFixed(2)}!`);
             } else {
                 balance += stake;
@@ -1321,9 +1417,6 @@
             updateButtonStates();
         }
 
-        // ----------------------------------------------------
-        // 4. AUTO LOGIN / SESSION RESTORE
-        // ----------------------------------------------------
         window.onload = function() {
             let savedUser = localStorage.getItem('aviator_user');
             let savedPhone = localStorage.getItem('aviator_phone');
