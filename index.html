@@ -1,8 +1,11 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aviator</title>
+    <!-- Socket.IO Client SDK -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -190,7 +193,6 @@
             align-items: center;
             color: #fff;
             cursor: pointer;
-            transition: all 0.2s;
         }
         .sound-icon-btn.muted {
             color: #ff5252;
@@ -219,7 +221,6 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            box-shadow: 0 2px 8px rgba(46,125,50,0.4);
         }
         .menu-toggle-btn {
             background: rgba(255,255,255,0.08);
@@ -260,7 +261,6 @@
             font-size: 11px;
             font-weight: 800;
             color: #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
         .pill-blue { background: linear-gradient(135deg, #1976d2, #0d47a1); }
         .pill-purple { background: linear-gradient(135deg, #7b1fa2, #4a148c); }
@@ -302,7 +302,6 @@
             transform: rotate(-15deg);
             transition: transform 0.1s linear, bottom 0.1s linear, left 0.1s linear;
             z-index: 1;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
         }
 
         .betting-panels {
@@ -322,7 +321,6 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .bet-tabs {
             display: flex;
@@ -342,12 +340,10 @@
             border-radius: 18px;
             cursor: pointer;
             color: #8b9bb4;
-            transition: all 0.2s;
         }
         .bet-tab.active {
             background-color: #1f2b42;
             color: #ffffff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
         .bet-controls-row {
             display: flex;
@@ -375,10 +371,6 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-        .stake-adjuster button:active {
-            background: #2e3c58;
         }
         .stake-value {
             font-size: 16px;
@@ -396,26 +388,19 @@
             font-size: 15px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,230,118,0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 2px;
-            transition: transform 0.1s;
-        }
-        .action-bet-btn:active {
-            transform: scale(0.98);
         }
         .action-bet-btn.cashout {
             background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
             color: #fff;
-            box-shadow: 0 4px 15px rgba(255,152,0,0.4);
         }
         .action-bet-btn.disabled-state {
             background: #1f2b42;
             color: #8b9bb4;
             cursor: not-allowed;
-            box-shadow: none;
         }
         .action-bet-btn span:last-child {
             font-size: 11px;
@@ -435,11 +420,6 @@
             color: #8b9bb4;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-        .quick-amt-btn:hover {
-            border-color: #ff9800;
-            color: #fff;
         }
 
         .live-history-bar {
@@ -465,12 +445,10 @@
             border-radius: 14px;
             color: #8b9bb4;
             cursor: pointer;
-            transition: all 0.2s;
         }
         .history-tab.active {
             background-color: #2e7d32;
             color: #ffffff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
         .chat-toggle-floating {
             background: linear-gradient(135deg, #e53935, #b71c1c);
@@ -484,7 +462,6 @@
             color: #fff;
             cursor: pointer;
             position: relative;
-            box-shadow: 0 4px 12px rgba(229,57,53,0.4);
         }
         .chat-badge {
             position: absolute;
@@ -508,7 +485,6 @@
             display: flex;
             flex-direction: column;
             border-left: 1px solid #1f2b42;
-            box-shadow: -15px 0 40px rgba(0,0,0,0.7);
         }
         .menu-drawer.open {
             right: 0;
@@ -536,10 +512,6 @@
             color: #ffffff;
             cursor: pointer;
             border-bottom: 1px solid rgba(255,255,255,0.02);
-            transition: background 0.2s;
-        }
-        .menu-item:hover {
-            background-color: rgba(255,255,255,0.03);
         }
         .menu-item.logout {
             color: #ff5252;
@@ -592,7 +564,6 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .profile-hero {
             display: flex;
@@ -607,7 +578,6 @@
             border-radius: 50%;
             border: 2px solid #00e676;
             object-fit: cover;
-            box-shadow: 0 0 12px rgba(0,230,118,0.3);
         }
         
         .bets-list-container {
@@ -620,7 +590,6 @@
             overflow-y: auto;
             max-height: 160px;
             margin-top: 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
         .bets-list-container.active {
             display: flex;
@@ -649,9 +618,9 @@
             font-weight: 800;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
+
     <div class="app-container">
 
         <!-- 1. REGISTER VIEW -->
@@ -661,31 +630,29 @@
                     <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
                     <span>Aviator</span>
                 </div>
-                              <div class="auth-title">Create Account</div>
-                
+                <div class="auth-title">Create Account</div>
                 <div class="input-group">
-                    <label>Name</label>
-                    <input type="text" id="regName" placeholder="Enter your name">
+                    <label>Username</label>
+                    <input type="text" id="regName" placeholder="Enter username">
                 </div>
                 <div class="input-group">
-                    <label>Phone Number (M-Pesa)</label>
-                    <input type="tel" id="regPhone" placeholder="e.g., 0712345678">
+                    <label>Phone Number</label>
+                    <input type="tel" id="regPhone" placeholder="0712345678">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="regPass" placeholder="Create a password">
+                    <input type="password" id="regPass" placeholder="••••••••">
                 </div>
                 <div class="input-group">
                     <label>Confirm Password</label>
-                    <input type="password" id="regConfirmPass" placeholder="Confirm your password">
+                    <input type="password" id="regConfirmPass" placeholder="••••••••">
                 </div>
-
-                <button class="primary-btn" onclick="handleRegister()">Create Account</button>
+                <button class="primary-btn" onclick="handleRegister()">Register</button>
                 <div class="auth-switch">Already have an account? <span onclick="showSignInView()">Sign In</span></div>
             </div>
         </div>
 
-        <!-- 2. SIGN IN VIEW -->
+                <!-- 2. SIGN IN VIEW -->
         <div class="view" id="signInView">
             <div class="auth-card">
                 <div class="auth-logo">
@@ -693,16 +660,14 @@
                     <span>Aviator</span>
                 </div>
                 <div class="auth-title">Welcome Back</div>
-                
                 <div class="input-group">
                     <label>Phone Number</label>
-                    <input type="tel" id="signInPhone" placeholder="Enter your phone number">
+                    <input type="tel" id="signInPhone" placeholder="0712345678">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="signInPass" placeholder="Enter your password">
+                    <input type="password" id="signInPass" placeholder="••••••••">
                 </div>
-
                 <button class="primary-btn" onclick="handleSignIn()">Sign In</button>
                 <div class="auth-switch">Don't have an account? <span onclick="showRegisterView()">Register</span></div>
             </div>
@@ -797,7 +762,8 @@
                         <button class="quick-amt-btn" onclick="setStake('stake2', 500)">500</button>
                     </div>
                 </div>
-                              <div class="bets-list-container" id="betsListContainer">
+
+                <div class="bets-list-container" id="betsListContainer">
                     <div style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #121824; color: #8b9bb4; border-bottom: 1px solid #1f2b42;">Live Bets This Round</div>
                     <div id="liveBetsItemsList"></div>
                 </div>
@@ -909,12 +875,7 @@
                 <span>Live Chat</span>
                 <button class="back-btn" onclick="toggleChatDrawer(false)">✕</button>
             </div>
-            <div class="chat-messages" id="chatMessagesList" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
-                <div class="chat-msg-bubble" style="background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border: 1px solid #28354c;">
-                    <span style="font-size: 10px; color: #ff9800; font-weight: bold;">Combos Man</span>
-                    <span>Aviator ✈️</span>
-                </div>
-            </div>
+            <div class="chat-messages" id="chatMessagesList" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
             <div class="chat-input-bar" style="padding:10px; background-color:#0b1322; display:flex; gap:8px; align-items:center; border-top:1px solid #1f2b42;">
                 <input type="text" id="chatInputMsg" placeholder="Type a message..." style="flex:1; background-color:#080c14; border:1px solid #1f2b42; padding:10px; border-radius:8px; color:#fff; font-size:13px; outline:none;">
                 <button class="chat-send-btn" onclick="sendChatMessage()" style="background-color:#e53935; border:none; color:#fff; padding:10px 16px; border-radius:8px; font-weight:bold; cursor:pointer;">Send</button>
@@ -924,8 +885,11 @@
     </div>
 
     <script>
-        // Socket.io Connection to Render Backend
-        const socket = io("https://aviator-live-backend.onrender.com");
+        // ----------------------------------------------------
+        // 1. WEBSOCKET REAL-TIME CONNECTION TO RENDER
+        // ----------------------------------------------------
+        const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com";
+        const socket = io(RENDER_BACKEND_URL);
 
         let balance = 0.00;
         let userName = "User";
@@ -942,119 +906,97 @@
         let soundEnabled = true;
         let audioCtx = null;
         let ambientSoundInterval = null;
-        let botChatInterval = null;
 
-        let totalRoundsPlayed = 0;
         let currentRoundLiveBets = [];
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
         let recentOddsHistory = [1.06, 2.19, 5.51, 1.45, 3.20];
 
-        const botNames = [
-            "Brian_Ke", "Amina99", "KevinOchieng", "Sharon_Cheptoo", "Juma_Mfalme", 
-            "MercyWanjiku", "Baraka_254", "FatmaHassan", "Otieno_G", "Cynthia_M"
-        ];
-        const botMessages = [
-            "Easy money today! 🚀", "Anyone cashing out above 3x?", "This game is crazy man 🔥",
-            "Just recovered my losses!", "Waiting for high multipliers", "M-Pesa deposit received instantly 💯",
-            "Let's gooo ✈️", "Smart cashout at 2x is the key"
-        ];
-
+        // ----------------------------------------------------
+        // 2. SOCKET EVENT LISTENERS (CONNECTED TO BACKEND)
+        // ----------------------------------------------------
         socket.on("connect", () => {
-            console.log("Connected to synchronized Render backend!");
+            console.log("Connected to Render backend service successfully.");
         });
 
-        socket.on("waiting", () => {
-            gameRunning = false;
+        socket.on("sync", (gameState) => {
+            gameRunning = gameState.isFlying;
+            currentMultiplier = gameState.currentOdd || 1.00;
+            document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
+            document.getElementById('gameStatusText').innerText = gameRunning ? "" : "WAITING...";
+        });
+
+        socket.on("takeoff", () => {
+            gameRunning = true;
             currentMultiplier = 1.00;
+            
+            document.getElementById('gameStatusText').innerText = "";
+            document.getElementById('gameMultiplierDisplay').innerText = "1.00x";
+            document.getElementById('gameMultiplierDisplay').style.color = "#ffffff";
+            
+            toggleAmbientSound(true);
 
-            document.getElementById("gameStatusText").innerText = "WAITING...";
-            document.getElementById("gameMultiplierDisplay").innerText = "1.00x";
-
-            let plane = document.getElementById("planeGraphic");
-            let gameScreenBox = document.getElementById("gameScreenBox");
-            let screenWidth = gameScreenBox ? gameScreenBox.clientWidth : 300;
-            let screenHeight = gameScreenBox ? gameScreenBox.clientHeight : 300;
-
-            plane.style.bottom = (screenHeight * 0.15) + "px";
-            plane.style.left = (screenWidth * 0.05) + "px";
-            plane.style.transform = "rotate(-15deg)";
-
-            hasPlacedBetCurrentRound = { 1: false, 2: false };
-
+            // Execute auto-bets if configured
             for (let i = 1; i <= 2; i++) {
                 if (autoMode[i] && autoBetActive[i] && !activeBets[i]) {
                     performBetPlacement(i);
                 }
             }
-
             updateButtonStates();
         });
 
         socket.on("tick", (data) => {
-            if (!gameRunning) {
-                gameRunning = true;
-                document.getElementById("gameStatusText").innerText = "";
-                toggleAmbientSound(true);
+            if (!gameRunning) return;
+            currentMultiplier = data.currentOdd;
+            document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
+
+            // Live Payout updates for placed bets
+            if (activeBets[1]) {
+                document.getElementById('betSubText1').innerText = (stakes.stake1 * currentMultiplier).toFixed(2) + " KES";
+            }
+            if (activeBets[2]) {
+                document.getElementById('betSubText2').innerText = (stakes.stake2 * currentMultiplier).toFixed(2) + " KES";
             }
 
-            currentMultiplier = parseFloat(data.multiplier);
-            document.getElementById("gameMultiplierDisplay").innerText = currentMultiplier.toFixed(2) + "x";
-
+            // Auto cashout checks
             for (let i = 1; i <= 2; i++) {
                 if (activeBets[i] && autoMode[i]) {
-                    let autoVal = parseFloat(document.getElementById("autoCashoutInp" + i).value);
-                    if (currentMultiplier >= autoVal) {
+                    let autoTarget = parseFloat(document.getElementById('autoCashoutInp' + i).value);
+                    if (!isNaN(autoTarget) && currentMultiplier >= autoTarget) {
                         executeCashout(i, true);
                     }
                 }
             }
-                    let plane = document.getElementById("planeGraphic");
-            let gameScreenBox = document.getElementById("gameScreenBox");
-            let targetWidth = gameScreenBox ? gameScreenBox.clientWidth : 300;
-            let targetHeight = gameScreenBox ? gameScreenBox.clientHeight : 300;
-
-            let progress = Math.min(1, (currentMultiplier - 1.00) / 10);
-            let targetLeft = targetWidth * 0.05 + progress * (targetWidth * 0.70);
-            let targetBottom = targetHeight * 0.15 + progress * (targetHeight * 0.60);
-
-            plane.style.left = targetLeft + "px";
-            plane.style.bottom = targetBottom + "px";
-            plane.style.transform = `rotate(${-15 + progress * 35}deg)`;
-
-            updateButtonStates();
         });
 
         socket.on("crash", (data) => {
             gameRunning = false;
-            let finalCrash = parseFloat(data.multiplier);
+            currentMultiplier = data.finalOdd;
+            
+            document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
+            document.getElementById('gameMultiplierDisplay').style.color = "#ff5252";
+            document.getElementById('gameStatusText').innerText = `CRASHED @ ${currentMultiplier.toFixed(2)}x`;
 
             toggleAmbientSound(false);
-            playSound("crash");
+            playSound('crash');
 
-            document.getElementById("gameStatusText").innerText = `CRASHED @ ${finalCrash.toFixed(2)}x`;
-
-            let plane = document.getElementById("planeGraphic");
-            plane.style.transform = "rotate(45deg) scale(0.8)";
-
-            recentOddsHistory.push(finalCrash);
+            recentOddsHistory.push(currentMultiplier);
             updateMultiplierRibbon();
 
             for (let i = 1; i <= 2; i++) {
-                if (activeBets[i]) {
-                    activeBets[i] = false;
-                    hasPlacedBetCurrentRound[i] = false;
-                    let btn = document.getElementById("betBtn" + i);
-                    let btnText = document.getElementById("betBtnText" + i);
-                    btn.classList.remove("cashout");
-                    btnText.innerText = "BET NEXT";
-                }
+                activeBets[i] = false;
+                hasPlacedBetCurrentRound[i] = false;
             }
             updateButtonStates();
         });
 
+                // ----------------------------------------------------
+        // 3. AUDIO ENGINE & UI CONTROL
+        // ----------------------------------------------------
         function initAudioContext() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
         }
 
         function playSound(type) {
@@ -1102,14 +1044,17 @@
                     osc.start(now);
                     osc.stop(now + 0.4);
                 }
-            } catch (e) {
-                console.log("Audio error:", e);
+            } catch(e) {
+                console.log("Audio play error:", e);
             }
         }
 
         function toggleAmbientSound(start) {
             if (!soundEnabled) {
-                if (ambientSoundInterval) clearInterval(ambientSoundInterval);
+                if (ambientSoundInterval) {
+                    clearInterval(ambientSoundInterval);
+                    ambientSoundInterval = null;
+                }
                 return;
             }
             try {
@@ -1123,23 +1068,9 @@
                     clearInterval(ambientSoundInterval);
                     ambientSoundInterval = null;
                 }
-            } catch (e) {}
-        }
-
-        function startBotChatLoop() {
-            if (botChatInterval) clearInterval(botChatInterval);
-            botChatInterval = setInterval(() => {
-                let randomBot = botNames[Math.floor(Math.random() * botNames.length)];
-                let randomMsg = botMessages[Math.floor(Math.random() * botMessages.length)];
-                
-                let list = document.getElementById('chatMessagesList');
-                let bubble = document.createElement('div');
-                bubble.className = 'chat-msg-bubble';
-                bubble.style.cssText = "background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border:1px solid #28354c;";
-                bubble.innerHTML = `<span style="font-size: 10px; color: #ff9800; font-weight: bold;">${randomBot}</span><span>${randomMsg}</span>`;
-                list.appendChild(bubble);
-                list.scrollTop = list.scrollHeight;
-            }, 3000);
+            } catch(e) {
+                console.log("Ambient sound error:", e);
+            }
         }
 
         function updateMultiplierRibbon() {
@@ -1148,8 +1079,8 @@
             recentOddsHistory.slice(-10).forEach(odd => {
                 let pill = document.createElement('div');
                 let colorClass = 'pill-blue';
-                if (odd >= 2.0 && odd < 5.0) colorClass = 'pill-purple';
-                else if (odd >= 5.0) colorClass = 'pill-pink';
+                if(odd >= 2.0 && odd < 5.0) colorClass = 'pill-purple';
+                else if(odd >= 5.0) colorClass = 'pill-pink';
                 pill.className = `multiplier-pill ${colorClass}`;
                 pill.innerText = odd.toFixed(2) + 'x';
                 ribbon.appendChild(pill);
@@ -1159,11 +1090,8 @@
 
         function updateAllBalances() {
             let formatted = balance.toFixed(2) + " KES";
-            document.getElementById('mainBalanceDisplay').innerText = formatted;
-            document.getElementById('depositBalDisplay').innerText = formatted;
-            document.getElementById('withdrawBalDisplay').innerText = formatted;
-            document.getElementById('withAvailBal').innerText = formatted;
-            document.getElementById('profileBalDisplay').innerText = formatted;
+            document.querySelectorAll('#mainBalanceDisplay, #depositBalDisplay, #withdrawBalDisplay, #withAvailBal, #profileBalDisplay')
+                    .forEach(el => { if(el) el.innerText = formatted; });
         }
 
         function showSignInView() {
@@ -1177,46 +1105,38 @@
         }
 
         function handleRegister() {
-            let nameInput = document.getElementById('regName');
-            let phoneInput = document.getElementById('regPhone');
-            let passwordInput = document.getElementById('regPass');
-            let confirmPasswordInput = document.getElementById('regConfirmPass');
+            let name = document.getElementById('regName').value.trim();
+            let phone = document.getElementById('regPhone').value.trim();
+            let password = document.getElementById('regPass').value;
+            let confirmPassword = document.getElementById('regConfirmPass').value;
 
-            let name = nameInput ? nameInput.value.trim() : "";
-            let phone = phoneInput ? phoneInput.value.trim() : "";
-            let password = passwordInput ? passwordInput.value : "";
-            let confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : "";
-
-            if (!name || !phone || !password || password !== confirmPassword) {
-                alert("Please verify registration fields.");
-                return false;
-            }
+            if (!name || !phone) { alert("Please complete name and phone fields."); return; }
+            if (!password || password.length < 6) { alert("Password must be at least 6 characters."); return; }
+            if (password !== confirmPassword) { alert("Passwords do not match."); return; }
 
             registeredUsers[phone] = { name: name, password: password };
             userName = name;
             userPhone = phone;
+            localStorage.setItem('aviator_user', userName);
+            localStorage.setItem('aviator_phone', userPhone);
+            
             document.getElementById('profileNameDisplay').innerText = userName;
-
             goToGameApp();
-            return true;
         }
 
         function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
 
-            let userRecord = registeredUsers[phone];
-            if (!userRecord || userRecord.password !== password) {
-                alert("Invalid phone or password.");
-                return false;
-            }
+            if (!phone || !password) { alert("Please enter phone and password."); return; }
 
-            userName = userRecord.name;
+            userName = registeredUsers[phone] ? registeredUsers[phone].name : "Player";
             userPhone = phone;
-            document.getElementById('profileNameDisplay').innerText = userName;
+            localStorage.setItem('aviator_user', userName);
+            localStorage.setItem('aviator_phone', userPhone);
 
+            document.getElementById('profileNameDisplay').innerText = userName;
             goToGameApp();
-            return true;
         }
 
         function goToGameApp() {
@@ -1225,7 +1145,6 @@
             document.getElementById('gameView').classList.add('active');
             updateAllBalances();
             updateMultiplierRibbon();
-            startBotChatLoop();
         }
 
         function toggleMenuDrawer(open) {
@@ -1242,20 +1161,28 @@
 
         function handleLogout() {
             toggleMenuDrawer(false);
-            if (botChatInterval) clearInterval(botChatInterval);
+            localStorage.removeItem('aviator_user');
+            localStorage.removeItem('aviator_phone');
             document.querySelectorAll('.sub-view').forEach(v => v.style.display = 'none');
             document.getElementById('gameView').classList.remove('active');
-            document.getElementById('signInView').classList.remove('active');
-            document.getElementById('registerView').classList.add('active');
+            showSignInView();
         }
 
         function toggleSoundFx() {
             soundEnabled = !soundEnabled;
             let btn = document.getElementById('soundToggleBtn');
-            btn.classList.toggle('muted', !soundEnabled);
-            toggleAmbientSound(soundEnabled && gameRunning);
+            let iconSvg = document.getElementById('soundIconSvg');
+            if (!soundEnabled) {
+                btn.classList.add('muted');
+                iconSvg.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+                toggleAmbientSound(false);
+            } else {
+                btn.classList.remove('muted');
+                iconSvg.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+                if (gameRunning) toggleAmbientSound(true);
+            }
         }
-
+        
         function setAutoMode(panelNum, isAuto) {
             autoMode[panelNum] = isAuto;
             document.getElementById('tabBet' + panelNum).classList.toggle('active', !isAuto);
@@ -1276,29 +1203,30 @@
             document.getElementById(key + 'Val').innerText = stakes[key];
             updateButtonStates();
         }
-               function updateButtonStates() {
-            for (let i = 1; i <= 2; i++) {
+
+        function updateButtonStates() {
+            for(let i=1; i<=2; i++) {
                 let val = stakes['stake' + i];
                 let btn = document.getElementById('betBtn' + i);
                 let btnText = document.getElementById('betBtnText' + i);
                 let btnSub = document.getElementById('betSubText' + i);
 
-                if (activeBets[i]) {
+                if(activeBets[i]) {
                     let currentPayout = val * currentMultiplier;
                     btnText.innerText = "CASH OUT";
                     btnSub.innerText = currentPayout.toFixed(2) + " KES";
                 } else {
                     btnSub.innerText = val.toFixed(2) + " KES";
-                    if (autoMode[i] && autoBetActive[i]) {
+                    if(autoMode[i] && autoBetActive[i]) {
                         btn.classList.add('cashout');
                         btn.classList.remove('disabled-state');
                         btnText.innerText = "AUTO ON";
                         btnSub.innerText = "Click to Stop";
-                    } else if (gameRunning && !hasPlacedBetCurrentRound[i]) {
+                    } else if(gameRunning && !hasPlacedBetCurrentRound[i]) {
                         btn.classList.add('disabled-state');
                         btn.classList.remove('cashout');
                         btnText.innerText = "WAITING...";
-                    } else if (!gameRunning) {
+                    } else if(!gameRunning) {
                         btn.classList.remove('disabled-state');
                         btn.classList.remove('cashout');
                         btnText.innerText = "BET NEXT";
@@ -1313,46 +1241,31 @@
             let amount = parseFloat(document.getElementById('depAmountInput').value);
 
             if (!phone || !code || isNaN(amount) || amount < 500) {
-                alert("Deposit minimum is KES 500.");
+                alert("Minimum deposit is 500 KES.");
                 return;
             }
 
             balance += amount;
             updateAllBalances();
-            alert(`Deposit of KES ${amount.toFixed(2)} successful!`);
+            alert(`Deposit of KES ${amount.toFixed(2)} credited!`);
             closeSubView('depositView');
         }
 
         function confirmWithdraw() {
             let amt = parseFloat(document.getElementById('withAmountInput').value);
-            if (isNaN(amt) || amt < 10000 || amt > balance) {
-                alert("Invalid withdrawal amount.");
-                return;
-            }
+            if(isNaN(amt) || amt < 10000 || amt > 1000000) { alert("Withdrawal must be between 10,000 and 1,000,000 KES."); return; }
+            if(balance < amt) { alert("Insufficient balance!"); return; }
+            
             balance -= amt;
             updateAllBalances();
-            alert(`Withdrew ${amt.toFixed(2)} KES successfully!`);
+            alert(`Withdrew ${amt.toFixed(2)} KES successfully.`);
             closeSubView('withdrawView');
-        }
-
-        function sendChatMessage() {
-            let input = document.getElementById('chatInputMsg');
-            let text = input.value.trim();
-            if (!text) return;
-            let list = document.getElementById('chatMessagesList');
-            let bubble = document.createElement('div');
-            bubble.className = 'chat-msg-bubble';
-            bubble.style.cssText = "background-color:#1c2638; padding:8px 12px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:2px; border:1px solid #28354c;";
-            bubble.innerHTML = `<span style="font-size: 10px; color: #ff9800; font-weight: bold;">${userName}</span><span>${text}</span>`;
-            list.appendChild(bubble);
-            input.value = '';
-            list.scrollTop = list.scrollHeight;
         }
 
         function handleBetAction(panelNum) {
             if (autoMode[panelNum] && !activeBets[panelNum]) {
                 autoBetActive[panelNum] = !autoBetActive[panelNum];
-                if (autoBetActive[panelNum] && !gameRunning && !hasPlacedBetCurrentRound[panelNum]) {
+                if(autoBetActive[panelNum] && !gameRunning && !hasPlacedBetCurrentRound[panelNum]) {
                     performBetPlacement(panelNum);
                 }
                 updateButtonStates();
@@ -1360,11 +1273,11 @@
             }
 
             if (gameRunning && !hasPlacedBetCurrentRound[panelNum] && !activeBets[panelNum]) {
-                alert("Bets locked after round starts!");
+                alert("Round active! Wait for next round.");
                 return;
             }
 
-            if (!activeBets[panelNum]) {
+            if(!activeBets[panelNum]) {
                 performBetPlacement(panelNum);
             } else {
                 executeCashout(panelNum, false);
@@ -1373,9 +1286,9 @@
         
         function performBetPlacement(panelNum) {
             let stake = stakes['stake' + panelNum];
-            if (balance < stake) { 
-                alert("Insufficient balance!"); 
-                if (autoBetActive[panelNum]) autoBetActive[panelNum] = false;
+            if(balance < stake) { 
+                alert("Insufficient balance."); 
+                autoBetActive[panelNum] = false;
                 updateButtonStates();
                 return; 
             }
@@ -1391,12 +1304,12 @@
         
         function executeCashout(panelNum, isAuto) {
             let stake = stakes['stake' + panelNum];
-            if (gameRunning) {
+            if(gameRunning) {
                 let winAmt = stake * currentMultiplier;
                 balance += winAmt;
                 updateAllBalances();
                 playSound('cashout');
-                if (!isAuto) alert(`Won ${winAmt.toFixed(2)} KES!`);
+                if (!isAuto) alert(`Cashed out KES ${winAmt.toFixed(2)}!`);
             } else {
                 balance += stake;
                 updateAllBalances();
@@ -1407,6 +1320,22 @@
             document.getElementById('betBtn' + panelNum).classList.remove('cashout');
             updateButtonStates();
         }
+
+        // ----------------------------------------------------
+        // 4. AUTO LOGIN / SESSION RESTORE
+        // ----------------------------------------------------
+        window.onload = function() {
+            let savedUser = localStorage.getItem('aviator_user');
+            let savedPhone = localStorage.getItem('aviator_phone');
+            if (savedUser && savedPhone) {
+                userName = savedUser;
+                userPhone = savedPhone;
+                document.getElementById('profileNameDisplay').innerText = userName;
+                goToGameApp();
+            } else {
+                showRegisterView();
+            }
+        };
     </script>
 </body>
 </html>
