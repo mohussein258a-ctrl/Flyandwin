@@ -54,6 +54,45 @@
             display: flex;
         }
 
+        /* TOAST NOTIFICATION STYLES */
+        .toast-container {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+            pointer-events: none;
+            width: 90%;
+            align-items: center;
+        }
+        .toast {
+            background: linear-gradient(135deg, #00e676 0%, #00c853 100%);
+            color: #05190b;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 13px;
+            box-shadow: 0 5px 15px rgba(0,230,118,0.3);
+            animation: slideDownFade 0.3s ease-out, fadeOut 0.3s ease-in 2.5s forwards;
+            text-align: center;
+        }
+        .toast.error {
+            background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(229,57,53,0.3);
+        }
+        @keyframes slideDownFade {
+            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
         #registerView, #signInView {
             justify-content: center;
             align-items: center;
@@ -513,6 +552,8 @@
         .bet-list-item .user-col { color: #fff; font-weight: 700; }
         .bet-list-item .stake-col { color: #ff9800; font-weight: 600; }
         .bet-list-item .win-col { color: #00e676; font-weight: 800; }
+        /* Dynamic lost styling */
+        .bet-list-item .win-col.lost-text { color: #ff5252; font-weight: 800; }
 
         .menu-drawer {
             position: absolute;
@@ -613,8 +654,11 @@
 <body>
 
     <div class="app-container">
+        
+        <!-- GLOBAL TOAST NOTIFICATION CONTAINER -->
+        <div class="toast-container" id="toastContainer"></div>
 
-        <!-- 1. REGISTER VIEW -->
+                <!-- 1. REGISTER VIEW -->
         <div class="view active" id="registerView">
             <div class="auth-card">
                 <div class="auth-logo">
@@ -643,7 +687,7 @@
             </div>
         </div>
 
-                                <!-- 2. SIGN IN VIEW -->
+        <!-- 2. SIGN IN VIEW -->
         <div class="view" id="signInView">
             <div class="auth-card">
                 <div class="auth-logo">
@@ -761,8 +805,7 @@
                     <div class="bets-list-body" id="liveBetsItemsList"></div>
                 </div>
             </div>
-
-            <div class="live-history-bar">
+                        <div class="live-history-bar">
                 <div class="history-tabs">
                     <div class="history-tab active" id="allBetsTabBtn" onclick="switchHistoryTab('all')">All Bets</div>
                     <div class="history-tab" id="myBetsTabBtn" onclick="switchHistoryTab('my')">My Bets</div>
@@ -805,7 +848,8 @@
                 </div>
             </div>
         </div>
-<!-- WITHDRAW VIEW -->
+
+        <!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('withdrawView')">✕</button>
@@ -829,8 +873,9 @@
                     <button class="primary-btn" onclick="confirmWithdraw()">Withdraw to M-Pesa</button>
                 </div>
             </div>
-                </div>
-                            <!-- PROFILE VIEW -->
+        </div>
+        
+        <!-- PROFILE VIEW -->
         <div class="sub-view" id="profileView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('profileView')">✕</button>
@@ -872,9 +917,25 @@
                 <button class="chat-send-btn" onclick="sendChatMessage()" style="background-color:#e53935; border:none; color:#fff; padding:10px 16px; border-radius:8px; font-weight:bold; cursor:pointer;">Send</button>
             </div>
         </div>
-
     </div>
+    
     <script>
+                // ----------------------------------------------------
+        // TOAST NOTIFICATION FUNCTION
+        // ----------------------------------------------------
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast' + (type === 'error' ? ' error' : '');
+            toast.innerText = message;
+            container.appendChild(toast);
+            
+            // Remove toast after animation finishes
+            setTimeout(() => {
+                if (container.contains(toast)) container.removeChild(toast);
+            }, 2800);
+        }
+
         // ----------------------------------------------------
         // 1. WEBSOCKET REAL-TIME CONNECTION TO RENDER
         // ----------------------------------------------------
@@ -900,7 +961,7 @@
         let liveBetsData = [];
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
-        let recentOddsHistory = []; // Initialize empty, server handles this now!
+        let recentOddsHistory = []; 
        
         // ----------------------------------------------------
         // 2. SOCKET EVENT LISTENERS
@@ -921,7 +982,6 @@
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
             document.getElementById('gameStatusText').innerText = gameRunning ? "" : "WAITING...";
             
-            // Sync history from server
             if (gameState.history) {
                 recentOddsHistory = gameState.history;
                 updateMultiplierRibbon();
@@ -938,19 +998,16 @@
             document.getElementById('gameMultiplierDisplay').innerText = "1.00x";
             document.getElementById('gameMultiplierDisplay').style.color = "#ffffff";
             
-            // Reset plane graphics
             let plane = document.getElementById('planeGraphic');
             if(plane) {
                 plane.style.left = "20px";
                 plane.style.bottom = "20px";
             }
-            // Generate live bot bets for active table
             generateLiveBets();
             renderLiveBetsList();
 
             toggleAmbientSound(true);
 
-            // Execute auto-bets
             for (let i = 1; i <= 2; i++) {
                 if (autoMode[i] && autoBetActive[i] && !activeBets[i]) {
                     performBetPlacement(i);
@@ -964,10 +1021,8 @@
             currentMultiplier = data.currentOdd;
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
           
-            // Update physical plane animation coordinates
             updatePlanePosition();
 
-            // Update live payouts for user bets
             if (activeBets[1]) {
                 document.getElementById('betSubText1').innerText = (stakes.stake1 * currentMultiplier).toFixed(2) + " KES";
             }
@@ -975,10 +1030,8 @@
                 document.getElementById('betSubText2').innerText = (stakes.stake2 * currentMultiplier).toFixed(2) + " KES";
             }
 
-            // Update live bets cashout simulations
             updateBotCashouts();
 
-            // Auto cashout checks
             for (let i = 1; i <= 2; i++) {
                 if (activeBets[i] && autoMode[i]) {
                     let autoTarget = parseFloat(document.getElementById('autoCashoutInp' + i).value);
@@ -988,7 +1041,8 @@
                 }
             }
         });
-                socket.on("crash", (data) => {
+        
+        socket.on("crash", (data) => {
             gameRunning = false;
             currentMultiplier = data.finalOdd;
             
@@ -1001,9 +1055,17 @@
 
             recentOddsHistory.push(currentMultiplier);
             if (recentOddsHistory.length > 10) {
-                recentOddsHistory.shift(); // keep array length at 10 to match server
+                recentOddsHistory.shift(); 
             }
             updateMultiplierRibbon();
+
+            // Mark any uncashed bots/users as lost and refresh the UI instantly
+            liveBetsData.forEach(b => {
+                if (!b.cashedOut) {
+                    b.crashed = true;
+                }
+            });
+            renderLiveBetsList();
 
             for (let i = 1; i <= 2; i++) {
                 activeBets[i] = false;
@@ -1011,11 +1073,9 @@
             }
             updateButtonStates();
         });
-
-        // ----------------------------------------------------
+                // ----------------------------------------------------
         // 3. CHAT IMPLEMENTATION
         // ----------------------------------------------------
-        
         socket.on("chat message", (msg) => {
             const chatBox = document.getElementById("chatMessagesList");
             if (chatBox) {
@@ -1027,7 +1087,6 @@
                 messageElement.style.color = "#fff";
                 messageElement.innerText = msg;
                 chatBox.appendChild(messageElement);
-                // Auto-scroll to the bottom
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
         });
@@ -1037,11 +1096,10 @@
             const msg = input.value.trim();
             if (msg !== "") {
                 socket.emit("chat message", `${userName}: ${msg}`);
-                input.value = ""; // Clear input after sending
+                input.value = ""; 
             }
         }
 
-        // Allow pressing "Enter" to send
         document.getElementById("chatInputMsg").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
@@ -1061,7 +1119,6 @@
             let w = screenBox.clientWidth || 300;
             let h = screenBox.clientHeight || 190;
 
-            // Normalize flight progress: 1.00x -> 10.00x maps to 0% -> 100% boundary
             let progress = Math.min((currentMultiplier - 1) / 5, 1);
             let moveX = 20 + progress * (w - 80);
             let moveY = 20 + progress * (h - 75);
@@ -1079,7 +1136,7 @@
                 let name = sampleNames[Math.floor(Math.random()*sampleNames.length)];
                 let stake = [10, 20, 50, 100, 200, 500][Math.floor(Math.random()*6)];
                 let target = 1.10 + (Math.random() * 4.0);
-                liveBetsData.push({ name, stake, target, cashedOut: false, winAmt: 0 });
+                liveBetsData.push({ name, stake, target, cashedOut: false, winAmt: 0, crashed: false });
             }
         }
 
@@ -1094,7 +1151,7 @@
             });
             if(changed) renderLiveBetsList();
         }
-
+        
         function renderLiveBetsList() {
             let container = document.getElementById('liveBetsItemsList');
             if(!container) return;
@@ -1108,23 +1165,38 @@
                 myHistoricalBets.slice(-10).reverse().forEach(b => {
                     let div = document.createElement('div');
                     div.className = 'bet-list-item';
+                    
+                    let winText = b.win ? '+' + b.win + ' KES' : 'LOST';
+                    let winStyleClass = b.win ? 'win-col' : 'win-col lost-text';
+
                     div.innerHTML = `
                         <span class="user-col">You</span>
                         <span class="stake-col">${b.stake} KES</span>
-                        <span class="win-col">${b.win ? '+' + b.win + ' KES' : 'LOST'}</span>
+                        <span class="${winStyleClass}">${winText}</span>
                     `;
                     container.appendChild(div);
                 });
                 return;
-            }
-
-            liveBetsData.forEach(b => {
+        }
+                        liveBetsData.forEach(b => {
                 let div = document.createElement('div');
                 div.className = 'bet-list-item';
+                
+                // Dynamically assign text and style based on state
+                let statusText = 'flying...';
+                let winStyleClass = 'win-col';
+
+                if (b.cashedOut) {
+                    statusText = b.winAmt + ' KES';
+                } else if (!gameRunning || b.crashed) {
+                    statusText = 'LOST';
+                    winStyleClass = 'win-col lost-text';
+                }
+
                 div.innerHTML = `
                     <span class="user-col">${b.name}</span>
                     <span class="stake-col">${b.stake} KES</span>
-                    <span class="win-col">${b.cashedOut ? b.winAmt + ' KES' : 'flying...'}</span>
+                    <span class="${winStyleClass}">${statusText}</span>
                 `;
                 container.appendChild(div);
             });
@@ -1136,7 +1208,8 @@
             document.getElementById('myBetsTabBtn').classList.toggle('active', tab === 'my');
             renderLiveBetsList();
         }
-                // ----------------------------------------------------
+        
+        // ----------------------------------------------------
         // 5. AUDIO ENGINE & UI CONTROLS
         // ----------------------------------------------------
         function initAudioContext() {
@@ -1144,7 +1217,6 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
         }
-
         function playSound(type) {
             if (!soundEnabled) return;
             try {
@@ -1211,8 +1283,7 @@
                 }
             } catch(e) {}
         }
-
-        function updateMultiplierRibbon() {
+            function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
             ribbon.innerHTML = '';
             recentOddsHistory.forEach(odd => {
@@ -1227,10 +1298,13 @@
             ribbon.scrollLeft = ribbon.scrollWidth;
         }
 
+        // Modified to persist balance securely to local storage
         function updateAllBalances() {
             let formatted = balance.toFixed(2) + " KES";
             document.querySelectorAll('#mainBalanceDisplay, #depositBalDisplay, #withdrawBalDisplay, #withAvailBal, #profileBalDisplay')
                     .forEach(el => { if(el) el.innerText = formatted; });
+                    
+            localStorage.setItem('aviator_balance', balance.toString());
         }
 
         function showSignInView() {
@@ -1249,9 +1323,9 @@
             let password = document.getElementById('regPass').value;
             let confirmPassword = document.getElementById('regConfirmPass').value;
 
-            if (!name || !phone) { alert("Please complete name and phone fields."); return; }
-            if (!password || password.length < 6) { alert("Password must be at least 6 characters."); return; }
-            if (password !== confirmPassword) { alert("Passwords do not match."); return; }
+            if (!name || !phone) { showToast("Please complete name and phone fields.", "error"); return; }
+            if (!password || password.length < 6) { showToast("Password must be at least 6 characters.", "error"); return; }
+            if (password !== confirmPassword) { showToast("Passwords do not match.", "error"); return; }
 
             registeredUsers[phone] = { name: name, password: password };
             userName = name;
@@ -1262,11 +1336,12 @@
             document.getElementById('profileNameDisplay').innerText = userName;
             goToGameApp();
         }
-                function handleSignIn() {
+        
+        function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
 
-            if (!phone || !password) { alert("Please enter phone and password."); return; }
+            if (!phone || !password) { showToast("Please enter phone and password.", "error"); return; }
 
             userName = registeredUsers[phone] ? registeredUsers[phone].name : "Player";
             userPhone = phone;
@@ -1276,7 +1351,7 @@
             document.getElementById('profileNameDisplay').innerText = userName;
             goToGameApp();
         }
-
+        
         function goToGameApp() {
             document.getElementById('registerView').classList.remove('active');
             document.getElementById('signInView').classList.remove('active');
@@ -1367,31 +1442,36 @@
                 }
             }
         }
-
-        function submitManualDeposit() {
+                function submitManualDeposit() {
             let phone = document.getElementById('depPhoneInput').value.trim();
             let code = document.getElementById('depCodeInput').value.trim().toUpperCase();
             let amount = parseFloat(document.getElementById('depAmountInput').value);
 
             if (!phone || !code || isNaN(amount) || amount < 500) {
-                alert("Minimum deposit is 500 KES.");
+                showToast("Minimum deposit is 500 KES.", "error");
                 return;
             }
 
             balance += amount;
             updateAllBalances();
-            alert(`Deposit of KES ${amount.toFixed(2)} credited!`);
+            showToast(`Deposit of KES ${amount.toFixed(2)} credited!`, "success");
             closeSubView('depositView');
         }
 
         function confirmWithdraw() {
             let amt = parseFloat(document.getElementById('withAmountInput').value);
-            if(isNaN(amt) || amt < 10000 || amt > 1000000) { alert("Withdrawal must be between 10,000 and 1,000,000 KES."); return; }
-            if(balance < amt) { alert("Insufficient balance!"); return; }
+            if(isNaN(amt) || amt < 10000 || amt > 1000000) { 
+                showToast("Withdrawal must be between 10,000 and 1,000,000 KES.", "error"); 
+                return; 
+            }
+            if(balance < amt) { 
+                showToast("Insufficient balance!", "error"); 
+                return; 
+            }
             
             balance -= amt;
             updateAllBalances();
-            alert(`Withdrew ${amt.toFixed(2)} KES successfully.`);
+            showToast(`Withdrew ${amt.toFixed(2)} KES successfully.`, "success");
             closeSubView('withdrawView');
         }
 
@@ -1406,7 +1486,7 @@
             }
 
             if (gameRunning && !hasPlacedBetCurrentRound[panelNum] && !activeBets[panelNum]) {
-                alert("Round active! Wait for next round.");
+                showToast("Round active! Wait for next round.", "error");
                 return;
             }
 
@@ -1420,7 +1500,7 @@
         function performBetPlacement(panelNum) {
             let stake = stakes['stake' + panelNum];
             if(balance < stake) { 
-                alert("Insufficient balance."); 
+                showToast("Insufficient balance.", "error"); 
                 autoBetActive[panelNum] = false;
                 updateButtonStates();
                 return; 
@@ -1446,7 +1526,7 @@
                 if(myHistoricalBets.length > 0) {
                     myHistoricalBets[myHistoricalBets.length - 1].win = winAmt.toFixed(2);
                 }
-                if (!isAuto) alert(`Cashed out KES ${winAmt.toFixed(2)}!`);
+                if (!isAuto) showToast(`Cashed out KES ${winAmt.toFixed(2)}!`, "success");
             } else {
                 balance += stake;
                 updateAllBalances();
@@ -1458,9 +1538,16 @@
             updateButtonStates();
         }
 
+        // Startup routine + loading saved balance
         window.onload = function() {
             let savedUser = localStorage.getItem('aviator_user');
             let savedPhone = localStorage.getItem('aviator_phone');
+            let savedBalance = localStorage.getItem('aviator_balance');
+            
+            if (savedBalance !== null) {
+                balance = parseFloat(savedBalance);
+            }
+
             if (savedUser && savedPhone) {
                 userName = savedUser;
                 userPhone = savedPhone;
@@ -1473,3 +1560,4 @@
     </script>
 </body>
 </html>
+       
