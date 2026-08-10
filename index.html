@@ -552,7 +552,6 @@
         .bet-list-item .user-col { color: #fff; font-weight: 700; }
         .bet-list-item .stake-col { color: #ff9800; font-weight: 600; }
         .bet-list-item .win-col { color: #00e676; font-weight: 800; }
-        /* Dynamic lost styling */
         .bet-list-item .win-col.lost-text { color: #ff5252; font-weight: 800; }
 
         .menu-drawer {
@@ -728,10 +727,7 @@
                     </button>
                 </div>
             </div>
-
-            <div class="multiplier-ribbon" id="multiplierRibbon">
-                <!-- Will be populated by JS based on server history -->
-            </div>
+            <div class="multiplier-ribbon" id="multiplierRibbon"></div>
 
             <div class="game-screen" id="gameScreenBox">
                 <div class="game-status-text" id="gameStatusText">CONNECTING TO SERVER...</div>
@@ -767,7 +763,7 @@
                         <button class="quick-amt-btn" onclick="setStake('stake1', 500)">500</button>
                     </div>
                 </div>
-                <div class="bet-card">
+                            <div class="bet-card">
                     <div class="bet-tabs">
                         <div class="bet-tab active" id="tabBet2" onclick="setAutoMode(2, false)">Bet</div>
                         <div class="bet-tab" id="tabAuto2" onclick="setAutoMode(2, true)">Auto</div>
@@ -794,7 +790,7 @@
                         <button class="quick-amt-btn" onclick="setStake('stake2', 500)">500</button>
                     </div>
                 </div>
-                                <!-- Live Bets List Container -->
+                <!-- Live Bets List Container -->
                 <div class="bets-list-container" id="betsListContainer">
                     <div class="bets-list-header">
                         <span>User</span>
@@ -865,7 +861,6 @@
                         <span style="font-size: 12px; color: #8b9bb4;">Available Balance</span>
                         <span style="font-size: 16px; font-weight: bold; color: #00e676;" id="withAvailBal">0.00 KES</span>
                     </div>
-                    
                     <div class="input-group">
                         <label>Receiving Phone Number</label>
                         <input type="tel" id="withPhoneInput" placeholder="07XXXXXXXX">
@@ -876,8 +871,6 @@
                     </div>
                     <button class="primary-btn" onclick="confirmWithdraw()">Withdraw to M-Pesa</button>
                 </div>
-
-                <!-- WITHDRAWAL HISTORY / PENDING SPACE -->
                 <div class="card-box">
                     <div style="font-weight: bold; font-size: 13px; color: #8b9bb4; border-bottom: 1px solid #1f2b42; padding-bottom: 8px;">Withdrawal History</div>
                     <div id="withdrawalHistoryList" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; max-height: 150px; overflow-y: auto;">
@@ -929,7 +922,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         // ----------------------------------------------------
         // TOAST NOTIFICATION FUNCTION
@@ -941,14 +934,12 @@
             toast.innerText = message;
             container.appendChild(toast);
             
-            // Remove toast after animation finishes
             setTimeout(() => {
                 if (container.contains(toast)) container.removeChild(toast);
             }, 2800);
         }
-
-        // ----------------------------------------------------
-        // 1. WEBSOCKET REAL-TIME CONNECTION TO RENDER
+                // ----------------------------------------------------
+        // WEBSOCKET REAL-TIME CONNECTION TO RENDER
         // ----------------------------------------------------
         const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com";
         const socket = io(RENDER_BACKEND_URL);
@@ -956,7 +947,6 @@
         let balance = 0.00;
         let userName = "User";
         let userPhone = "";
-        let registeredUsers = {}; 
         let stakes = { stake1: 10, stake2: 10 };
         let activeBets = { 1: false, 2: false };
         let hasPlacedBetCurrentRound = { 1: false, 2: false };
@@ -967,7 +957,6 @@
         let currentMultiplier = 1.00;
         let soundEnabled = true;
         let audioCtx = null;
-        let ambientSoundInterval = null;
 
         let liveBetsData = [];
         let myHistoricalBets = [];
@@ -975,7 +964,7 @@
         let recentOddsHistory = []; 
         
         // ----------------------------------------------------
-        // 2. SOCKET EVENT LISTENERS
+        // SOCKET EVENT LISTENERS
         // ----------------------------------------------------
         socket.on("connect", () => {
             console.log("Connected to Render backend service.");
@@ -997,10 +986,10 @@
                 recentOddsHistory = gameState.history;
                 updateMultiplierRibbon();
             }
-
             if (gameRunning) updatePlanePosition();
         });
-                socket.on("takeoff", () => {
+
+        socket.on("takeoff", () => {
             gameRunning = true;
             currentMultiplier = 1.00;
             
@@ -1016,8 +1005,6 @@
             generateLiveBets();
             renderLiveBetsList();
 
-            toggleAmbientSound(true);
-
             for (let i = 1; i <= 2; i++) {
                 if (autoMode[i] && autoBetActive[i] && !activeBets[i]) {
                     performBetPlacement(i);
@@ -1025,8 +1012,7 @@
             }
             updateButtonStates();
         });
-
-        socket.on("tick", (data) => {
+                socket.on("tick", (data) => {
             if (!gameRunning) return;
             currentMultiplier = data.currentOdd;
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
@@ -1060,7 +1046,6 @@
             document.getElementById('gameMultiplierDisplay').style.color = "#ff5252";
             document.getElementById('gameStatusText').innerText = `CRASHED @ ${currentMultiplier.toFixed(2)}x`;
 
-            toggleAmbientSound(false);
             playSound('crash');
 
             recentOddsHistory.push(currentMultiplier);
@@ -1069,7 +1054,6 @@
             }
             updateMultiplierRibbon();
 
-            // Mark any uncashed bots/users as lost and refresh the UI instantly
             liveBetsData.forEach(b => {
                 if (!b.cashedOut) {
                     b.crashed = true;
@@ -1084,7 +1068,7 @@
             updateButtonStates();
         });
                 // ----------------------------------------------------
-        // 3. CHAT IMPLEMENTATION
+        // CHAT IMPLEMENTATION
         // ----------------------------------------------------
         socket.on("chat message", (msg) => {
             const chatBox = document.getElementById("chatMessagesList");
@@ -1101,11 +1085,10 @@
             }
         });
 
-        // M-PESA WITHDRAWAL STATUS LISTENER (New)
         socket.on("withdrawalStatus", (data) => {
             let historyContainer = document.getElementById('withdrawalHistoryList');
             let noTxText = document.getElementById('noWithdrawalsText');
-            if (noTxText) noTxText.style.display = 'none'; // Hide the "No recent withdrawals" text
+            if (noTxText) noTxText.style.display = 'none';
 
             let txItem = document.createElement('div');
             txItem.style.cssText = "background: #080c14; padding: 10px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; flex-direction: column; gap: 6px;";
@@ -1120,7 +1103,6 @@
                     <span style="color: #8b9bb4;">${data.timestamp}</span>
                 </div>
             `;
-            
             historyContainer.prepend(txItem);
         });
 
@@ -1141,7 +1123,7 @@
         });
 
         // ----------------------------------------------------
-        // 4. PLANE ANIMATION & LIVE BETS RENDERERS
+        // PLANE ANIMATION & LIVE BETS RENDERERS
         // ----------------------------------------------------
         function updatePlanePosition() {
             let screenBox = document.getElementById('gameScreenBox');
@@ -1209,12 +1191,10 @@
                 });
                 return;
             }
-            
             liveBetsData.forEach(b => {
                 let div = document.createElement('div');
                 div.className = 'bet-list-item';
                 
-                // Dynamically assign text and style based on state
                 let statusText = 'flying...';
                 let winStyleClass = 'win-col';
 
@@ -1241,7 +1221,7 @@
             renderLiveBetsList();
         }
                 // ----------------------------------------------------
-        // 5. AUDIO ENGINE & UI CONTROLS
+        // AUDIO ENGINE & UI CONTROLS
         // ----------------------------------------------------
         function initAudioContext() {
             if (!audioCtx) {
@@ -1256,19 +1236,7 @@
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 let now = audioCtx.currentTime;
 
-                if (type === 'vocal_beat') {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(180, now);
-                    osc.frequency.exponentialRampToValueAtTime(60, now + 0.15);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.linearRampToValueAtTime(0.001, now + 0.15);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.15);
-                } else if (type === 'cashout') {
+                if (type === 'cashout') {
                     let osc = audioCtx.createOscillator();
                     let gain = audioCtx.createGain();
                     osc.type = 'sine';
@@ -1297,25 +1265,6 @@
             } catch(e) {}
         }
 
-        function toggleAmbientSound(start) {
-            if (!soundEnabled) {
-                if (ambientSoundInterval) { clearInterval(ambientSoundInterval); ambientSoundInterval = null; }
-                return;
-            }
-            try {
-                initAudioContext();
-                if (start && !ambientSoundInterval) {
-                    ambientSoundInterval = setInterval(() => {
-                        if (!soundEnabled || !gameRunning) return;
-                        playSound('vocal_beat');
-                    }, 300);
-                } else if (!start && ambientSoundInterval) {
-                    clearInterval(ambientSoundInterval);
-                    ambientSoundInterval = null;
-                }
-            } catch(e) {}
-        }
-
         function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
             ribbon.innerHTML = '';
@@ -1335,10 +1284,11 @@
             let formatted = balance.toFixed(2) + " KES";
             document.querySelectorAll('#mainBalanceDisplay, #depositBalDisplay, #withdrawBalDisplay, #withAvailBal, #profileBalDisplay')
                     .forEach(el => { if(el) el.innerText = formatted; });
-                    
-            localStorage.setItem('aviator_balance', balance.toString());
         }
-                function showSignInView() {
+                // ----------------------------------------------------
+        // BACKEND DATABASE SYNCED AUTHENTICATION APIs
+        // ----------------------------------------------------
+        function showSignInView() {
             document.getElementById('registerView').classList.remove('active');
             document.getElementById('signInView').classList.add('active');
         }
@@ -1348,7 +1298,7 @@
             document.getElementById('registerView').classList.add('active');
         }
 
-        function handleRegister() {
+        async function handleRegister() {
             let name = document.getElementById('regName').value.trim();
             let phone = document.getElementById('regPhone').value.trim();
             let password = document.getElementById('regPass').value;
@@ -1358,35 +1308,73 @@
             if (!password || password.length < 6) { showToast("Password must be at least 6 characters.", "error"); return; }
             if (password !== confirmPassword) { showToast("Passwords do not match.", "error"); return; }
 
-            registeredUsers[phone] = { name: name, password: password };
-            userName = name;
-            userPhone = phone;
-            localStorage.setItem('aviator_user', JSON.stringify(registeredUsers));
+            try {
+                let response = await fetch(`${RENDER_BACKEND_URL}/api/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, password })
+                });
+                let data = await response.json();
 
-            document.getElementById('registerView').classList.remove('active');
-            document.getElementById('gameView').classList.add('active');
-            
-            document.getElementById('profileNameDisplay').innerText = userName;
-            showToast("Registration successful!");
+                if (response.ok) {
+                    userName = data.user.name;
+                    userPhone = data.user.phone;
+                    balance = data.user.balance || 0.00;
+                    updateAllBalances();
+
+                    document.getElementById('registerView').classList.remove('active');
+                    document.getElementById('gameView').classList.add('active');
+                    document.getElementById('profileNameDisplay').innerText = userName;
+                    showToast("Registration successful!");
+                } else {
+                    showToast(data.message || "Registration failed.", "error");
+                }
+            } catch (err) {
+                showToast("Connection error. Please check network.", "error");
+            }
         }
 
-        function handleSignIn() {
+        async function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
             
-            let users = JSON.parse(localStorage.getItem('aviator_user')) || registeredUsers;
+            if (!phone || !password) { showToast("Please enter phone and password.", "error"); return; }
 
-            if (users[phone] && users[phone].password === password) {
-                userName = users[phone].name;
-                userPhone = phone;
-                document.getElementById('signInView').classList.remove('active');
-                document.getElementById('gameView').classList.add('active');
-                
-                document.getElementById('profileNameDisplay').innerText = userName;
-                showToast(`Welcome back, ${userName}!`);
-            } else {
-                showToast("Invalid phone number or password.", "error");
+            try {
+                let response = await fetch(`${RENDER_BACKEND_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, password })
+                });
+                let data = await response.json();
+
+                if (response.ok) {
+                    userName = data.user.name;
+                    userPhone = data.user.phone;
+                    balance = data.user.balance || 0.00;
+                    updateAllBalances();
+
+                    document.getElementById('signInView').classList.remove('active');
+                    document.getElementById('gameView').classList.add('active');
+                    document.getElementById('profileNameDisplay').innerText = userName;
+                    showToast(`Welcome back, ${userName}!`);
+                } else {
+                    showToast(data.message || "Invalid phone number or password.", "error");
+                }
+            } catch (err) {
+                showToast("Connection error. Please check network.", "error");
             }
+            }
+        }
+                async function syncBalanceToBackend() {
+            if (!userPhone) return;
+            try {
+                await fetch(`${RENDER_BACKEND_URL}/api/balance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: userPhone, balance })
+                });
+            } catch (err) {}
         }
 
         function handleLogout() {
@@ -1396,6 +1384,7 @@
             document.getElementById('signInView').classList.add('active');
             document.getElementById('signInPhone').value = '';
             document.getElementById('signInPass').value = '';
+            userPhone = "";
             showToast("Logged out successfully.");
         }
 
@@ -1414,6 +1403,7 @@
                 updateButtonStates();
             }
         }
+
         function setStake(stakeKey, val) {
             stakes[stakeKey] = val;
             document.getElementById(stakeKey + 'Val').innerText = val;
@@ -1455,6 +1445,8 @@
             }
             balance -= s;
             updateAllBalances();
+            syncBalanceToBackend();
+
             activeBets[panel] = true;
             hasPlacedBetCurrentRound[panel] = true;
             updateButtonStates();
@@ -1468,11 +1460,11 @@
             
             balance += winAmt;
             updateAllBalances();
+            syncBalanceToBackend();
             
             activeBets[panel] = false;
             playSound('cashout');
             
-            // Add to My Bets history
             myHistoricalBets.push({
                 stake: s.toFixed(2),
                 win: winAmt.toFixed(2),
@@ -1517,8 +1509,8 @@
                     }
                 }
             }
-        }
-               function toggleMenuDrawer(show) { document.getElementById('menuDrawer').classList.toggle('open', show); }
+       }
+                function toggleMenuDrawer(show) { document.getElementById('menuDrawer').classList.toggle('open', show); }
         function toggleChatDrawer(show) { document.getElementById('chatDrawer').style.display = show ? 'flex' : 'none'; }
         
         function openSubView(id) { document.getElementById(id).style.display = 'flex'; }
@@ -1537,11 +1529,9 @@
             if (soundEnabled) {
                 btn.classList.remove('muted');
                 icon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
-                if(gameRunning) toggleAmbientSound(true);
             } else {
                 btn.classList.add('muted');
                 icon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
-                toggleAmbientSound(false);
             }
         }
 
@@ -1557,6 +1547,7 @@
 
             balance += amt;
             updateAllBalances();
+            syncBalanceToBackend();
             
             document.getElementById('depPhoneInput').value = '';
             document.getElementById('depCodeInput').value = '';
@@ -1581,12 +1572,11 @@
                 showToast("Insufficient balance!", "error"); 
                 return; 
             }
-            
-            // Deduct locally and update UI
+
             balance -= amt;
             updateAllBalances();
+            syncBalanceToBackend();
             
-            // Send socket request to server to process and show as pending
             socket.emit("requestWithdrawal", { phone: phone, amount: amt });
             
             document.getElementById('withPhoneInput').value = '';
@@ -1595,16 +1585,8 @@
             showToast(`Processing withdrawal of ${amt.toFixed(2)} KES...`, "success");
         }
 
-        window.onload = function() {
-            let savedBal = localStorage.getItem('aviator_balance');
-            if (savedBal) balance = parseFloat(savedBal);
-            updateAllBalances();
-        };
-
-        // UI Interactions to initialize contexts
         document.body.addEventListener('click', () => { initAudioContext(); }, { once: true });
         document.body.addEventListener('touchstart', () => { initAudioContext(); }, { once: true });
     </script>
 </body>
 </html>
-       
