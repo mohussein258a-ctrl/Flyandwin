@@ -794,8 +794,7 @@
                         <button class="quick-amt-btn" onclick="setStake('stake2', 500)">500</button>
                     </div>
                 </div>
-
-                <!-- Live Bets List Container -->
+                                <!-- Live Bets List Container -->
                 <div class="bets-list-container" id="betsListContainer">
                     <div class="bets-list-header">
                         <span>User</span>
@@ -805,7 +804,7 @@
                     <div class="bets-list-body" id="liveBetsItemsList"></div>
                 </div>
             </div>
-                        <div class="live-history-bar">
+            <div class="live-history-bar">
                 <div class="history-tabs">
                     <div class="history-tab active" id="allBetsTabBtn" onclick="switchHistoryTab('all')">All Bets</div>
                     <div class="history-tab" id="myBetsTabBtn" onclick="switchHistoryTab('my')">My Bets</div>
@@ -866,16 +865,28 @@
                         <span style="font-size: 12px; color: #8b9bb4;">Available Balance</span>
                         <span style="font-size: 16px; font-weight: bold; color: #00e676;" id="withAvailBal">0.00 KES</span>
                     </div>
+                    
+                    <div class="input-group">
+                        <label>Receiving Phone Number</label>
+                        <input type="tel" id="withPhoneInput" placeholder="07XXXXXXXX">
+                    </div>
                     <div class="input-group">
                         <label>Amount (KES)</label>
                         <input type="number" id="withAmountInput" placeholder="Enter amount (10,000 - 1,000,000 KES)">
                     </div>
                     <button class="primary-btn" onclick="confirmWithdraw()">Withdraw to M-Pesa</button>
                 </div>
+
+                <!-- WITHDRAWAL HISTORY / PENDING SPACE -->
+                <div class="card-box">
+                    <div style="font-weight: bold; font-size: 13px; color: #8b9bb4; border-bottom: 1px solid #1f2b42; padding-bottom: 8px;">Withdrawal History</div>
+                    <div id="withdrawalHistoryList" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; max-height: 150px; overflow-y: auto;">
+                        <div style="font-size: 11px; color: #556680; text-align: center;" id="noWithdrawalsText">No recent withdrawals</div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <!-- PROFILE VIEW -->
+                <!-- PROFILE VIEW -->
         <div class="sub-view" id="profileView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('profileView')">✕</button>
@@ -920,7 +931,7 @@
     </div>
     
     <script>
-                // ----------------------------------------------------
+        // ----------------------------------------------------
         // TOAST NOTIFICATION FUNCTION
         // ----------------------------------------------------
         function showToast(message, type = 'success') {
@@ -962,7 +973,7 @@
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
         let recentOddsHistory = []; 
-       
+        
         // ----------------------------------------------------
         // 2. SOCKET EVENT LISTENERS
         // ----------------------------------------------------
@@ -989,8 +1000,7 @@
 
             if (gameRunning) updatePlanePosition();
         });
-
-        socket.on("takeoff", () => {
+                socket.on("takeoff", () => {
             gameRunning = true;
             currentMultiplier = 1.00;
             
@@ -1041,7 +1051,7 @@
                 }
             }
         });
-        
+
         socket.on("crash", (data) => {
             gameRunning = false;
             currentMultiplier = data.finalOdd;
@@ -1091,6 +1101,29 @@
             }
         });
 
+        // M-PESA WITHDRAWAL STATUS LISTENER (New)
+        socket.on("withdrawalStatus", (data) => {
+            let historyContainer = document.getElementById('withdrawalHistoryList');
+            let noTxText = document.getElementById('noWithdrawalsText');
+            if (noTxText) noTxText.style.display = 'none'; // Hide the "No recent withdrawals" text
+
+            let txItem = document.createElement('div');
+            txItem.style.cssText = "background: #080c14; padding: 10px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; flex-direction: column; gap: 6px;";
+            
+            txItem.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                    <span style="color: #fff; font-weight: bold;">To: ${data.phone}</span>
+                    <span style="color: #ff9800; font-weight: 800; background: rgba(255,152,0,0.1); padding: 2px 8px; border-radius: 12px; font-size: 10px;">${data.status}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                    <span style="color: #00e676; font-weight: bold;">${data.amount.toFixed(2)} KES</span>
+                    <span style="color: #8b9bb4;">${data.timestamp}</span>
+                </div>
+            `;
+            
+            historyContainer.prepend(txItem);
+        });
+
         function sendChatMessage() {
             const input = document.getElementById("chatInputMsg");
             const msg = input.value.trim();
@@ -1106,7 +1139,6 @@
                 sendChatMessage();
             }
         });
-
 
         // ----------------------------------------------------
         // 4. PLANE ANIMATION & LIVE BETS RENDERERS
@@ -1139,8 +1171,7 @@
                 liveBetsData.push({ name, stake, target, cashedOut: false, winAmt: 0, crashed: false });
             }
         }
-
-        function updateBotCashouts() {
+                function updateBotCashouts() {
             let changed = false;
             liveBetsData.forEach(b => {
                 if(!b.cashedOut && currentMultiplier >= b.target) {
@@ -1151,7 +1182,7 @@
             });
             if(changed) renderLiveBetsList();
         }
-        
+
         function renderLiveBetsList() {
             let container = document.getElementById('liveBetsItemsList');
             if(!container) return;
@@ -1177,8 +1208,9 @@
                     container.appendChild(div);
                 });
                 return;
-        }
-                        liveBetsData.forEach(b => {
+            }
+            
+            liveBetsData.forEach(b => {
                 let div = document.createElement('div');
                 div.className = 'bet-list-item';
                 
@@ -1208,8 +1240,7 @@
             document.getElementById('myBetsTabBtn').classList.toggle('active', tab === 'my');
             renderLiveBetsList();
         }
-        
-        // ----------------------------------------------------
+                // ----------------------------------------------------
         // 5. AUDIO ENGINE & UI CONTROLS
         // ----------------------------------------------------
         function initAudioContext() {
@@ -1217,6 +1248,7 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
         }
+
         function playSound(type) {
             if (!soundEnabled) return;
             try {
@@ -1283,7 +1315,8 @@
                 }
             } catch(e) {}
         }
-            function updateMultiplierRibbon() {
+
+        function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
             ribbon.innerHTML = '';
             recentOddsHistory.forEach(odd => {
@@ -1298,7 +1331,6 @@
             ribbon.scrollLeft = ribbon.scrollWidth;
         }
 
-        // Modified to persist balance securely to local storage
         function updateAllBalances() {
             let formatted = balance.toFixed(2) + " KES";
             document.querySelectorAll('#mainBalanceDisplay, #depositBalDisplay, #withdrawBalDisplay, #withAvailBal, #profileBalDisplay')
@@ -1306,8 +1338,7 @@
                     
             localStorage.setItem('aviator_balance', balance.toString());
         }
-
-        function showSignInView() {
+                function showSignInView() {
             document.getElementById('registerView').classList.remove('active');
             document.getElementById('signInView').classList.add('active');
         }
@@ -1330,136 +1361,218 @@
             registeredUsers[phone] = { name: name, password: password };
             userName = name;
             userPhone = phone;
-            localStorage.setItem('aviator_user', userName);
-            localStorage.setItem('aviator_phone', userPhone);
+            localStorage.setItem('aviator_user', JSON.stringify(registeredUsers));
+
+            document.getElementById('registerView').classList.remove('active');
+            document.getElementById('gameView').classList.add('active');
             
             document.getElementById('profileNameDisplay').innerText = userName;
-            goToGameApp();
+            showToast("Registration successful!");
         }
-        
+
         function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
+            
+            let users = JSON.parse(localStorage.getItem('aviator_user')) || registeredUsers;
 
-            if (!phone || !password) { showToast("Please enter phone and password.", "error"); return; }
-
-            userName = registeredUsers[phone] ? registeredUsers[phone].name : "Player";
-            userPhone = phone;
-            localStorage.setItem('aviator_user', userName);
-            localStorage.setItem('aviator_phone', userPhone);
-
-            document.getElementById('profileNameDisplay').innerText = userName;
-            goToGameApp();
+            if (users[phone] && users[phone].password === password) {
+                userName = users[phone].name;
+                userPhone = phone;
+                document.getElementById('signInView').classList.remove('active');
+                document.getElementById('gameView').classList.add('active');
+                
+                document.getElementById('profileNameDisplay').innerText = userName;
+                showToast(`Welcome back, ${userName}!`);
+            } else {
+                showToast("Invalid phone number or password.", "error");
+            }
         }
-        
-        function goToGameApp() {
-            document.getElementById('registerView').classList.remove('active');
-            document.getElementById('signInView').classList.remove('active');
-            document.getElementById('gameView').classList.add('active');
-            updateAllBalances();
-            updateMultiplierRibbon();
-            renderLiveBetsList();
-        }
-
-        function toggleMenuDrawer(open) { document.getElementById('menuDrawer').classList.toggle('open', open); }
-        function toggleChatDrawer(open) { document.getElementById('chatDrawer').style.display = open ? 'flex' : 'none'; }
-        function openSubView(viewId) { document.getElementById(viewId).style.display = 'flex'; }
-        function closeSubView(viewId) { document.getElementById(viewId).style.display = 'none'; }
-        function openSubViewFromMenu(viewId) { toggleMenuDrawer(false); openSubView(viewId); }
 
         function handleLogout() {
+            closeSubView('profileView');
             toggleMenuDrawer(false);
-            localStorage.removeItem('aviator_user');
-            localStorage.removeItem('aviator_phone');
-            document.querySelectorAll('.sub-view').forEach(v => v.style.display = 'none');
             document.getElementById('gameView').classList.remove('active');
-            showSignInView();
+            document.getElementById('signInView').classList.add('active');
+            document.getElementById('signInPhone').value = '';
+            document.getElementById('signInPass').value = '';
+            showToast("Logged out successfully.");
+        }
+
+        function setAutoMode(panel, isAuto) {
+            autoMode[panel] = isAuto;
+            document.getElementById(`tabBet${panel}`).classList.toggle('active', !isAuto);
+            document.getElementById(`tabAuto${panel}`).classList.toggle('active', isAuto);
+            document.getElementById(`autoControls${panel}`).style.display = isAuto ? 'flex' : 'none';
+        }
+
+        function adjustStake(stakeKey, amount) {
+            let newVal = stakes[stakeKey] + amount;
+            if (newVal >= 10 && newVal <= 10000) {
+                stakes[stakeKey] = newVal;
+                document.getElementById(stakeKey + 'Val').innerText = newVal;
+                updateButtonStates();
+            }
+        }
+        function setStake(stakeKey, val) {
+            stakes[stakeKey] = val;
+            document.getElementById(stakeKey + 'Val').innerText = val;
+            updateButtonStates();
+        }
+
+        function handleBetAction(panel) {
+            if (!gameRunning && !hasPlacedBetCurrentRound[panel]) {
+                if (autoMode[panel]) {
+                    autoBetActive[panel] = !autoBetActive[panel];
+                    let btnText = document.getElementById('betBtnText' + panel);
+                    let subText = document.getElementById('betSubText' + panel);
+                    let btn = document.getElementById('betBtn' + panel);
+                    if (autoBetActive[panel]) {
+                        btnText.innerText = "CANCEL AUTO";
+                        subText.innerText = stakes['stake' + panel] + ".00 KES";
+                        btn.style.background = "linear-gradient(135deg, #e53935 0%, #b71c1c 100%)";
+                        btn.style.color = "#fff";
+                    } else {
+                        btnText.innerText = "BET NEXT";
+                        subText.innerText = stakes['stake' + panel] + ".00 KES";
+                        btn.style.background = "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
+                        btn.style.color = "#05190b";
+                    }
+                } else {
+                    performBetPlacement(panel);
+                }
+            } else if (gameRunning && activeBets[panel]) {
+                executeCashout(panel);
+            }
+        }
+
+        function performBetPlacement(panel) {
+            let s = stakes['stake' + panel];
+            if (balance < s) {
+                showToast("Insufficient Balance!", "error");
+                if (autoMode[panel]) { autoBetActive[panel] = false; updateButtonStates(); }
+                return;
+            }
+            balance -= s;
+            updateAllBalances();
+            activeBets[panel] = true;
+            hasPlacedBetCurrentRound[panel] = true;
+            updateButtonStates();
+        }
+
+        function executeCashout(panel, isAutoCall = false) {
+            if (!activeBets[panel]) return;
+            
+            let s = stakes['stake' + panel];
+            let winAmt = s * currentMultiplier;
+            
+            balance += winAmt;
+            updateAllBalances();
+            
+            activeBets[panel] = false;
+            playSound('cashout');
+            
+            // Add to My Bets history
+            myHistoricalBets.push({
+                stake: s.toFixed(2),
+                win: winAmt.toFixed(2),
+                multiplier: currentMultiplier.toFixed(2)
+            });
+            if(currentHistoryTab === 'my') renderLiveBetsList();
+            
+            showToast(`Cashed out! +${winAmt.toFixed(2)} KES`);
+            updateButtonStates();
+        }
+
+        function updateButtonStates() {
+            for (let i = 1; i <= 2; i++) {
+                let btn = document.getElementById('betBtn' + i);
+                let btnText = document.getElementById('betBtnText' + i);
+                let subText = document.getElementById('betSubText' + i);
+                let s = stakes['stake' + i];
+
+                btn.classList.remove('cashout', 'disabled-state');
+                btn.style.background = "";
+                btn.style.color = "";
+
+                if (gameRunning && activeBets[i]) {
+                    btn.classList.add('cashout');
+                    btnText.innerText = "CASHOUT";
+                    subText.innerText = (s * currentMultiplier).toFixed(2) + " KES";
+                } else if (!gameRunning && hasPlacedBetCurrentRound[i]) {
+                    btn.classList.add('disabled-state');
+                    btnText.innerText = "WAITING";
+                    subText.innerText = s.toFixed(2) + " KES";
+                } else {
+                    if (autoMode[i] && autoBetActive[i]) {
+                        btnText.innerText = "CANCEL AUTO";
+                        subText.innerText = s.toFixed(2) + " KES";
+                        btn.style.background = "linear-gradient(135deg, #e53935 0%, #b71c1c 100%)";
+                        btn.style.color = "#fff";
+                    } else {
+                        btnText.innerText = "BET NEXT";
+                        subText.innerText = s.toFixed(2) + " KES";
+                        btn.style.background = "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
+                        btn.style.color = "#05190b";
+                    }
+                }
+            }
+        }
+               function toggleMenuDrawer(show) { document.getElementById('menuDrawer').classList.toggle('open', show); }
+        function toggleChatDrawer(show) { document.getElementById('chatDrawer').style.display = show ? 'flex' : 'none'; }
+        
+        function openSubView(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeSubView(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function openSubViewFromMenu(id) {
+            toggleMenuDrawer(false);
+            openSubView(id);
         }
 
         function toggleSoundFx() {
             soundEnabled = !soundEnabled;
             let btn = document.getElementById('soundToggleBtn');
-            let iconSvg = document.getElementById('soundIconSvg');
-            if (!soundEnabled) {
-                btn.classList.add('muted');
-                iconSvg.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
-                toggleAmbientSound(false);
-            } else {
+            let icon = document.getElementById('soundIconSvg');
+            
+            if (soundEnabled) {
                 btn.classList.remove('muted');
-                iconSvg.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
-                if (gameRunning) toggleAmbientSound(true);
+                icon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+                if(gameRunning) toggleAmbientSound(true);
+            } else {
+                btn.classList.add('muted');
+                icon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+                toggleAmbientSound(false);
             }
         }
-        
-        function setAutoMode(panelNum, isAuto) {
-            autoMode[panelNum] = isAuto;
-            document.getElementById('tabBet' + panelNum).classList.toggle('active', !isAuto);
-            document.getElementById('tabAuto' + panelNum).classList.toggle('active', isAuto);
-            document.getElementById('autoControls' + panelNum).style.display = isAuto ? 'flex' : 'none';
-            if (!isAuto) autoBetActive[panelNum] = false; 
-            updateButtonStates();
-        }
 
-        function adjustStake(key, amount) {
-            stakes[key] = Math.max(10, stakes[key] + amount);
-            document.getElementById(key + 'Val').innerText = stakes[key];
-            updateButtonStates();
-        }
+        function submitManualDeposit() {
+            let phone = document.getElementById('depPhoneInput').value;
+            let code = document.getElementById('depCodeInput').value;
+            let amt = parseFloat(document.getElementById('depAmountInput').value);
 
-        function setStake(key, amount) {
-            stakes[key] = amount;
-            document.getElementById(key + 'Val').innerText = stakes[key];
-            updateButtonStates();
-        }
-
-        function updateButtonStates() {
-            for(let i=1; i<=2; i++) {
-                let val = stakes['stake' + i];
-                let btn = document.getElementById('betBtn' + i);
-                let btnText = document.getElementById('betBtnText' + i);
-                let btnSub = document.getElementById('betSubText' + i);
-
-                if(activeBets[i]) {
-                    let currentPayout = val * currentMultiplier;
-                    btnText.innerText = "CASH OUT";
-                    btnSub.innerText = currentPayout.toFixed(2) + " KES";
-                } else {
-                    btnSub.innerText = val.toFixed(2) + " KES";
-                    if(autoMode[i] && autoBetActive[i]) {
-                        btn.classList.add('cashout');
-                        btn.classList.remove('disabled-state');
-                        btnText.innerText = "AUTO ON";
-                        btnSub.innerText = "Click to Stop";
-                    } else if(gameRunning && !hasPlacedBetCurrentRound[i]) {
-                        btn.classList.add('disabled-state');
-                        btn.classList.remove('cashout');
-                        btnText.innerText = "WAITING...";
-                    } else if(!gameRunning) {
-                        btn.classList.remove('disabled-state');
-                        btn.classList.remove('cashout');
-                        btnText.innerText = "BET NEXT";
-                    }
-                }
-            }
-        }
-                function submitManualDeposit() {
-            let phone = document.getElementById('depPhoneInput').value.trim();
-            let code = document.getElementById('depCodeInput').value.trim().toUpperCase();
-            let amount = parseFloat(document.getElementById('depAmountInput').value);
-
-            if (!phone || !code || isNaN(amount) || amount < 500) {
-                showToast("Minimum deposit is 500 KES.", "error");
+            if(!phone || !code || isNaN(amt) || amt < 500) {
+                showToast("Please verify details. Minimum deposit is 500 KES.", "error");
                 return;
             }
 
-            balance += amount;
+            balance += amt;
             updateAllBalances();
-            showToast(`Deposit of KES ${amount.toFixed(2)} credited!`, "success");
-            closeSubView('depositView');
+            
+            document.getElementById('depPhoneInput').value = '';
+            document.getElementById('depCodeInput').value = '';
+            document.getElementById('depAmountInput').value = '';
+            
+            showToast(`Successfully deposited ${amt.toFixed(2)} KES!`);
         }
 
         function confirmWithdraw() {
+            let phone = document.getElementById('withPhoneInput').value.trim();
             let amt = parseFloat(document.getElementById('withAmountInput').value);
+            
+            if(!phone) {
+                showToast("Please enter a receiving phone number.", "error");
+                return;
+            }
             if(isNaN(amt) || amt < 10000 || amt > 1000000) { 
                 showToast("Withdrawal must be between 10,000 and 1,000,000 KES.", "error"); 
                 return; 
@@ -1469,94 +1582,28 @@
                 return; 
             }
             
+            // Deduct locally and update UI
             balance -= amt;
             updateAllBalances();
-            showToast(`Withdrew ${amt.toFixed(2)} KES successfully.`, "success");
-            closeSubView('withdrawView');
-        }
-
-        function handleBetAction(panelNum) {
-            if (autoMode[panelNum] && !activeBets[panelNum]) {
-                autoBetActive[panelNum] = !autoBetActive[panelNum];
-                if(autoBetActive[panelNum] && !gameRunning && !hasPlacedBetCurrentRound[panelNum]) {
-                    performBetPlacement(panelNum);
-                }
-                updateButtonStates();
-                return;
-            }
-
-            if (gameRunning && !hasPlacedBetCurrentRound[panelNum] && !activeBets[panelNum]) {
-                showToast("Round active! Wait for next round.", "error");
-                return;
-            }
-
-            if(!activeBets[panelNum]) {
-                performBetPlacement(panelNum);
-            } else {
-                executeCashout(panelNum, false);
-            }
-        }
-
-        function performBetPlacement(panelNum) {
-            let stake = stakes['stake' + panelNum];
-            if(balance < stake) { 
-                showToast("Insufficient balance.", "error"); 
-                autoBetActive[panelNum] = false;
-                updateButtonStates();
-                return; 
-            }
             
-            balance -= stake;
-            updateAllBalances();
-            activeBets[panelNum] = true;
-            hasPlacedBetCurrentRound[panelNum] = true;
-
-            myHistoricalBets.push({ stake: stake, win: 0 });
-            document.getElementById('betBtn' + panelNum).classList.add('cashout');
-            updateButtonStates();
-        }
-        
-        function executeCashout(panelNum, isAuto) {
-            let stake = stakes['stake' + panelNum];
-            if(gameRunning) {
-                let winAmt = stake * currentMultiplier;
-                balance += winAmt;
-                updateAllBalances();
-                playSound('cashout');
-                if(myHistoricalBets.length > 0) {
-                    myHistoricalBets[myHistoricalBets.length - 1].win = winAmt.toFixed(2);
-                }
-                if (!isAuto) showToast(`Cashed out KES ${winAmt.toFixed(2)}!`, "success");
-            } else {
-                balance += stake;
-                updateAllBalances();
-            }
+            // Send socket request to server to process and show as pending
+            socket.emit("requestWithdrawal", { phone: phone, amount: amt });
             
-            activeBets[panelNum] = false;
-            hasPlacedBetCurrentRound[panelNum] = false;
-            document.getElementById('betBtn' + panelNum).classList.remove('cashout');
-            updateButtonStates();
+            document.getElementById('withPhoneInput').value = '';
+            document.getElementById('withAmountInput').value = '';
+            
+            showToast(`Processing withdrawal of ${amt.toFixed(2)} KES...`, "success");
         }
 
-        // Startup routine + loading saved balance
         window.onload = function() {
-            let savedUser = localStorage.getItem('aviator_user');
-            let savedPhone = localStorage.getItem('aviator_phone');
-            let savedBalance = localStorage.getItem('aviator_balance');
-            
-            if (savedBalance !== null) {
-                balance = parseFloat(savedBalance);
-            }
-
-            if (savedUser && savedPhone) {
-                userName = savedUser;
-                userPhone = savedPhone;
-                document.getElementById('profileNameDisplay').innerText = userName;
-                goToGameApp();
-            } else {
-                showRegisterView();
-            }
+            let savedBal = localStorage.getItem('aviator_balance');
+            if (savedBal) balance = parseFloat(savedBal);
+            updateAllBalances();
         };
+
+        // UI Interactions to initialize contexts
+        document.body.addEventListener('click', () => { initAudioContext(); }, { once: true });
+        document.body.addEventListener('touchstart', () => { initAudioContext(); }, { once: true });
     </script>
 </body>
 </html>
