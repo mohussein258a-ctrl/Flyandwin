@@ -657,7 +657,7 @@
         <!-- GLOBAL TOAST NOTIFICATION CONTAINER -->
         <div class="toast-container" id="toastContainer"></div>
 
-                                                                <!-- 1. REGISTER VIEW -->
+                <!-- 1. REGISTER VIEW -->
         <div class="view active" id="registerView">
             <div class="auth-card">
                 <div class="auth-logo">
@@ -706,6 +706,7 @@
                 <div class="auth-switch">Don't have an account? <span onclick="showRegisterView()">Register</span></div>
             </div>
         </div>
+
         <!-- 3. MAIN GAME VIEW -->
         <div class="view" id="gameView">
             <div class="top-bar">
@@ -733,7 +734,8 @@
                 <div class="game-multiplier-display" id="gameMultiplierDisplay">1.00x</div>
                 <div class="plane-graphic" id="planeGraphic">✈️</div>
             </div>
-                        <div class="betting-panels">
+
+            <div class="betting-panels">
                 <div class="bet-card">
                     <div class="bet-tabs">
                         <div class="bet-tab active" id="tabBet1" onclick="setAutoMode(1, false)">Bet</div>
@@ -761,7 +763,8 @@
                         <button class="quick-amt-btn" onclick="setStake('stake1', 500)">500</button>
                     </div>
                 </div>
-                            <div class="bet-card">
+
+                <div class="bet-card">
                     <div class="bet-tabs">
                         <div class="bet-tab active" id="tabBet2" onclick="setAutoMode(2, false)">Bet</div>
                         <div class="bet-tab" id="tabAuto2" onclick="setAutoMode(2, true)">Auto</div>
@@ -788,6 +791,7 @@
                         <button class="quick-amt-btn" onclick="setStake('stake2', 500)">500</button>
                     </div>
                 </div>
+
                 <!-- Live Bets List Container -->
                 <div class="bets-list-container" id="betsListContainer">
                     <div class="bets-list-header">
@@ -809,6 +813,7 @@
                 </button>
             </div>
         </div>
+
         <!-- DEPOSIT VIEW -->
         <div class="sub-view" id="depositView">
             <div class="sub-header">
@@ -840,7 +845,8 @@
                 </div>
             </div>
         </div>
-                <!-- WITHDRAW VIEW -->
+
+        <!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('withdrawView')">✕</button>
@@ -874,8 +880,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-                <!-- PROFILE VIEW -->
+    </div>
+            <!-- PROFILE VIEW -->
         <div class="sub-view" id="profileView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('profileView')">✕</button>
@@ -934,7 +940,8 @@
                 if (container.contains(toast)) container.removeChild(toast);
             }, 2800);
         }
-                // ----------------------------------------------------
+
+        // ----------------------------------------------------
         // WEBSOCKET REAL-TIME CONNECTION TO RENDER
         // ----------------------------------------------------
         const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com";
@@ -958,8 +965,39 @@
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
         let recentOddsHistory = []; 
-        
+
         // ----------------------------------------------------
+        // CHECK TOKEN ON APP LOAD (PERSISTENT REFRESH FIX)
+        // ----------------------------------------------------
+        window.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('aviator_token');
+            if (token) {
+                try {
+                    let response = await fetch(`${RENDER_BACKEND_URL}/api/me`, {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    let data = await response.json();
+
+                    if (response.ok && data.success) {
+                        userName = data.user.name;
+                        userPhone = data.user.phone;
+                        balance = data.user.balance || 0.00;
+                        updateAllBalances();
+
+                        document.getElementById('registerView').classList.remove('active');
+                        document.getElementById('signInView').classList.remove('active');
+                        document.getElementById('gameView').classList.add('active');
+                        document.getElementById('profileNameDisplay').innerText = userName;
+                    } else {
+                        localStorage.removeItem('aviator_token');
+                    }
+                } catch (err) {
+                    console.error("Session restore error:", err);
+                }
+            }
+        });
+                // ----------------------------------------------------
         // SOCKET EVENT LISTENERS
         // ----------------------------------------------------
         socket.on("connect", () => {
@@ -984,7 +1022,8 @@
             }
             if (gameRunning) updatePlanePosition();
         });
-                socket.on("takeoff", () => {
+
+        socket.on("takeoff", () => {
             gameRunning = true;
             currentMultiplier = 1.00;
             
@@ -1007,7 +1046,8 @@
             }
             updateButtonStates();
         });
-                socket.on("tick", (data) => {
+
+        socket.on("tick", (data) => {
             if (!gameRunning) return;
             currentMultiplier = data.currentOdd;
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
@@ -1062,7 +1102,7 @@
             }
             updateButtonStates();
         });
-                        // ----------------------------------------------------
+                // ----------------------------------------------------
         // CHAT IMPLEMENTATION
         // ----------------------------------------------------
         socket.on("chat message", (msg) => {
@@ -1079,6 +1119,7 @@
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
         });
+
         socket.on("withdrawalStatus", (data) => {
             let historyContainer = document.getElementById('withdrawalHistoryList');
             let noTxText = document.getElementById('noWithdrawalsText');
@@ -1115,6 +1156,7 @@
                 sendChatMessage();
             }
         });
+
         // ----------------------------------------------------
         // PLANE ANIMATION & LIVE BETS RENDERERS
         // ----------------------------------------------------
@@ -1146,7 +1188,8 @@
                 liveBetsData.push({ name, stake, target, cashedOut: false, winAmt: 0, crashed: false });
             }
         }
-                function updateBotCashouts() {
+
+        function updateBotCashouts() {
             let changed = false;
             liveBetsData.forEach(b => {
                 if(!b.cashedOut && currentMultiplier >= b.target) {
@@ -1157,7 +1200,8 @@
             });
             if(changed) renderLiveBetsList();
         }
-                function renderLiveBetsList() {
+
+        function renderLiveBetsList() {
             let container = document.getElementById('liveBetsItemsList');
             if(!container) return;
             container.innerHTML = '';
@@ -1211,7 +1255,7 @@
             document.getElementById('allBetsTabBtn').classList.toggle('active', tab === 'all');
             document.getElementById('myBetsTabBtn').classList.toggle('active', tab === 'my');
             renderLiveBetsList();
-        }
+                }
                 // ----------------------------------------------------
         // AUDIO ENGINE & UI CONTROLS
         // ----------------------------------------------------
@@ -1255,7 +1299,8 @@
                 }
             } catch(e) {}
         }
-                function updateMultiplierRibbon() {
+
+        function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
             ribbon.innerHTML = '';
             recentOddsHistory.forEach(odd => {
@@ -1275,14 +1320,14 @@
             document.querySelectorAll('#mainBalanceDisplay, #depositBalDisplay, #withdrawBalDisplay, #withAvailBal, #profileBalDisplay')
                     .forEach(el => { if(el) el.innerText = formatted; });
         }
-                // ----------------------------------------------------
+
+        // ----------------------------------------------------
         // BACKEND DATABASE SYNCED AUTHENTICATION APIs
         // ----------------------------------------------------
         function showSignInView() {
             document.getElementById('registerView').classList.remove('active');
             document.getElementById('signInView').classList.add('active');
         }
-
         function showRegisterView() {
             document.getElementById('signInView').classList.remove('active');
             document.getElementById('registerView').classList.add('active');
@@ -1307,6 +1352,7 @@
                 let data = await response.json();
 
                 if (response.ok) {
+                    localStorage.setItem('aviator_token', data.token);
                     userName = data.user.name;
                     userPhone = data.user.phone;
                     balance = data.user.balance || 0.00;
@@ -1339,6 +1385,7 @@
                 let data = await response.json();
 
                 if (response.ok) {
+                    localStorage.setItem('aviator_token', data.token);
                     userName = data.user.name;
                     userPhone = data.user.phone;
                     balance = data.user.balance || 0.00;
@@ -1362,12 +1409,13 @@
                 await fetch(`${RENDER_BACKEND_URL}/api/balance`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone: userPhone, balance })
+                    body: JSON.stringify({ phone: userPhone, amount: balance })
                 });
             } catch (err) {}
         }
 
         function handleLogout() {
+            localStorage.removeItem('aviator_token');
             closeSubView('profileView');
             toggleMenuDrawer(false);
             document.getElementById('gameView').classList.remove('active');
@@ -1402,7 +1450,8 @@
                 document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
             }
         }
-                function handleBetAction(panel) {
+
+        function handleBetAction(panel) {
             if (activeBets[panel]) {
                 if (gameRunning) { executeCashout(panel, false); }
             } else {
@@ -1413,7 +1462,7 @@
                     } else { performBetPlacement(panel); }
                 }
             }
-        }
+       }
                 function performBetPlacement(panel) {
             let stake = stakes['stake' + panel];
             if (balance < stake) { showToast("Insufficient balance.", "error"); return; }
@@ -1487,7 +1536,8 @@
                 }
             }
         }
-                // ----------------------------------------------------
+
+        // ----------------------------------------------------
         // UI HELPERS (DRAWER, VIEWS, AUDIO TOGGLE)
         // ----------------------------------------------------
         function toggleSoundFx() {
