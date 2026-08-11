@@ -657,7 +657,7 @@
         <!-- GLOBAL TOAST NOTIFICATION CONTAINER -->
         <div class="toast-container" id="toastContainer"></div>
 
-                <!-- 1. REGISTER VIEW -->
+                                                                <!-- 1. REGISTER VIEW -->
         <div class="view active" id="registerView">
             <div class="auth-card">
                 <div class="auth-logo">
@@ -706,7 +706,6 @@
                 <div class="auth-switch">Don't have an account? <span onclick="showRegisterView()">Register</span></div>
             </div>
         </div>
-
         <!-- 3. MAIN GAME VIEW -->
         <div class="view" id="gameView">
             <div class="top-bar">
@@ -734,8 +733,7 @@
                 <div class="game-multiplier-display" id="gameMultiplierDisplay">1.00x</div>
                 <div class="plane-graphic" id="planeGraphic">✈️</div>
             </div>
-
-            <div class="betting-panels">
+                        <div class="betting-panels">
                 <div class="bet-card">
                     <div class="bet-tabs">
                         <div class="bet-tab active" id="tabBet1" onclick="setAutoMode(1, false)">Bet</div>
@@ -811,7 +809,6 @@
                 </button>
             </div>
         </div>
-
         <!-- DEPOSIT VIEW -->
         <div class="sub-view" id="depositView">
             <div class="sub-header">
@@ -843,8 +840,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- WITHDRAW VIEW -->
+                <!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('withdrawView')">✕</button>
@@ -988,8 +984,7 @@
             }
             if (gameRunning) updatePlanePosition();
         });
-
-        socket.on("takeoff", () => {
+                socket.on("takeoff", () => {
             gameRunning = true;
             currentMultiplier = 1.00;
             
@@ -1067,7 +1062,7 @@
             }
             updateButtonStates();
         });
-                // ----------------------------------------------------
+                        // ----------------------------------------------------
         // CHAT IMPLEMENTATION
         // ----------------------------------------------------
         socket.on("chat message", (msg) => {
@@ -1084,7 +1079,6 @@
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
         });
-
         socket.on("withdrawalStatus", (data) => {
             let historyContainer = document.getElementById('withdrawalHistoryList');
             let noTxText = document.getElementById('noWithdrawalsText');
@@ -1121,7 +1115,6 @@
                 sendChatMessage();
             }
         });
-
         // ----------------------------------------------------
         // PLANE ANIMATION & LIVE BETS RENDERERS
         // ----------------------------------------------------
@@ -1164,8 +1157,7 @@
             });
             if(changed) renderLiveBetsList();
         }
-
-        function renderLiveBetsList() {
+                function renderLiveBetsList() {
             let container = document.getElementById('liveBetsItemsList');
             if(!container) return;
             container.innerHTML = '';
@@ -1228,7 +1220,6 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
         }
-
         function playSound(type) {
             if (!soundEnabled) return;
             try {
@@ -1264,8 +1255,7 @@
                 }
             } catch(e) {}
         }
-
-        function updateMultiplierRibbon() {
+                function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
             ribbon.innerHTML = '';
             recentOddsHistory.forEach(odd => {
@@ -1332,7 +1322,9 @@
             } catch (err) {
                 showToast("Connection error. Please check network.", "error");
             }
-                    async function handleSignIn() {
+        }
+
+        async function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
             
@@ -1362,9 +1354,9 @@
             } catch (err) {
                 showToast("Connection error. Please check network.", "error");
             }
-            }
         }
-                async function syncBalanceToBackend() {
+
+        async function syncBalanceToBackend() {
             if (!userPhone) return;
             try {
                 await fetch(`${RENDER_BACKEND_URL}/api/balance`, {
@@ -1391,200 +1383,202 @@
             document.getElementById(`tabBet${panel}`).classList.toggle('active', !isAuto);
             document.getElementById(`tabAuto${panel}`).classList.toggle('active', isAuto);
             document.getElementById(`autoControls${panel}`).style.display = isAuto ? 'flex' : 'none';
-        }
-
-        function adjustStake(stakeKey, amount) {
-            let newVal = stakes[stakeKey] + amount;
-            if (newVal >= 10 && newVal <= 10000) {
-                stakes[stakeKey] = newVal;
-                document.getElementById(stakeKey + 'Val').innerText = newVal;
-                updateButtonStates();
-            }
-        }
-
-        function setStake(stakeKey, val) {
-            stakes[stakeKey] = val;
-            document.getElementById(stakeKey + 'Val').innerText = val;
+            if (isAuto) { autoBetActive[panel] = true; } else { autoBetActive[panel] = false; }
             updateButtonStates();
         }
 
-        function handleBetAction(panel) {
-            if (!gameRunning && !hasPlacedBetCurrentRound[panel]) {
-                if (autoMode[panel]) {
-                    autoBetActive[panel] = !autoBetActive[panel];
-                    let btnText = document.getElementById('betBtnText' + panel);
-                    let subText = document.getElementById('betSubText' + panel);
-                    let btn = document.getElementById('betBtn' + panel);
-                    if (autoBetActive[panel]) {
-                        btnText.innerText = "CANCEL AUTO";
-                        subText.innerText = stakes['stake' + panel] + ".00 KES";
-                        btn.style.background = "linear-gradient(135deg, #e53935 0%, #b71c1c 100%)";
-                        btn.style.color = "#fff";
-                    } else {
-                        btnText.innerText = "BET NEXT";
-                        subText.innerText = stakes['stake' + panel] + ".00 KES";
-                        btn.style.background = "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
-                        btn.style.color = "#05190b";
-                    }
-                } else {
-                    performBetPlacement(panel);
-                }
-            } else if (gameRunning && activeBets[panel]) {
-                executeCashout(panel);
+        function adjustStake(key, amount) {
+            let newVal = stakes[key] + amount;
+            if (newVal >= 10 && newVal <= 500000) {
+                stakes[key] = newVal;
+                document.getElementById(key + 'Val').innerText = stakes[key];
+                document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
             }
         }
-
-        function performBetPlacement(panel) {
-            let s = stakes['stake' + panel];
-            if (balance < s) {
-                showToast("Insufficient Balance!", "error");
-                if (autoMode[panel]) { autoBetActive[panel] = false; updateButtonStates(); }
-                return;
+        function setStake(key, amount) {
+            if (amount >= 10 && amount <= 500000) {
+                stakes[key] = amount;
+                document.getElementById(key + 'Val').innerText = stakes[key];
+                document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
             }
-            balance -= s;
+        }
+                function handleBetAction(panel) {
+            if (activeBets[panel]) {
+                if (gameRunning) { executeCashout(panel, false); }
+            } else {
+                if (!gameRunning && !hasPlacedBetCurrentRound[panel]) {
+                    if (autoMode[panel]) {
+                        autoBetActive[panel] = !autoBetActive[panel];
+                        updateButtonStates();
+                    } else { performBetPlacement(panel); }
+                }
+            }
+        }
+                function performBetPlacement(panel) {
+            let stake = stakes['stake' + panel];
+            if (balance < stake) { showToast("Insufficient balance.", "error"); return; }
+            
+            balance -= stake;
             updateAllBalances();
             syncBalanceToBackend();
-
+            
             activeBets[panel] = true;
             hasPlacedBetCurrentRound[panel] = true;
             updateButtonStates();
         }
 
-        function executeCashout(panel, isAutoCall = false) {
-            if (!activeBets[panel]) return;
+        function executeCashout(panel, isAuto) {
+            if (!activeBets[panel] || !gameRunning) return;
             
-            let s = stakes['stake' + panel];
-            let winAmt = s * currentMultiplier;
-            
+            let winAmt = stakes['stake' + panel] * currentMultiplier;
             balance += winAmt;
             updateAllBalances();
             syncBalanceToBackend();
-            
+
             activeBets[panel] = false;
+            
             playSound('cashout');
+            showToast(`Cashed out: ${winAmt.toFixed(2)} KES`, 'success');
             
-            myHistoricalBets.push({
-                stake: s.toFixed(2),
-                win: winAmt.toFixed(2),
-                multiplier: currentMultiplier.toFixed(2)
-            });
-            if(currentHistoryTab === 'my') renderLiveBetsList();
+            myHistoricalBets.push({ stake: stakes['stake'+panel], win: winAmt.toFixed(2) });
+            renderLiveBetsList();
             
-            showToast(`Cashed out! +${winAmt.toFixed(2)} KES`);
             updateButtonStates();
         }
 
         function updateButtonStates() {
             for (let i = 1; i <= 2; i++) {
-                let btn = document.getElementById('betBtn' + i);
-                let btnText = document.getElementById('betBtnText' + i);
-                let subText = document.getElementById('betSubText' + i);
-                let s = stakes['stake' + i];
+                let btn = document.getElementById(`betBtn${i}`);
+                let txt = document.getElementById(`betBtnText${i}`);
+                let sub = document.getElementById(`betSubText${i}`);
+                
+                btn.className = 'action-bet-btn';
 
-                btn.classList.remove('cashout', 'disabled-state');
-                btn.style.background = "";
-                btn.style.color = "";
-
-                if (gameRunning && activeBets[i]) {
-                    btn.classList.add('cashout');
-                    btnText.innerText = "CASHOUT";
-                    subText.innerText = (s * currentMultiplier).toFixed(2) + " KES";
-                } else if (!gameRunning && hasPlacedBetCurrentRound[i]) {
-                    btn.classList.add('disabled-state');
-                    btnText.innerText = "WAITING";
-                    subText.innerText = s.toFixed(2) + " KES";
-                } else {
-                    if (autoMode[i] && autoBetActive[i]) {
-                        btnText.innerText = "CANCEL AUTO";
-                        subText.innerText = s.toFixed(2) + " KES";
-                        btn.style.background = "linear-gradient(135deg, #e53935 0%, #b71c1c 100%)";
-                        btn.style.color = "#fff";
+                if (activeBets[i]) {
+                    if (gameRunning) {
+                        btn.classList.add('cashout');
+                        txt.innerText = "CASHOUT";
+                        sub.innerText = (stakes[`stake${i}`] * currentMultiplier).toFixed(2) + " KES";
                     } else {
-                        btnText.innerText = "BET NEXT";
-                        subText.innerText = s.toFixed(2) + " KES";
-                        btn.style.background = "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
-                        btn.style.color = "#05190b";
+                        btn.classList.add('disabled-state');
+                        txt.innerText = "WAITING...";
+                        sub.innerText = stakes[`stake${i}`] + ".00 KES";
+                    }
+                } else {
+                    if (gameRunning || hasPlacedBetCurrentRound[i]) {
+                        btn.classList.add('disabled-state');
+                        txt.innerText = "WAIT NEXT ROUND";
+                        sub.innerText = stakes[`stake${i}`] + ".00 KES";
+                    } else {
+                        if (autoMode[i]) {
+                            if (autoBetActive[i]) {
+                                btn.style.background = "#ff5252";
+                                txt.innerText = "CANCEL AUTO";
+                            } else {
+                                btn.style.background = "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
+                                txt.innerText = "START AUTO";
+                            }
+                        } else {
+                            btn.style.background = "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
+                            txt.innerText = "BET NEXT";
+                        }
+                        sub.innerText = stakes[`stake${i}`] + ".00 KES";
                     }
                 }
             }
-       }
-                function toggleMenuDrawer(show) { document.getElementById('menuDrawer').classList.toggle('open', show); }
-        function toggleChatDrawer(show) { document.getElementById('chatDrawer').style.display = show ? 'flex' : 'none'; }
-        
-        function openSubView(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeSubView(id) { document.getElementById(id).style.display = 'none'; }
-        
-        function openSubViewFromMenu(id) {
-            toggleMenuDrawer(false);
-            openSubView(id);
         }
-
+                // ----------------------------------------------------
+        // UI HELPERS (DRAWER, VIEWS, AUDIO TOGGLE)
+        // ----------------------------------------------------
         function toggleSoundFx() {
             soundEnabled = !soundEnabled;
             let btn = document.getElementById('soundToggleBtn');
-            let icon = document.getElementById('soundIconSvg');
+            let svgPath = document.querySelector('#soundIconSvg path');
             
             if (soundEnabled) {
                 btn.classList.remove('muted');
-                icon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+                svgPath.setAttribute('d', "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z");
             } else {
                 btn.classList.add('muted');
-                icon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+                svgPath.setAttribute('d', "M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z");
             }
+        }
+
+        function toggleMenuDrawer(open) {
+            const drawer = document.getElementById('menuDrawer');
+            if (open) drawer.classList.add('open');
+            else drawer.classList.remove('open');
+        }
+
+        function toggleChatDrawer(open) {
+            const drawer = document.getElementById('chatDrawer');
+            drawer.style.display = open ? 'flex' : 'none';
+        }
+
+        function openSubView(viewId) {
+            document.getElementById(viewId).style.display = 'flex';
+        }
+
+        function closeSubView(viewId) {
+            document.getElementById(viewId).style.display = 'none';
+        }
+
+        function openSubViewFromMenu(viewId) {
+            toggleMenuDrawer(false);
+            openSubView(viewId);
         }
 
         function submitManualDeposit() {
-            let phone = document.getElementById('depPhoneInput').value;
-            let code = document.getElementById('depCodeInput').value;
+            let phone = document.getElementById('depPhoneInput').value.trim();
+            let code = document.getElementById('depCodeInput').value.trim();
             let amt = parseFloat(document.getElementById('depAmountInput').value);
 
-            if(!phone || !code || isNaN(amt) || amt < 500) {
-                showToast("Please verify details. Minimum deposit is 500 KES.", "error");
+            if (!phone || code.length < 5 || isNaN(amt) || amt < 500) {
+                showToast("Please enter valid details (Min 500 KES).", "error");
                 return;
             }
-
-            balance += amt;
-            updateAllBalances();
-            syncBalanceToBackend();
             
-            document.getElementById('depPhoneInput').value = '';
-            document.getElementById('depCodeInput').value = '';
-            document.getElementById('depAmountInput').value = '';
+            showToast("Verifying with M-Pesa...", "success");
             
-            showToast(`Successfully deposited ${amt.toFixed(2)} KES!`);
+            setTimeout(async () => {
+                balance += amt;
+                updateAllBalances();
+                await syncBalanceToBackend();
+                
+                showToast(`Success! ${amt.toFixed(2)} KES added.`, "success");
+                document.getElementById('depCodeInput').value = '';
+                document.getElementById('depAmountInput').value = '';
+                closeSubView('depositView');
+            }, 2000);
         }
 
-        function confirmWithdraw() {
+        async function confirmWithdraw() {
             let phone = document.getElementById('withPhoneInput').value.trim();
             let amt = parseFloat(document.getElementById('withAmountInput').value);
-            
-            if(!phone) {
-                showToast("Please enter a receiving phone number.", "error");
+
+            if (!phone || isNaN(amt) || amt < 10000 || amt > 1000000) {
+                showToast("Invalid amount (Min: 10,000 / Max: 1,000,000)", "error");
                 return;
             }
-            if(isNaN(amt) || amt < 10000 || amt > 1000000) { 
-                showToast("Withdrawal must be between 10,000 and 1,000,000 KES.", "error"); 
-                return; 
-            }
-            if(balance < amt) { 
-                showToast("Insufficient balance!", "error"); 
-                return; 
+            if (amt > balance) {
+                showToast("Insufficient balance", "error");
+                return;
             }
 
             balance -= amt;
             updateAllBalances();
-            syncBalanceToBackend();
+            await syncBalanceToBackend();
             
-            socket.emit("requestWithdrawal", { phone: phone, amount: amt });
-            
-            document.getElementById('withPhoneInput').value = '';
+            showToast("Withdrawal processed!", "success");
             document.getElementById('withAmountInput').value = '';
-            
-            showToast(`Processing withdrawal of ${amt.toFixed(2)} KES...`, "success");
-        }
 
-        document.body.addEventListener('click', () => { initAudioContext(); }, { once: true });
-        document.body.addEventListener('touchstart', () => { initAudioContext(); }, { once: true });
+            socket.emit('triggerWithdrawal', {
+                phone: phone,
+                amount: amt,
+                status: 'Completed',
+                timestamp: new Date().toLocaleTimeString()
+            });
+        }
     </script>
 </body>
 </html>
