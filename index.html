@@ -1127,6 +1127,72 @@
             let noTxText = document.getElementById('noWithdrawalsText');
             if (noTxText) noTxText.style.display = 'none';
 
+
+            // --- ADD THIS RIGHT AFTER YOUR socket.on("withdrawalUpdate") BLOCK ---
+
+// Function to load historical withdrawals on page refresh
+async function fetchSavedWithdrawals() {
+    // ⚠️ Check that "token" is the correct key you used in localStorage when the user logged in
+    const token = localStorage.getItem("token"); 
+    if (!token) return;
+
+    try {
+        const response = await fetch('/api/withdrawals', {
+            method: 'GET',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+
+        if (response.ok && data.success && data.withdrawals.length > 0) {
+            let historyContainer = document.getElementById('withdrawalHistoryList');
+            let noTxText = document.getElementById('noWithdrawalsText');
+            
+            if (historyContainer) {
+                // Hide the empty state text
+                if (noTxText) noTxText.style.display = 'none';
+                
+                // Clear the container before loading the database records
+                historyContainer.innerHTML = ''; 
+                
+                // Render each saved withdrawal using your existing CSS
+                data.withdrawals.forEach(tx => {
+                    let txItem = document.createElement('div');
+                    txItem.id = tx._id;
+                    txItem.style.cssText = "background: #080c14; padding: 10px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;";
+                    
+                    // Format time & determine colors based on database status
+                    let timeString = new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    let statusColor = tx.status === "Pending" ? "#ff9800" : (tx.status === "Processing..." ? "#2196f3" : "#00e676");
+                    let bgStatusColor = tx.status === "Pending" ? "rgba(255, 152, 0, 0.1)" : (tx.status === "Processing..." ? "rgba(33, 150, 243, 0.1)" : "rgba(0, 230, 118, 0.1)");
+
+                    txItem.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                            <span style="color: #fff; font-weight: bold;">To: ${tx.phone}</span>
+                            <span class="tx-status" style="color: ${statusColor}; font-weight: bold; background: ${bgStatusColor}; padding: 2px 8px; border-radius: 12px; font-size: 10px;">${tx.status}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                            <span style="color: #00e676; font-weight: bold;">${parseFloat(tx.amount).toFixed(2)} KES</span>
+                            <span style="color: #8b9bb4;">${timeString}</span>
+                        </div>
+                    `;
+                    historyContainer.appendChild(txItem);
+                });
+            }
+        }
+    } catch (err) {
+        console.error("Failed to load withdrawal history:", err);
+    }
+}
+
+// Call this immediately to fetch records when the script loads
+fetchSavedWithdrawals();
+
+// ---------------------------------------------------------------------
+            
             let txItem = document.createElement('div');
             txItem.id = data.id; 
             txItem.style.cssText = "background: #080c14; padding: 10px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;";
