@@ -791,7 +791,8 @@
                         <button class="quick-amt-btn" onclick="setStake('stake2', 500)">500</button>
                     </div>
                 </div>
-                                <!-- Live Bets List Container -->
+
+                <!-- Live Bets List Container -->
                 <div class="bets-list-container" id="betsListContainer">
                     <div class="bets-list-header">
                         <span>User</span>
@@ -844,8 +845,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- WITHDRAW VIEW -->
+                <!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('withdrawView')">✕</button>
@@ -926,23 +926,6 @@
     </div>
 
     <script>
-        // ----------------------------------------------------
-        // TOAST NOTIFICATION FUNCTION
-        // ----------------------------------------------------
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast' + (type === 'error' ? ' error' : '');
-            toast.innerText = message;
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                if (container.contains(toast)) container.removeChild(toast);
-            }, 2800);
-        }
-                // ----------------------------------------------------
-        // WEBSOCKET REAL-TIME CONNECTION TO RENDER
-        // ----------------------------------------------------
         const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com";
         const socket = io(RENDER_BACKEND_URL);
 
@@ -965,8 +948,20 @@
         let currentHistoryTab = 'all';
         let recentOddsHistory = []; 
 
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast' + (type === 'error' ? ' error' : '');
+            toast.innerText = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (container.contains(toast)) container.removeChild(toast);
+            }, 2800);
+        }
+
         // ----------------------------------------------------
-        // CHECK TOKEN ON APP LOAD (PERSISTENT REFRESH FIX)
+        // FETCH USER PROFILE & WITHDRAWAL HISTORY ON LOAD
         // ----------------------------------------------------
         window.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('aviator_token');
@@ -988,6 +983,9 @@
                         document.getElementById('signInView').classList.remove('active');
                         document.getElementById('gameView').classList.add('active');
                         document.getElementById('profileNameDisplay').innerText = userName;
+
+                        // Fetch MongoDB Withdrawal History
+                        fetchWithdrawalHistory(token);
                     } else {
                         localStorage.removeItem('aviator_token');
                     }
@@ -996,12 +994,46 @@
                 }
             }
         });
-        
-        // ----------------------------------------------------
+
+        async function fetchWithdrawalHistory(token) {
+            try {
+                let res = await fetch(`${RENDER_BACKEND_URL}/api/withdrawals`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                let data = await res.json();
+                if (data.success && data.withdrawals.length > 0) {
+                    let historyContainer = document.getElementById('withdrawalHistoryList');
+                    let noTxText = document.getElementById('noWithdrawalsText');
+                    if (noTxText) noTxText.style.display = 'none';
+                    historyContainer.innerHTML = '';
+
+                    data.withdrawals.forEach(tx => {
+                        let txItem = document.createElement('div');
+                        txItem.id = tx._id; 
+                        txItem.style.cssText = "background: #080c14; padding: 10px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;";
+                        
+                        txItem.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                                <span style="color: #fff; font-weight: bold;">To: ${tx.phone}</span>
+                                <span class="tx-status" style="color: ${tx.status === 'Pending' ? '#2196f3' : '#00e676'}; font-weight: bold; background: rgba(33, 150, 243, 0.1); padding: 2px 8px; border-radius: 12px; font-size: 10px;">${tx.status}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                                <span style="color: #00e676; font-weight: bold;">${tx.amount.toFixed(2)} KES</span>
+                                <span style="color: #8b9bb4;">${tx.timestamp}</span>
+                            </div>
+                        `;
+                        historyContainer.appendChild(txItem);
+                    });
+                }
+            } catch(e) {
+                console.error("Failed to fetch withdrawals", e);
+            }
+        }
+                // ----------------------------------------------------
         // SOCKET EVENT LISTENERS
         // ----------------------------------------------------
         socket.on("connect", () => {
-            console.log("Connected to Render backend service.");
             document.getElementById('gameStatusText').innerText = "CONNECTED";
         });
 
@@ -1083,16 +1115,10 @@
             playSound('crash');
 
             recentOddsHistory.push(currentMultiplier);
-            if (recentOddsHistory.length > 10) {
-                recentOddsHistory.shift(); 
-            }
+            if (recentOddsHistory.length > 10) recentOddsHistory.shift(); 
             updateMultiplierRibbon();
 
-            liveBetsData.forEach(b => {
-                if (!b.cashedOut) {
-                    b.crashed = true;
-                }
-            });
+            liveBetsData.forEach(b => { if (!b.cashedOut) b.crashed = true; });
             renderLiveBetsList();
 
             for (let i = 1; i <= 2; i++) {
@@ -1101,27 +1127,19 @@
             }
             updateButtonStates();
         });
-                // ----------------------------------------------------
-        // CHAT IMPLEMENTATION
-        // ----------------------------------------------------
+
         socket.on("chat message", (msg) => {
             const chatBox = document.getElementById("chatMessagesList");
             if (chatBox) {
                 const messageElement = document.createElement("div");
-                messageElement.style.backgroundColor = "#1f2b42";
-                messageElement.style.padding = "8px 12px";
-                messageElement.style.borderRadius = "8px";
-                messageElement.style.fontSize = "12px";
-                messageElement.style.color = "#fff";
+                messageElement.style.cssText = "background: #1f2b42; padding: 8px 12px; border-radius: 8px; font-size: 12px; color: #fff;";
                 messageElement.innerText = msg;
                 chatBox.appendChild(messageElement);
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
         });
 
-        // ----------------------------------------------------
-        // WITHDRAWAL STATUS LISTENERS
-        // ----------------------------------------------------
+        // Withdrawal real-time updates saved from MongoDB ID
         socket.on("withdrawalStatus", (data) => {
             let historyContainer = document.getElementById('withdrawalHistoryList');
             let noTxText = document.getElementById('noWithdrawalsText');
@@ -1144,16 +1162,6 @@
             historyContainer.prepend(txItem);
         });
 
-        socket.on("withdrawalUpdate", (data) => {
-            let txItem = document.getElementById(data.id);
-            if (txItem) {
-                let statusBadge = txItem.querySelector('.tx-status');
-                statusBadge.innerText = data.status; 
-                statusBadge.style.color = "#ff9800"; 
-                statusBadge.style.background = "rgba(255, 152, 0, 0.1)";
-            }
-        });
-
         function sendChatMessage() {
             const input = document.getElementById("chatInputMsg");
             const msg = input.value.trim();
@@ -1162,18 +1170,7 @@
                 input.value = ""; 
             }
         }
-
-        document.getElementById("chatInputMsg").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                sendChatMessage();
-            }
-        });
-
-        // ----------------------------------------------------
-        // PLANE ANIMATION & LIVE BETS RENDERERS
-        // ----------------------------------------------------
-        function updatePlanePosition() {
+                function updatePlanePosition() {
             let screenBox = document.getElementById('gameScreenBox');
             let plane = document.getElementById('planeGraphic');
             if (!screenBox || !plane) return;
@@ -1182,17 +1179,13 @@
             let h = screenBox.clientHeight || 190;
 
             let progress = Math.min((currentMultiplier - 1) / 5, 1);
-            let moveX = 20 + progress * (w - 80);
-            let moveY = 20 + progress * (h - 75);
-
-            plane.style.left = moveX + "px";
-            plane.style.bottom = moveY + "px";
+            plane.style.left = (20 + progress * (w - 80)) + "px";
+            plane.style.bottom = (20 + progress * (h - 75)) + "px";
         }
 
         function generateLiveBets() {
             const sampleNames = ["Alex_88", "Kipchumba", "Mwangi", "Sarah_M", "Brian_K", "Wanjiku", "David_O"];
             liveBetsData = [];
-            
             let count = Math.floor(Math.random() * 4) + 4;
             for(let i=0; i<count; i++) {
                 let name = sampleNames[Math.floor(Math.random()*sampleNames.length)];
@@ -1227,13 +1220,10 @@
                 myHistoricalBets.slice(-10).reverse().forEach(b => {
                     let div = document.createElement('div');
                     div.className = 'bet-list-item';
-                    let winText = b.win ? '+' + b.win + ' KES' : 'LOST';
-                    let winStyleClass = b.win ? 'win-col' : 'win-col lost-text';
-
                     div.innerHTML = `
                         <span class="user-col">You</span>
                         <span class="stake-col">${b.stake} KES</span>
-                        <span class="${winStyleClass}">${winText}</span>
+                        <span class="${b.win ? 'win-col' : 'win-col lost-text'}">${b.win ? '+' + b.win + ' KES' : 'LOST'}</span>
                     `;
                     container.appendChild(div);
                 });
@@ -1242,16 +1232,8 @@
             liveBetsData.forEach(b => {
                 let div = document.createElement('div');
                 div.className = 'bet-list-item';
-                
-                let statusText = 'flying...';
-                let winStyleClass = 'win-col';
-
-                if (b.cashedOut) {
-                    statusText = b.winAmt + ' KES';
-                } else if (!gameRunning || b.crashed) {
-                    statusText = 'LOST';
-                    winStyleClass = 'win-col lost-text';
-                }
+                let statusText = b.cashedOut ? b.winAmt + ' KES' : ((!gameRunning || b.crashed) ? 'LOST' : 'flying...');
+                let winStyleClass = (b.cashedOut || (!gameRunning && !b.crashed)) ? 'win-col' : 'win-col lost-text';
 
                 div.innerHTML = `
                     <span class="user-col">${b.name}</span>
@@ -1268,58 +1250,45 @@
             document.getElementById('myBetsTabBtn').classList.toggle('active', tab === 'my');
             renderLiveBetsList();
         }
-        
-        // ----------------------------------------------------
-        // AUDIO ENGINE & UI CONTROLS
-        // ----------------------------------------------------
+
         function initAudioContext() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
+
         function playSound(type) {
             if (!soundEnabled) return;
             try {
                 initAudioContext();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 let now = audioCtx.currentTime;
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
 
                 if (type === 'cashout') {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(523.25, now);
-                    osc.frequency.setValueAtTime(659.25, now + 0.1);
-                    osc.frequency.setValueAtTime(783.99, now + 0.2);
                     gain.gain.setValueAtTime(0.15, now);
                     gain.gain.linearRampToValueAtTime(0.001, now + 0.35);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.35);
                 } else if (type === 'crash') {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
                     osc.type = 'sawtooth';
                     osc.frequency.setValueAtTime(220, now);
                     osc.frequency.exponentialRampToValueAtTime(40, now + 0.4);
                     gain.gain.setValueAtTime(0.3, now);
                     gain.gain.linearRampToValueAtTime(0.001, now + 0.4);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.4);
                 }
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
             } catch(e) {}
         }
-                function updateMultiplierRibbon() {
+
+        function updateMultiplierRibbon() {
             let ribbon = document.getElementById('multiplierRibbon');
             ribbon.innerHTML = '';
             recentOddsHistory.forEach(odd => {
                 let pill = document.createElement('div');
-                let colorClass = 'pill-blue';
-                if(odd >= 2.0 && odd < 5.0) colorClass = 'pill-purple';
-                else if(odd >= 5.0) colorClass = 'pill-pink';
+                let colorClass = odd >= 5.0 ? 'pill-pink' : (odd >= 2.0 ? 'pill-purple' : 'pill-blue');
                 pill.className = `multiplier-pill ${colorClass}`;
                 pill.innerText = odd.toFixed(2) + 'x';
                 ribbon.appendChild(pill);
@@ -1333,9 +1302,6 @@
                     .forEach(el => { if(el) el.innerText = formatted; });
         }
 
-        // ----------------------------------------------------
-        // BACKEND DATABASE SYNCED AUTHENTICATION APIs
-        // ----------------------------------------------------
         function showSignInView() {
             document.getElementById('registerView').classList.remove('active');
             document.getElementById('signInView').classList.add('active');
@@ -1378,7 +1344,7 @@
                     showToast(data.message || "Registration failed.", "error");
                 }
             } catch (err) {
-                showToast("Connection error. Please check network.", "error");
+                showToast("Connection error.", "error");
             }
         }
 
@@ -1406,12 +1372,14 @@
                     document.getElementById('signInView').classList.remove('active');
                     document.getElementById('gameView').classList.add('active');
                     document.getElementById('profileNameDisplay').innerText = userName;
+                    
+                    fetchWithdrawalHistory(data.token);
                     showToast(`Welcome back, ${userName}!`);
                 } else {
-                    showToast(data.message || "Invalid phone number or password.", "error");
+                    showToast(data.message || "Invalid credentials.", "error");
                 }
             } catch (err) {
-                showToast("Connection error. Please check network.", "error");
+                showToast("Connection error.", "error");
             }
         }
 
@@ -1432,8 +1400,6 @@
             toggleMenuDrawer(false);
             document.getElementById('gameView').classList.remove('active');
             document.getElementById('signInView').classList.add('active');
-            document.getElementById('signInPhone').value = '';
-            document.getElementById('signInPass').value = '';
             userPhone = "";
             showToast("Logged out successfully.");
         }
@@ -1443,7 +1409,7 @@
             document.getElementById(`tabBet${panel}`).classList.toggle('active', !isAuto);
             document.getElementById(`tabAuto${panel}`).classList.toggle('active', isAuto);
             document.getElementById(`autoControls${panel}`).style.display = isAuto ? 'flex' : 'none';
-            if (isAuto) { autoBetActive[panel] = true; } else { autoBetActive[panel] = false; }
+            autoBetActive[panel] = isAuto;
             updateButtonStates();
         }
 
@@ -1455,17 +1421,15 @@
                 document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
             }
         }
-        function setStake(key, amount) {
-            if (amount >= 10 && amount <= 500000) {
-                stakes[key] = amount;
-                document.getElementById(key + 'Val').innerText = stakes[key];
-                document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
-            }
+                function setStake(key, amount) {
+            stakes[key] = amount;
+            document.getElementById(key + 'Val').innerText = stakes[key];
+            document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
         }
 
         function handleBetAction(panel) {
             if (activeBets[panel]) {
-                if (gameRunning) { executeCashout(panel, false); }
+                if (gameRunning) executeCashout(panel, false);
             } else {
                 if (!gameRunning && !hasPlacedBetCurrentRound[panel]) {
                     if (autoMode[panel]) {
@@ -1475,7 +1439,7 @@
                 }
             }
         }
-        
+
         function performBetPlacement(panel) {
             let stake = stakes['stake' + panel];
             if (balance < stake) { showToast("Insufficient balance.", "error"); return; }
@@ -1498,13 +1462,11 @@
             syncBalanceToBackend();
 
             activeBets[panel] = false;
-            
             playSound('cashout');
             showToast(`Cashed out: ${winAmt.toFixed(2)} KES`, 'success');
             
             myHistoricalBets.push({ stake: stakes['stake'+panel], win: winAmt.toFixed(2) });
             renderLiveBetsList();
-            
             updateButtonStates();
         }
 
@@ -1533,13 +1495,8 @@
                         sub.innerText = stakes[`stake${i}`] + ".00 KES";
                     } else {
                         if (autoMode[i]) {
-                            if (autoBetActive[i]) {
-                                btn.style.background = "#ff5252";
-                                txt.innerText = "CANCEL AUTO";
-                            } else {
-                                btn.style.background = "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
-                                txt.innerText = "START AUTO";
-                            }
+                            btn.style.background = autoBetActive[i] ? "#ff5252" : "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
+                            txt.innerText = autoBetActive[i] ? "CANCEL AUTO" : "START AUTO";
                         } else {
                             btn.style.background = "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
                             txt.innerText = "BET NEXT";
@@ -1549,46 +1506,24 @@
                 }
             }
         }
-                // ----------------------------------------------------
-        // UI HELPERS (DRAWER, VIEWS, AUDIO TOGGLE)
-        // ----------------------------------------------------
+
         function toggleSoundFx() {
             soundEnabled = !soundEnabled;
             let btn = document.getElementById('soundToggleBtn');
-            let svgPath = document.querySelector('#soundIconSvg path');
-            
-            if (soundEnabled) {
-                btn.classList.remove('muted');
-                svgPath.setAttribute('d', "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z");
-            } else {
-                btn.classList.add('muted');
-                svgPath.setAttribute('d', "M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z");
-            }
+            btn.classList.toggle('muted', !soundEnabled);
         }
 
         function toggleMenuDrawer(open) {
-            const drawer = document.getElementById('menuDrawer');
-            if (open) drawer.classList.add('open');
-            else drawer.classList.remove('open');
+            document.getElementById('menuDrawer').classList.toggle('open', open);
         }
 
         function toggleChatDrawer(open) {
-            const drawer = document.getElementById('chatDrawer');
-            drawer.style.display = open ? 'flex' : 'none';
+            document.getElementById('chatDrawer').style.display = open ? 'flex' : 'none';
         }
 
-        function openSubView(viewId) {
-            document.getElementById(viewId).style.display = 'flex';
-        }
-
-        function closeSubView(viewId) {
-            document.getElementById(viewId).style.display = 'none';
-        }
-
-        function openSubViewFromMenu(viewId) {
-            toggleMenuDrawer(false);
-            openSubView(viewId);
-        }
+        function openSubView(viewId) { document.getElementById(viewId).style.display = 'flex'; }
+        function closeSubView(viewId) { document.getElementById(viewId).style.display = 'none'; }
+        function openSubViewFromMenu(viewId) { toggleMenuDrawer(false); openSubView(viewId); }
 
         function submitManualDeposit() {
             let phone = document.getElementById('depPhoneInput').value.trim();
@@ -1601,12 +1536,10 @@
             }
             
             showToast("Verifying with M-Pesa...", "success");
-            
             setTimeout(async () => {
                 balance += amt;
                 updateAllBalances();
                 await syncBalanceToBackend();
-                
                 showToast(`Success! ${amt.toFixed(2)} KES added.`, "success");
                 document.getElementById('depCodeInput').value = '';
                 document.getElementById('depAmountInput').value = '';
@@ -1634,7 +1567,9 @@
             showToast("Withdrawal initiated!", "success");
             document.getElementById('withAmountInput').value = '';
 
+            // Emit to backend to save into MongoDB
             socket.emit('requestWithdrawal', {
+                token: localStorage.getItem('aviator_token'),
                 phone: phone,
                 amount: amt
             });
