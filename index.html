@@ -152,8 +152,8 @@
             font-weight: 600;
         }
         .input-group input {
-            background-color: #080b11;
-            border: 1px solid #222d42;
+            background-color: #0b0f17;
+            border: 1px solid #1f2b42;
             border-radius: 10px;
             padding: 12px 14px;
             color: #ffffff;
@@ -166,14 +166,15 @@
             box-shadow: 0 0 8px rgba(255,152,0,0.2);
         }
         .input-group input[readonly] {
-            background-color: #080c14;
+            background-color: #0d121c;
             color: #8b9bb4;
-            border: 1px solid #1f2b42;
+            border: 1px solid #1a253a;
             cursor: not-allowed;
             outline: none;
+            opacity: 0.85;
         }
         .input-group input[readonly]:focus {
-            border-color: #1f2b42;
+            border-color: #1a253a;
             box-shadow: none;
         }
         .primary-btn {
@@ -604,29 +605,34 @@
             display: none;
             flex-direction: column;
             height: 100%;
-            background-color: #0d121b;
+            background-color: #0a0d14;
             position: absolute;
             top: 0; left: 0; width: 100%;
             z-index: 200;
         }
         .sub-header {
-            background-color: #0b1322;
-            padding: 12px 16px;
+            background-color: #0d1527;
+            padding: 14px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             color: #fff;
-            border-bottom: 1px solid #1f2b42;
+            border-bottom: 1px solid #1a253b;
         }
-        .sub-header-title { font-size: 16px; font-weight: bold; }
-        .back-btn {
-            background: none;
-            border: none;
+        .sub-header-title { font-size: 17px; font-weight: 800; }
+        .back-btn-box {
+            background: #14355e;
+            border: 1px solid #1f4f8a;
             color: #fff;
-            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            cursor: pointer;
             font-size: 18px;
+            font-weight: bold;
         }
         .sub-content {
             padding: 16px;
@@ -637,10 +643,10 @@
             flex: 1;
         }
         .card-box {
-            background-color: #131a28;
-            border: 1px solid #1f2b42;
-            border-radius: 14px;
-            padding: 18px;
+            background-color: #141923;
+            border: 1px solid #1e2636;
+            border-radius: 16px;
+            padding: 20px 18px;
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -660,16 +666,55 @@
             object-fit: cover;
         }
 
-        /* PRESET DEPOSIT BUTTONS STYLES */
-        .deposit-preset-grid {
+        /* PRESET DEPOSIT BUTTONS STYLES MATCHING IMAGE 2 */
+                .deposit-preset-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            margin: 4px 0 10px 0;
+            margin: 4px 0 6px 0;
         }
-                .preset-btn:active, .preset-btn.active {
-            border-color: #00e676;
-            background-color: rgba(0, 230, 118, 0.1);
+        .preset-btn {
+            background: #1e2533;
+            border: 1px solid #2a3447;
+            border-radius: 10px;
+            color: #ffffff;
+            padding: 12px 0;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .preset-btn:active, .preset-btn:hover {
+            background-color: #273145;
+            border-color: #3b4b66;
+        }
+
+        /* REDESIGNED TRANSACTION HISTORY ITEM */
+        .tx-card-item {
+            background-color: #121722;
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #1a2232;
+        }
+        .tx-status-badge {
+            font-weight: 800;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+        }
+        .tx-status-badge.failed {
+            background-color: #3e1e21;
+            color: #ff5252;
+        }
+        .tx-status-badge.pending {
+            background-color: #3d2d14;
+            color: #ff9800;
+        }
+        .tx-status-badge.completed {
+            background-color: #133823;
             color: #00e676;
         }
     </style>
@@ -815,8 +860,7 @@
                         <button class="quick-amt-btn" onclick="setStake('stake2', 500)">500</button>
                     </div>
                 </div>
-
-                <!-- Live Bets List Container -->
+                                <!-- Live Bets List Container -->
                 <div class="bets-list-container" id="betsListContainer">
                     <div class="bets-list-header">
                         <span>User</span>
@@ -839,29 +883,29 @@
             </div>
         </div>
 
-        <!-- DEPOSIT VIEW -->
+        <!-- DEPOSIT VIEW (UPDATED TO MATCH IMAGE 2) -->
         <div class="sub-view" id="depositView">
             <div class="sub-header">
-                <button class="back-btn" onclick="closeSubView('depositView')">←</button>
+                <div class="back-btn-box" onclick="closeSubView('depositView')">←</div>
                 <div class="sub-header-title">Deposit</div>
                 <div class="balance-pill" id="depositBalDisplay">0.00 KES</div>
             </div>
             <div class="sub-content">
                 <div class="card-box">
-                    <div style="font-weight: bold; font-size: 17px; margin-bottom: 4px;">M-Pesa Deposit</div>
+                    <div style="font-weight: 800; font-size: 18px; color: #ffffff;">M-Pesa Deposit</div>
                     
-                    <!-- READONLY PHONE INPUT LOCKED TO ACCOUNT -->
+                    <!-- LOCKED READONLY PHONE INPUT -->
                     <div class="input-group">
-                        <label>Phone Number (Registered)</label>
-                        <input type="text" id="depPhoneInput" readonly tabindex="-1" placeholder="Loading registered phone...">
+                        <label>Phone Number</label>
+                        <input type="text" id="depPhoneInput" readonly tabindex="-1" placeholder="Registered Phone Number">
                     </div>
 
                     <div class="input-group">
                         <label>Amount (KES)</label>
-                        <input type="number" id="depAmountInput" placeholder="Min amount: 500 KES">
+                        <input type="number" id="depAmountInput" placeholder="Enter amount">
                     </div>
 
-                    <!-- Preset Quick Amount Buttons -->
+                    <!-- Preset Quick Amount Grid (Matching Image 2) -->
                     <div class="deposit-preset-grid">
                         <button class="preset-btn" onclick="setDepositPreset(500)">500</button>
                         <button class="preset-btn" onclick="setDepositPreset(1000)">1000</button>
@@ -871,13 +915,14 @@
                         <button class="preset-btn" onclick="setDepositPreset(10000)">10000</button>
                     </div>
 
-                    <button class="primary-btn" id="stkDepositBtn" style="background: #2e7d32; color: #ffffff; padding: 16px; border-radius: 12px; font-size: 16px;" onclick="triggerStkPushDeposit()">Deposit via M-Pesa</button>
+                    <button class="primary-btn" id="stkDepositBtn" style="background: #1e9f1d; color: #ffffff; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold;" onclick="triggerStkPushDeposit()">Deposit via M-Pesa</button>
                 </div>
 
-                <div class="card-box">
-                    <div style="font-weight: bold; font-size: 13px; color: #8b9bb4; border-bottom: 1px solid #1f2b42; padding-bottom: 8px;">Deposit History</div>
-                    <div id="depositHistoryList" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; max-height: 150px; overflow-y: auto;">
-                        <div style="font-size: 11px; color: #556680; text-align: center;" id="noDepositsText">No recent deposits</div>
+                <!-- Transaction History Section (Matching Image 2) -->
+                <div style="margin-top: 6px;">
+                    <div style="font-weight: 800; font-size: 18px; color: #ffffff; margin-bottom: 12px;">Transaction History</div>
+                    <div id="depositHistoryList" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="font-size: 12px; color: #556680; text-align: center; padding: 16px;" id="noDepositsText">No recent deposits</div>
                     </div>
                 </div>
             </div>
@@ -886,7 +931,7 @@
         <!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
-                <button class="back-btn" onclick="closeSubView('withdrawView')">✕</button>
+                <div class="back-btn-box" onclick="closeSubView('withdrawView')">←</div>
                 <div class="sub-header-title">Withdraw</div>
                 <div class="balance-pill" id="withdrawBalDisplay">0.00 KES</div>
             </div>
@@ -922,7 +967,7 @@
         <!-- PROFILE VIEW -->
         <div class="sub-view" id="profileView">
             <div class="sub-header">
-                <button class="back-btn" onclick="closeSubView('profileView')">✕</button>
+                <div class="back-btn-box" onclick="closeSubView('profileView')">✕</div>
                 <div class="sub-header-title">Profile</div>
                 <div class="balance-pill" id="profileBalDisplay">0.00 KES</div>
             </div>
@@ -939,7 +984,7 @@
         <div class="menu-drawer" id="menuDrawer">
             <div class="menu-header">
                 <div style="font-weight: bold; font-size: 16px;">Menu</div>
-                <button class="back-btn" onclick="toggleMenuDrawer(false)">✕</button>
+                <div class="back-btn-box" onclick="toggleMenuDrawer(false)">✕</div>
             </div>
             <div class="menu-items">
                 <div class="menu-item" onclick="openSubViewFromMenu('depositView')">➕ Deposit</div>
@@ -953,7 +998,7 @@
         <div class="chat-drawer" id="chatDrawer" style="display:none; position:absolute; bottom:0; left:0; width:100%; height:70%; background-color:#121824; border-top-left-radius:20px; border-top-right-radius:20px; z-index:300; flex-direction:column; border-top:1px solid #1f2b42; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);">
             <div class="chat-header-bar" style="background-color:#0b1322; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-top-left-radius:20px; border-top-right-radius:20px; font-weight:bold; border-bottom:1px solid #1f2b42;">
                 <span>Live Chat</span>
-                <button class="back-btn" onclick="toggleChatDrawer(false)">✕</button>
+                <div class="back-btn-box" onclick="toggleChatDrawer(false)">✕</div>
             </div>
             <div class="chat-messages" id="chatMessagesList" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
             <div class="chat-input-bar" style="padding:10px; background-color:#0b1322; display:flex; gap:8px; align-items:center; border-top:1px solid #1f2b42;">
@@ -998,7 +1043,7 @@
             }, 2800);
         }
 
-                // ----------------------------------------------------
+        // ----------------------------------------------------
         // FETCH USER PROFILE, DEPOSITS & WITHDRAWAL HISTORY ON LOAD
         // ----------------------------------------------------
         window.addEventListener('DOMContentLoaded', async () => {
@@ -1040,7 +1085,7 @@
                 }
             }
         });
-
+                // FETCH DEPOSIT HISTORY (STRICTLY ACCOUNT SCOPED)
         async function fetchDepositHistory(token) {
             try {
                 let res = await fetch(`${RENDER_BACKEND_URL}/api/deposits`, {
@@ -1048,30 +1093,33 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 let data = await res.json();
-                if (data.success && data.deposits.length > 0) {
-                    let historyContainer = document.getElementById('depositHistoryList');
-                    let noTxText = document.getElementById('noDepositsText');
-                    if (noTxText) noTxText.style.display = 'none';
+                let historyContainer = document.getElementById('depositHistoryList');
+                if (!historyContainer) return;
+
+                if (data.success && data.deposits && data.deposits.length > 0) {
                     historyContainer.innerHTML = '';
 
                     data.deposits.forEach(tx => {
                         let txItem = document.createElement('div');
-                        txItem.id = tx._id; 
-                        let statusColor = tx.status === 'Completed' ? '#00e676' : (tx.status === 'Pending' ? '#ff9800' : '#ff5252');
-                        txItem.style.cssText = "background: #080c14; padding: 10px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;";
-                        
+                        txItem.className = 'tx-card-item';
+                        txItem.id = tx._id || `tx_${Math.random()}`;
+
+                        let statusClass = tx.status === 'Completed' ? 'completed' : (tx.status === 'Pending' ? 'pending' : 'failed');
+                        let statusText = tx.status || 'Failed';
+
                         txItem.innerHTML = `
-                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
-                                <span style="color: #fff; font-weight: bold;">M-Pesa Deposit</span>
-                                <span class="tx-status" style="color: ${statusColor}; font-weight: bold; background: rgba(255, 255, 255, 0.05); padding: 2px 8px; border-radius: 12px; font-size: 10px;">${tx.status}</span>
+                            <div>
+                                <div style="color: #00e676; font-weight: 800; font-size: 15px;">+ ${parseFloat(tx.amount).toFixed(2)} KES</div>
+                                <div style="color: #6c7b91; font-size: 11px; margin-top: 4px;">${tx.timestamp || new Date().toLocaleString()}</div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
-                                <span style="color: #00e676; font-weight: bold;">+ ${tx.amount.toFixed(2)} KES</span>
-                                <span style="color: #8b9bb4;">${tx.timestamp}</span>
+                            <div>
+                                <span class="tx-status-badge ${statusClass}">${statusText}</span>
                             </div>
                         `;
                         historyContainer.appendChild(txItem);
                     });
+                } else {
+                    historyContainer.innerHTML = '<div style="font-size: 12px; color: #556680; text-align: center; padding: 16px;" id="noDepositsText">No recent deposits</div>';
                 }
             } catch(e) {
                 console.error("Failed to fetch deposits", e);
@@ -1085,10 +1133,10 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 let data = await res.json();
-                if (data.success && data.withdrawals.length > 0) {
-                    let historyContainer = document.getElementById('withdrawalHistoryList');
-                    let noTxText = document.getElementById('noWithdrawalsText');
-                    if (noTxText) noTxText.style.display = 'none';
+                let historyContainer = document.getElementById('withdrawalHistoryList');
+                if (!historyContainer) return;
+
+                if (data.success && data.withdrawals && data.withdrawals.length > 0) {
                     historyContainer.innerHTML = '';
 
                     data.withdrawals.forEach(tx => {
@@ -1287,7 +1335,8 @@
                 liveBetsData.push({ name, stake, target, cashedOut: false, winAmt: 0, crashed: false });
             }
         }
-                function updateBotCashouts() {
+
+        function updateBotCashouts() {
             let changed = false;
             liveBetsData.forEach(b => {
                 if(!b.cashedOut && currentMultiplier >= b.target) {
@@ -1402,13 +1451,11 @@
             document.getElementById('signInView').classList.remove('active');
             document.getElementById('registerView').classList.add('active');
         }
-
-        async function handleRegister() {
+                async function handleRegister() {
             let name = document.getElementById('regName').value.trim();
             let phone = document.getElementById('regPhone').value.trim();
             let password = document.getElementById('regPass').value;
             let confirmPassword = document.getElementById('regConfirmPass').value;
-
             if (!name || !phone) { showToast("Please complete name and phone fields.", "error"); return; }
             if (!password || password.length < 6) { showToast("Password must be at least 6 characters.", "error"); return; }
             if (password !== confirmPassword) { showToast("Passwords do not match.", "error"); return; }
@@ -1434,6 +1481,9 @@
                     document.getElementById('registerView').classList.remove('active');
                     document.getElementById('gameView').classList.add('active');
                     document.getElementById('profileNameDisplay').innerText = userName;
+                    
+                    fetchDepositHistory(data.token);
+                    fetchWithdrawalHistory(data.token);
                     showToast("Registration successful!");
                 } else {
                     showToast(data.message || "Registration failed.", "error");
@@ -1496,13 +1546,25 @@
                 });
             } catch (err) {}
         }
-                function handleLogout() {
+
+        // STRICT ACCOUNT ISOLATION LOGOUT HANDLER
+        function handleLogout() {
             localStorage.removeItem('aviator_token');
             closeSubView('profileView');
             toggleMenuDrawer(false);
+            
+            // Wipe loaded user-specific data from DOM & JS memory
+            userPhone = "";
+            userName = "User";
+            myHistoricalBets = [];
+            
+            document.getElementById('depositHistoryList').innerHTML = '<div style="font-size: 12px; color: #556680; text-align: center; padding: 16px;" id="noDepositsText">No recent deposits</div>';
+            document.getElementById('withdrawalHistoryList').innerHTML = '<div style="font-size: 11px; color: #556680; text-align: center;" id="noWithdrawalsText">No recent withdrawals</div>';
+            document.getElementById('depPhoneInput').value = '';
+            document.getElementById('withPhoneInput').value = '';
+
             document.getElementById('gameView').classList.remove('active');
             document.getElementById('signInView').classList.add('active');
-            userPhone = "";
             showToast("Logged out successfully.");
         }
 
@@ -1638,7 +1700,7 @@
             document.getElementById('depAmountInput').value = amount;
         }
 
-        // TRIGGER MODEPAY STK PUSH PROMPT
+        // TRIGGER M-PESA DEPOSIT & HANDLE PENDING/FAILED STATES
         async function triggerStkPushDeposit() {
             let amt = parseFloat(document.getElementById('depAmountInput').value);
             const token = localStorage.getItem('aviator_token');
@@ -1673,12 +1735,15 @@
 
                 if (response.ok && data.success) {
                     showToast("M-Pesa STK Push sent! Enter your PIN on your phone.", "success");
+                    fetchDepositHistory(token);
                     setTimeout(() => closeSubView('depositView'), 1500);
                 } else {
                     showToast(data.message || "Failed to initiate M-Pesa prompt.", "error");
+                    fetchDepositHistory(token);
                 }
             } catch (err) {
                 showToast("Connection error sending prompt.", "error");
+                fetchDepositHistory(token);
             } finally {
                 btn.innerText = "Deposit via M-Pesa";
                 btn.disabled = false;
