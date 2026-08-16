@@ -648,6 +648,31 @@
             border: 2px solid #00e676;
             object-fit: cover;
         }
+
+        /* NEW PRESET DEPOSIT BUTTONS STYLES */
+        .deposit-preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 4px 0 10px 0;
+        }
+        .preset-btn {
+            background-color: #080c14;
+            border: 1px solid #1f2b42;
+            border-radius: 8px;
+            padding: 12px 0;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+                .preset-btn:active, .preset-btn.active {
+            border-color: #00e676;
+            background-color: rgba(0, 230, 118, 0.1);
+            color: #00e676;
+        }
     </style>
 </head>
 <body>
@@ -657,7 +682,7 @@
         <!-- GLOBAL TOAST NOTIFICATION CONTAINER -->
         <div class="toast-container" id="toastContainer"></div>
 
-                <!-- 1. REGISTER VIEW -->
+        <!-- 1. REGISTER VIEW -->
         <div class="view active" id="registerView">
             <div class="auth-card">
                 <div class="auth-logo">
@@ -802,6 +827,7 @@
                     <div class="bets-list-body" id="liveBetsItemsList"></div>
                 </div>
             </div>
+
             <div class="live-history-bar">
                 <div class="history-tabs">
                     <div class="history-tab active" id="allBetsTabBtn" onclick="switchHistoryTab('all')">All Bets</div>
@@ -814,38 +840,43 @@
             </div>
         </div>
 
-        <!-- DEPOSIT VIEW -->
+        <!-- NEW DEPOSIT VIEW (MATCHES SCREENSHOT 2) -->
         <div class="sub-view" id="depositView">
             <div class="sub-header">
-                <button class="back-btn" onclick="closeSubView('depositView')">✕</button>
-                <div class="sub-header-title">M-Pesa Deposit</div>
+                <button class="back-btn" onclick="closeSubView('depositView')">←</button>
+                <div class="sub-header-title">Deposit</div>
                 <div class="balance-pill" id="depositBalDisplay">0.00 KES</div>
             </div>
             <div class="sub-content">
                 <div class="card-box">
-                    <div style="font-weight: bold; font-size: 13px; color: #ff9800; line-height: 1.5; margin-bottom: 10px;">
-                        How to Deposit:<br>
-                        1. Send buy goods till: <span style="color:#fff;">1591980</span><br>
-                        2. Paste your M-Pesa confirmation code below.<br>
-                        <span style="color: #00e676; font-size: 12px; display: inline-block; margin-top: 6px;">ℹ️ Minimum Deposit: 500 KES</span>
-                    </div>
+                    <div style="font-weight: bold; font-size: 17px; margin-bottom: 4px;">M-Pesa Deposit</div>
+                    
                     <div class="input-group">
-                        <label>Your Phone Number</label>
-                        <input type="tel" id="depPhoneInput" placeholder="0712345678">
+                        <label>Phone Number</label>
+                        <input type="tel" id="depPhoneInput" placeholder="2547XXXXXXXX">
                     </div>
+
                     <div class="input-group">
-                        <label>M-Pesa Message Code</label>
-                        <input type="text" id="depCodeInput" placeholder="e.g. QGH78X..." style="text-transform: uppercase;">
+                        <label>Amount (KES)</label>
+                        <input type="number" id="depAmountInput" placeholder="Enter amount">
                     </div>
-                    <div class="input-group">
-                        <label>Amount Sent (KES)</label>
-                        <input type="number" id="depAmountInput" placeholder="Enter amount (Min: 500 KES)">
+
+                    <!-- Preset Quick Amount Buttons -->
+                    <div class="deposit-preset-grid">
+                        <button class="preset-btn" onclick="setDepositPreset(500)">500</button>
+                        <button class="preset-btn" onclick="setDepositPreset(1000)">1000</button>
+                        <button class="preset-btn" onclick="setDepositPreset(2000)">2000</button>
+                        <button class="preset-btn" onclick="setDepositPreset(3000)">3000</button>
+                        <button class="preset-btn" onclick="setDepositPreset(5000)">5000</button>
+                        <button class="preset-btn" onclick="setDepositPreset(10000)">10000</button>
                     </div>
-                    <button class="primary-btn" style="background: linear-gradient(135deg, #00e676 0%, #00c853 100%); color: #05190b; margin-top: 10px;" onclick="submitManualDeposit()">Verify & Credit Balance</button>
+
+                    <button class="primary-btn" id="stkDepositBtn" style="background: #2e7d32; color: #ffffff; padding: 16px; border-radius: 12px; font-size: 16px;" onclick="triggerStkPushDeposit()">Deposit via M-Pesa</button>
                 </div>
             </div>
         </div>
-                <!-- WITHDRAW VIEW -->
+
+        <!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
                 <button class="back-btn" onclick="closeSubView('withdrawView')">✕</button>
@@ -896,8 +927,7 @@
                 <button class="primary-btn logout" style="background: rgba(229,57,53,0.15); color: #ff5252; border: 1px solid #ff5252;" onclick="handleLogout()">Logout</button>
             </div>
         </div>
-
-        <!-- SIDE MENU DRAWER -->
+                <!-- SIDE MENU DRAWER -->
         <div class="menu-drawer" id="menuDrawer">
             <div class="menu-header">
                 <div style="font-weight: bold; font-size: 16px;">Menu</div>
@@ -979,12 +1009,19 @@
                         balance = data.user.balance || 0.00;
                         updateAllBalances();
 
+                        // Auto-fill deposit and withdrawal phone inputs
+                        if (document.getElementById('depPhoneInput')) {
+                            document.getElementById('depPhoneInput').value = userPhone;
+                        }
+                        if (document.getElementById('withPhoneInput')) {
+                            document.getElementById('withPhoneInput').value = userPhone;
+                        }
+
                         document.getElementById('registerView').classList.remove('active');
                         document.getElementById('signInView').classList.remove('active');
                         document.getElementById('gameView').classList.add('active');
                         document.getElementById('profileNameDisplay').innerText = userName;
 
-                        // Fetch MongoDB Withdrawal History
                         fetchWithdrawalHistory(token);
                     } else {
                         localStorage.removeItem('aviator_token');
@@ -1030,7 +1067,8 @@
                 console.error("Failed to fetch withdrawals", e);
             }
         }
-                // ----------------------------------------------------
+
+        // ----------------------------------------------------
         // SOCKET EVENT LISTENERS
         // ----------------------------------------------------
         socket.on("connect", () => {
@@ -1038,7 +1076,7 @@
         });
 
         socket.on("disconnect", () => {
-            document.getElementById('gameStatusText').innerText = "WAKING BACKEND... (30s)";
+            document.getElementById('gameStatusText').innerText = "RECONNECTING...";
         });
 
         socket.on("sync", (gameState) => {
@@ -1103,8 +1141,7 @@
                 }
             }
         });
-
-        socket.on("crash", (data) => {
+                socket.on("crash", (data) => {
             gameRunning = false;
             currentMultiplier = data.finalOdd;
             
@@ -1139,7 +1176,6 @@
             }
         });
 
-        // Withdrawal real-time updates saved from MongoDB ID
         socket.on("withdrawalStatus", (data) => {
             let historyContainer = document.getElementById('withdrawalHistoryList');
             let noTxText = document.getElementById('noWithdrawalsText');
@@ -1170,14 +1206,14 @@
                 input.value = ""; 
             }
         }
-                function updatePlanePosition() {
+
+        function updatePlanePosition() {
             let screenBox = document.getElementById('gameScreenBox');
             let plane = document.getElementById('planeGraphic');
             if (!screenBox || !plane) return;
 
             let w = screenBox.clientWidth || 300;
             let h = screenBox.clientHeight || 190;
-
             let progress = Math.min((currentMultiplier - 1) / 5, 1);
             plane.style.left = (20 + progress * (w - 80)) + "px";
             plane.style.bottom = (20 + progress * (h - 75)) + "px";
@@ -1336,6 +1372,9 @@
                     balance = data.user.balance || 0.00;
                     updateAllBalances();
 
+                    document.getElementById('depPhoneInput').value = userPhone;
+                    document.getElementById('withPhoneInput').value = userPhone;
+
                     document.getElementById('registerView').classList.remove('active');
                     document.getElementById('gameView').classList.add('active');
                     document.getElementById('profileNameDisplay').innerText = userName;
@@ -1369,6 +1408,9 @@
                     balance = data.user.balance || 0.00;
                     updateAllBalances();
 
+                    document.getElementById('depPhoneInput').value = userPhone;
+                    document.getElementById('withPhoneInput').value = userPhone;
+
                     document.getElementById('signInView').classList.remove('active');
                     document.getElementById('gameView').classList.add('active');
                     document.getElementById('profileNameDisplay').innerText = userName;
@@ -1384,12 +1426,16 @@
         }
 
         async function syncBalanceToBackend() {
-            if (!userPhone) return;
+            const token = localStorage.getItem('aviator_token');
+            if (!token) return;
             try {
                 await fetch(`${RENDER_BACKEND_URL}/api/balance`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone: userPhone, amount: balance })
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ amount: balance })
                 });
             } catch (err) {}
         }
@@ -1421,7 +1467,8 @@
                 document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
             }
         }
-                function setStake(key, amount) {
+
+        function setStake(key, amount) {
             stakes[key] = amount;
             document.getElementById(key + 'Val').innerText = stakes[key];
             document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
@@ -1525,26 +1572,57 @@
         function closeSubView(viewId) { document.getElementById(viewId).style.display = 'none'; }
         function openSubViewFromMenu(viewId) { toggleMenuDrawer(false); openSubView(viewId); }
 
-        function submitManualDeposit() {
-            let phone = document.getElementById('depPhoneInput').value.trim();
-            let code = document.getElementById('depCodeInput').value.trim();
-            let amt = parseFloat(document.getElementById('depAmountInput').value);
+        // PRESET AMOUNT BUTTON HANDLER
+        function setDepositPreset(amount) {
+            document.getElementById('depAmountInput').value = amount;
+        }
 
-            if (!phone || code.length < 5 || isNaN(amt) || amt < 500) {
-                showToast("Please enter valid details (Min 500 KES).", "error");
+                // TRIGGER MODEPAY STK PUSH PROMPT
+        async function triggerStkPushDeposit() {
+            let phone = document.getElementById('depPhoneInput').value.trim();
+            let amt = parseFloat(document.getElementById('depAmountInput').value);
+            const token = localStorage.getItem('aviator_token');
+
+            if (!token) {
+                showToast("Please log in to make a deposit.", "error");
                 return;
             }
-            
-            showToast("Verifying with M-Pesa...", "success");
-            setTimeout(async () => {
-                balance += amt;
-                updateAllBalances();
-                await syncBalanceToBackend();
-                showToast(`Success! ${amt.toFixed(2)} KES added.`, "success");
-                document.getElementById('depCodeInput').value = '';
-                document.getElementById('depAmountInput').value = '';
-                closeSubView('depositView');
-            }, 2000);
+
+            if (!phone || isNaN(amt) || amt < 10) {
+                showToast("Enter a valid phone number and amount (Min 10 KES).", "error");
+                return;
+            }
+
+            let btn = document.getElementById('stkDepositBtn');
+            btn.innerText = "Sending Prompt...";
+            btn.disabled = true;
+
+            showToast("Sending M-Pesa STK Push prompt...", "success");
+
+            try {
+                let response = await fetch(`${RENDER_BACKEND_URL}/api/deposit/stkpush`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ phone, amount: amt })
+                });
+
+                let data = await response.json();
+
+                if (response.ok && data.success) {
+                    showToast("M-Pesa STK Push sent! Enter your PIN on your phone.", "success");
+                    setTimeout(() => closeSubView('depositView'), 1500);
+                } else {
+                    showToast(data.message || "Failed to initiate M-Pesa prompt.", "error");
+                }
+            } catch (err) {
+                showToast("Connection error sending prompt.", "error");
+            } finally {
+                btn.innerText = "Deposit via M-Pesa";
+                btn.disabled = false;
+            }
         }
 
         async function confirmWithdraw() {
@@ -1567,7 +1645,6 @@
             showToast("Withdrawal initiated!", "success");
             document.getElementById('withAmountInput').value = '';
 
-            // Emit to backend to save into MongoDB
             socket.emit('requestWithdrawal', {
                 token: localStorage.getItem('aviator_token'),
                 phone: phone,
