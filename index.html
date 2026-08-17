@@ -665,8 +665,7 @@
             border: 2px solid #00e676;
             object-fit: cover;
         }
-
-        /* PRESET DEPOSIT BUTTONS STYLES MATCHING IMAGE 2 */
+                /* PRESET DEPOSIT BUTTONS STYLES MATCHING IMAGE 2 */
                 .deposit-preset-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -687,6 +686,25 @@
         .preset-btn:active, .preset-btn:hover {
             background-color: #273145;
             border-color: #3b4b66;
+        }
+
+        /* INJECTED FEE NOTICE STYLES */
+        .fee-notice {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .fee-notice svg {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
         }
 
         /* REDESIGNED TRANSACTION HISTORY ITEM */
@@ -883,7 +901,7 @@
             </div>
         </div>
 
-        <!-- DEPOSIT VIEW (UPDATED TO MATCH IMAGE 2) -->
+        <!-- DEPOSIT VIEW (UPDATED TO MATCH IMAGE 2 AND INCLUDES FEE NOTICE) -->
         <div class="sub-view" id="depositView">
             <div class="sub-header">
                 <div class="back-btn-box" onclick="closeSubView('depositView')">←</div>
@@ -913,6 +931,16 @@
                         <button class="preset-btn" onclick="setDepositPreset(3000)">3000</button>
                         <button class="preset-btn" onclick="setDepositPreset(5000)">5000</button>
                         <button class="preset-btn" onclick="setDepositPreset(10000)">10000</button>
+                    </div>
+
+                    <!-- Injected Fee Notice -->
+                    <div class="fee-notice">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span>A transaction fee of KES 15 applies to this deposit.</span>
                     </div>
 
                     <button class="primary-btn" id="stkDepositBtn" style="background: #1e9f1d; color: #ffffff; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold;" onclick="triggerStkPushDeposit()">Deposit via M-Pesa</button>
@@ -963,8 +991,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- PROFILE VIEW -->
+                <!-- PROFILE VIEW -->
         <div class="sub-view" id="profileView">
             <div class="sub-header">
                 <div class="back-btn-box" onclick="closeSubView('profileView')">✕</div>
@@ -1012,7 +1039,7 @@
         const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com";
         const socket = io(RENDER_BACKEND_URL);
 
-        let balance = 0.00;
+                let balance = 0.00;
         let userName = "User";
         let userPhone = "";
         let stakes = { stake1: 10, stake2: 10 };
@@ -1225,7 +1252,6 @@
             }
 
             updateBotCashouts();
-
             for (let i = 1; i <= 2; i++) {
                 if (activeBets[i] && autoMode[i]) {
                     let autoTarget = parseFloat(document.getElementById('autoCashoutInp' + i).value);
@@ -1348,7 +1374,7 @@
             if(changed) renderLiveBetsList();
         }
 
-        function renderLiveBetsList() {
+                function renderLiveBetsList() {
             let container = document.getElementById('liveBetsItemsList');
             if(!container) return;
             container.innerHTML = '';
@@ -1492,7 +1518,6 @@
                 showToast("Connection error.", "error");
             }
         }
-
         async function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
@@ -1671,8 +1696,7 @@
                 }
             }
         }
-
-        function toggleSoundFx() {
+                function toggleSoundFx() {
             soundEnabled = !soundEnabled;
             let btn = document.getElementById('soundToggleBtn');
             btn.classList.toggle('muted', !soundEnabled);
