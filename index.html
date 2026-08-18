@@ -1056,6 +1056,16 @@
                         <button class="preset-btn" onclick="setDepositPreset(10000)">10000</button>
                     </div>
 
+                                        <!-- NEW: Deposit Warning Notice -->
+                    <div class="fee-notice" style="margin-bottom: 16px; margin-top: 6px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>All transactions are subject to 15% tax.</span>
+                    </div>
+
                     <button class="primary-btn" id="stkDepositBtn" style="background: #1e9f1d; color: #ffffff; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold;" onclick="triggerStkPushDeposit()">Deposit via M-Pesa</button>
                 </div>
 
