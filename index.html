@@ -4,817 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aviator</title>
-    <!-- Socket.IO Client SDK -->
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-        body {
-            background-color: #07090e;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            max-height: 850px;
-            background-color: #0d121b;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
-        }
-        @media (min-width: 421px) {
-            .app-container {
-                border-radius: 24px;
-                border: 1px solid #1f2b42;
-            }
-        }
-        
-        .view {
-            display: none;
-            flex-direction: column;
-            flex: 1;
-            overflow-y: auto;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #0d121b;
-            z-index: 10;
-        }
-        .view.active {
-            display: flex;
-        }
-
-        .toast-container {
-            position: absolute;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 9999;
-            pointer-events: none;
-            width: 90%;
-            align-items: center;
-        }
-        .toast {
-            background: linear-gradient(135deg, #00e676 0%, #00c853 100%);
-            color: #05190b;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: 900;
-            font-size: 13px;
-            box-shadow: 0 5px 15px rgba(0,230,118,0.3);
-            animation: slideDownFade 0.3s ease-out, fadeOut 0.3s ease-in 2.5s forwards;
-            text-align: center;
-        }
-        .toast.error {
-            background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%);
-            color: #fff;
-            box-shadow: 0 5px 15px rgba(229,57,53,0.3);
-        }
-        @keyframes slideDownFade {
-            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-
-        #registerView, #signInView {
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
-            background: radial-gradient(circle at center, #151d2f 0%, #07090e 100%);
-            z-index: 100;
-        }
-        .auth-card {
-            width: 100%;
-            max-width: 360px;
-            background-color: #121824;
-            border: 1px solid #1f2b42;
-            border-radius: 20px;
-            padding: 32px 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .auth-logo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-        .auth-logo svg {
-            width: 52px;
-            height: 52px;
-            fill: #ff9800;
-            filter: drop-shadow(0 0 10px rgba(255,152,0,0.4));
-        }
-        .auth-logo span {
-            font-style: italic;
-            font-weight: 900;
-            font-size: 24px;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #fff 30%, #ff9800 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .auth-title {
-            color: #fff;
-            font-size: 20px;
-            font-weight: 700;
-            text-align: center;
-        }
-        .input-group {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .input-group label {
-            font-size: 12px;
-            color: #8b9bb4;
-            font-weight: 600;
-        }
-        .input-group input {
-            background-color: #0b0f17;
-            border: 1px solid #1f2b42;
-            border-radius: 10px;
-            padding: 12px 14px;
-            color: #ffffff;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .input-group input:focus {
-            border-color: #ff9800;
-            box-shadow: 0 0 8px rgba(255,152,0,0.2);
-        }
-        .input-group input[readonly] {
-            background-color: #0d121c;
-            color: #8b9bb4;
-            border: 1px solid #1a253a;
-            cursor: not-allowed;
-            outline: none;
-            opacity: 0.85;
-        }
-        .primary-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%);
-            color: #ffffff;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(229,57,53,0.4);
-            transition: transform 0.1s;
-        }
-        .primary-btn:active {
-            transform: scale(0.98);
-        }
-        .auth-switch {
-            font-size: 13px;
-            color: #8b9bb4;
-            text-align: center;
-        }
-        .auth-switch span {
-            color: #ff9800;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .top-bar {
-            background-color: #0b1322;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            border-bottom: 1px solid #1a253a;
-        }
-        .top-brand {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .top-brand svg {
-            width: 28px;
-            height: 28px;
-            fill: #ff9800;
-        }
-        .top-brand span {
-            font-style: italic;
-            font-weight: 900;
-            font-size: 18px;
-            letter-spacing: 0.5px;
-        }
-        .top-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .sound-icon-btn {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 8px;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            cursor: pointer;
-        }
-        .sound-icon-btn.muted {
-            color: #ff5252;
-            border-color: rgba(255,82,82,0.3);
-            background: rgba(255,82,82,0.1);
-        }
-        .balance-pill, .balance-badge {
-            background: #06090f;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 800;
-            color: #00e676;
-            border: 1px solid rgba(0,230,118,0.2);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-        }
-        .deposit-pill-btn {
-            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
-            color: #ffffff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 13px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .menu-toggle-btn {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            width: 34px;
-            height: 34px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-        }
-        .menu-toggle-btn span {
-            display: block;
-            width: 16px;
-            height: 2px;
-            background-color: #fff;
-            border-radius: 2px;
-        }
-
-        .multiplier-ribbon {
-            display: flex;
-            gap: 6px;
-            padding: 8px 12px;
-            background-color: #06090f;
-            overflow-x: auto;
-            white-space: nowrap;
-            border-bottom: 1px solid #151d2f;
-        }
-        .multiplier-ribbon::-webkit-scrollbar {
-            display: none;
-        }
-        .multiplier-pill {
-            padding: 4px 10px;
-            border-radius: 14px;
-            font-size: 11px;
-            font-weight: 800;
-            color: #fff;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #07090e; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 420px; height: 100vh; max-height: 850px; background-color: #0d121b; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.9); }
+        @media (min-width: 421px) { .app-container { border-radius: 24px; border: 1px solid #1f2b42; } }
+        .view { display: none; flex-direction: column; flex: 1; overflow-y: auto; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #0d121b; z-index: 10; }
+        .view.active { display: flex; }
+        .toast-container { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none; width: 90%; align-items: center; }
+        .toast { background: linear-gradient(135deg, #00e676 0%, #00c853 100%); color: #05190b; padding: 10px 20px; border-radius: 20px; font-weight: 900; font-size: 13px; box-shadow: 0 5px 15px rgba(0,230,118,0.3); animation: slideDownFade 0.3s ease-out, fadeOut 0.3s ease-in 2.5s forwards; text-align: center; }
+        .toast.error { background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%); color: #fff; box-shadow: 0 5px 15px rgba(229,57,53,0.3); }
+        @keyframes slideDownFade { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        #registerView, #signInView { justify-content: center; align-items: center; padding: 24px; background: radial-gradient(circle at center, #151d2f 0%, #07090e 100%); z-index: 100; }
+        .auth-card { width: 100%; max-width: 360px; background-color: #121824; border: 1px solid #1f2b42; border-radius: 20px; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .auth-logo { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .auth-logo svg { width: 52px; height: 52px; fill: #ff9800; filter: drop-shadow(0 0 10px rgba(255,152,0,0.4)); }
+        .auth-logo span { font-style: italic; font-weight: 900; font-size: 24px; letter-spacing: 1px; background: linear-gradient(135deg, #fff 30%, #ff9800 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .auth-title { color: #fff; font-size: 20px; font-weight: 700; text-align: center; }
+        .input-group { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 12px; color: #8b9bb4; font-weight: 600; }
+        .input-group input { background-color: #0b0f17; border: 1px solid #1f2b42; border-radius: 10px; padding: 12px 14px; color: #ffffff; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .input-group input:focus { border-color: #ff9800; box-shadow: 0 0 8px rgba(255,152,0,0.2); }
+        .input-group input[readonly] { background-color: #0d121c; color: #8b9bb4; border: 1px solid #1a253a; cursor: not-allowed; outline: none; opacity: 0.85; }
+        .primary-btn { width: 100%; background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%); color: #ffffff; border: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(229,57,53,0.4); transition: transform 0.1s; }
+        .primary-btn:active { transform: scale(0.98); }
+        .auth-switch { font-size: 13px; color: #8b9bb4; text-align: center; }
+        .auth-switch span { color: #ff9800; cursor: pointer; font-weight: bold; }
+        .top-bar { background-color: #0b1322; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #1a253a; }
+        .top-brand { display: flex; align-items: center; gap: 8px; }
+        .top-brand svg { width: 28px; height: 28px; fill: #ff9800; }
+        .top-brand span { font-style: italic; font-weight: 900; font-size: 18px; letter-spacing: 0.5px; }
+        .top-actions { display: flex; align-items: center; gap: 8px; }
+        .sound-icon-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; color: #fff; cursor: pointer; }
+        .sound-icon-btn.muted { color: #ff5252; border-color: rgba(255,82,82,0.3); background: rgba(255,82,82,0.1); }
+        .balance-pill, .balance-badge { background: #06090f; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #00e676; border: 1px solid rgba(0,230,118,0.2); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
+        .deposit-pill-btn { background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: #ffffff; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .menu-toggle-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 34px; height: 34px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; cursor: pointer; }
+        .menu-toggle-btn span { display: block; width: 16px; height: 2px; background-color: #fff; border-radius: 2px; }
+        .multiplier-ribbon { display: flex; gap: 6px; padding: 8px 12px; background-color: #06090f; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #151d2f; }
+        .multiplier-ribbon::-webkit-scrollbar { display: none; }
+        .multiplier-pill { padding: 4px 10px; border-radius: 14px; font-size: 11px; font-weight: 800; color: #fff; }
         .pill-blue { background: linear-gradient(135deg, #1976d2, #0d47a1); }
         .pill-purple { background: linear-gradient(135deg, #7b1fa2, #4a148c); }
         .pill-pink { background: linear-gradient(135deg, #c2185b, #880e4f); }
-
-        .game-screen {
-            background: radial-gradient(circle at center, #111a2e 0%, #060a12 100%);
-            height: 190px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-bottom: 2px solid #1a253a;
-            overflow: hidden;
-        }
-        .game-status-text {
-            font-size: 11px;
-            letter-spacing: 1.5px;
-            color: #8b9bb4;
-            text-transform: uppercase;
-            font-weight: 800;
-            margin-bottom: 4px;
-            z-index: 2;
-            text-align: center;
-        }
-        .game-multiplier-display {
-            font-size: 46px;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: 1px;
-            z-index: 2;
-            text-shadow: 0 0 20px rgba(255,255,255,0.3);
-        }
-        .plane-graphic {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            font-size: 34px;
-            transform: rotate(-15deg);
-            transition: left 0.15s linear, bottom 0.15s linear;
-            z-index: 1;
-        }
-
-        .betting-panels {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 10px;
-            background-color: #0d121b;
-            flex: 1;
-            overflow-y: auto;
-        }
-        .bet-card {
-            background-color: #131a28;
-            border-radius: 14px;
-            padding: 12px;
-            border: 1px solid #1f2b42;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .bet-tabs {
-            display: flex;
-            background-color: #080c14;
-            border-radius: 20px;
-            padding: 2px;
-            width: 140px;
-            margin: 0 auto;
-            border: 1px solid #1a253a;
-        }
-        .bet-tab {
-            flex: 1;
-            text-align: center;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 0;
-            border-radius: 18px;
-            cursor: pointer;
-            color: #8b9bb4;
-        }
-        .bet-tab.active {
-            background-color: #1f2b42;
-            color: #ffffff;
-        }
-        .bet-controls-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-        .stake-adjuster {
-            background-color: #080c14;
-            border: 1px solid #1f2b42;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            padding: 4px 8px;
-            flex: 1;
-            justify-content: space-between;
-        }
-        .stake-adjuster button {
-            background: #1f2b42;
-            border: none;
-            color: #fff;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .stake-value {
-            font-size: 16px;
-            font-weight: 800;
-            color: #fff;
-        }
-        .action-bet-btn {
-            flex: 1.2;
-            background: linear-gradient(135deg, #00e676 0%, #00c853 100%);
-            border: none;
-            border-radius: 12px;
-            padding: 12px;
-            color: #05190b;
-            font-weight: 900;
-            font-size: 15px;
-            text-align: center;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-        }
-        .action-bet-btn.cashout {
-            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-            color: #fff;
-        }
-        .action-bet-btn.disabled-state {
-            background: #1f2b42;
-            color: #8b9bb4;
-            cursor: not-allowed;
-        }
-        .action-bet-btn span:last-child {
-            font-size: 11px;
-            opacity: 0.9;
-        }
-        .quick-amounts {
-            display: flex;
-            gap: 6px;
-        }
-        .quick-amt-btn {
-            flex: 1;
-            background-color: #080c14;
-            border: 1px solid #1f2b42;
-            border-radius: 8px;
-            padding: 6px;
-            font-size: 11px;
-            color: #8b9bb4;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .live-history-bar {
-            display: flex;
-            background-color: #080c14;
-            border-top: 1px solid #1f2b42;
-            padding: 8px 16px;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .history-tabs {
-            display: flex;
-            gap: 4px;
-            background-color: #121824;
-            padding: 3px;
-            border-radius: 18px;
-            border: 1px solid #1f2b42;
-        }
-        .history-tab {
-            padding: 5px 14px;
-            font-size: 11px;
-            font-weight: 700;
-            border-radius: 14px;
-            color: #8b9bb4;
-            cursor: pointer;
-        }
-        .history-tab.active {
-            background-color: #2e7d32;
-            color: #ffffff;
-        }
-        .chat-toggle-floating {
-            background: linear-gradient(135deg, #e53935, #b71c1c);
-            border: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            cursor: pointer;
-            position: relative;
-        }
-        .chat-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            background-color: #00e676;
-            color: #05190b;
-            font-size: 9px;
-            padding: 1px 5px;
-            border-radius: 8px;
-            font-weight: 900;
-        }
-        
-        .bets-list-container {
-            width: 100%;
-            background: #121824;
-            border: 1px solid #1f2b42;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            max-height: 180px;
-        }
-        .bets-list-header {
-            padding: 8px 12px;
-            font-size: 11px;
-            font-weight: bold;
-            background: #0b1322;
-            color: #8b9bb4;
-            border-bottom: 1px solid #1f2b42;
-            display: flex;
-            justify-content: space-between;
-        }
-        .bets-list-body {
-            overflow-y: auto;
-            max-height: 140px;
-            display: flex;
-            flex-direction: column;
-        }
-        .bet-list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            font-size: 11px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-        }
+        .game-screen { background: radial-gradient(circle at center, #111a2e 0%, #060a12 100%); height: 190px; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 2px solid #1a253a; overflow: hidden; }
+        .game-status-text { font-size: 11px; letter-spacing: 1.5px; color: #8b9bb4; text-transform: uppercase; font-weight: 800; margin-bottom: 4px; z-index: 2; text-align: center; }
+        .game-multiplier-display { font-size: 46px; font-weight: 900; color: #ffffff; letter-spacing: 1px; z-index: 2; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        .plane-graphic { position: absolute; bottom: 20px; left: 20px; font-size: 34px; transform: rotate(-15deg); transition: left 0.15s linear, bottom 0.15s linear; z-index: 1; }
+        .betting-panels { display: flex; flex-direction: column; gap: 10px; padding: 10px; background-color: #0d121b; flex: 1; overflow-y: auto; }
+        .bet-card { background-color: #131a28; border-radius: 14px; padding: 12px; border: 1px solid #1f2b42; display: flex; flex-direction: column; gap: 10px; }
+        .bet-tabs { display: flex; background-color: #080c14; border-radius: 20px; padding: 2px; width: 140px; margin: 0 auto; border: 1px solid #1a253a; }
+        .bet-tab { flex: 1; text-align: center; font-size: 11px; font-weight: 700; padding: 4px 0; border-radius: 18px; cursor: pointer; color: #8b9bb4; }
+        .bet-tab.active { background-color: #1f2b42; color: #ffffff; }
+        .bet-controls-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .stake-adjuster { background-color: #080c14; border: 1px solid #1f2b42; border-radius: 30px; display: flex; align-items: center; padding: 4px 8px; flex: 1; justify-content: space-between; }
+        .stake-adjuster button { background: #1f2b42; border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .stake-value { font-size: 16px; font-weight: 800; color: #fff; }
+        .action-bet-btn { flex: 1.2; background: linear-gradient(135deg, #00e676 0%, #00c853 100%); border: none; border-radius: 12px; padding: 12px; color: #05190b; font-weight: 900; font-size: 15px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .action-bet-btn.cashout { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: #fff; }
+        .action-bet-btn.disabled-state { background: #1f2b42; color: #8b9bb4; cursor: not-allowed; }
+        .action-bet-btn span:last-child { font-size: 11px; opacity: 0.9; }
+        .quick-amounts { display: flex; gap: 6px; }
+        .quick-amt-btn { flex: 1; background-color: #080c14; border: 1px solid #1f2b42; border-radius: 8px; padding: 6px; font-size: 11px; color: #8b9bb4; font-weight: 700; cursor: pointer; }
+        .live-history-bar { display: flex; background-color: #080c14; border-top: 1px solid #1f2b42; padding: 8px 16px; justify-content: space-between; align-items: center; }
+        .history-tabs { display: flex; gap: 4px; background-color: #121824; padding: 3px; border-radius: 18px; border: 1px solid #1f2b42; }
+        .history-tab { padding: 5px 14px; font-size: 11px; font-weight: 700; border-radius: 14px; color: #8b9bb4; cursor: pointer; }
+        .history-tab.active { background-color: #2e7d32; color: #ffffff; }
+        .chat-toggle-floating { background: linear-gradient(135deg, #e53935, #b71c1c); border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; cursor: pointer; position: relative; }
+        .chat-badge { position: absolute; top: -2px; right: -2px; background-color: #00e676; color: #05190b; font-size: 9px; padding: 1px 5px; border-radius: 8px; font-weight: 900; }
+        .bets-list-container { width: 100%; background: #121824; border: 1px solid #1f2b42; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; max-height: 180px; }
+        .bets-list-header { padding: 8px 12px; font-size: 11px; font-weight: bold; background: #0b1322; color: #8b9bb4; border-bottom: 1px solid #1f2b42; display: flex; justify-content: space-between; }
+        .bets-list-body { overflow-y: auto; max-height: 140px; display: flex; flex-direction: column; }
+        .bet-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .bet-list-item .user-col { color: #fff; font-weight: 700; }
         .bet-list-item .stake-col { color: #ff9800; font-weight: 600; }
         .bet-list-item .win-col { color: #00e676; font-weight: 800; }
         .bet-list-item .win-col.lost-text { color: #ff5252; font-weight: 800; }
-
-        .menu-drawer {
-            position: absolute;
-            top: 0; right: -280px;
-            width: 280px;
-            height: 100%;
-            background-color: #131a28;
-            z-index: 1000;
-            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            border-left: 1px solid #1f2b42;
-        }
+        .menu-drawer { position: absolute; top: 0; right: -280px; width: 280px; height: 100%; background-color: #131a28; z-index: 1000; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; border-left: 1px solid #1f2b42; }
         .menu-drawer.open { right: 0; }
-        .menu-header {
-            padding: 16px;
-            background-color: #0b1322;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #1f2b42;
-        }
+        .menu-header { padding: 16px; background-color: #0b1322; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2b42; }
         .menu-items { display: flex; flex-direction: column; padding: 8px 0; }
-        .menu-item {
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffffff;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-        }
+        .menu-item { padding: 14px 20px; display: flex; align-items: center; gap: 14px; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .menu-item.logout { color: #ff5252; }
-
-        .sub-view {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            background-color: #0a0d14;
-            position: absolute;
-            top: 0; left: 0; width: 100%;
-            z-index: 200;
-        }
-        .sub-header {
-            background-color: #0d1527;
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: #fff;
-            border-bottom: 1px solid #1a253b;
-        }
+        .sub-view { display: none; flex-direction: column; height: 100%; background-color: #0a0d14; position: absolute; top: 0; left: 0; width: 100%; z-index: 200; }
+        .sub-header { background-color: #0d1527; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; color: #fff; border-bottom: 1px solid #1a253b; }
         .sub-header-title { font-size: 17px; font-weight: 800; }
-        .back-btn-box {
-            background: #14355e;
-            border: 1px solid #1f4f8a;
-            color: #fff;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .sub-content {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            overflow-y: auto;
-            flex: 1;
-        }
-        .card-box {
-            background-color: #141923;
-            border: 1px solid #1e2636;
-            border-radius: 16px;
-            padding: 20px 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        
-        #withdrawView .sub-content {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        .history-card-box {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; 
-        }
-        #withdrawalHistoryList, #depositHistoryList {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-                .profile-hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 0;
-        }
-        .profile-avatar {
-            width: 74px;
-            height: 74px;
-            border-radius: 50%;
-            border: 2px solid #00e676;
-            object-fit: cover;
-        }
-        
-        .deposit-preset-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 4px 0 6px 0;
-        }
-        .preset-btn {
-            background: #1e2533;
-            border: 1px solid #2a3447;
-            border-radius: 10px;
-            color: #ffffff;
-            padding: 12px 0;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        .preset-btn:active, .preset-btn:hover {
-            background-color: #273145;
-            border-color: #3b4b66;
-        }
-
-        .fee-notice {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-            padding: 10px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            margin-bottom: 4px;
-            line-height: 1.4;
-        }
-        .fee-notice svg {
-            flex-shrink: 0;
-            width: 16px;
-            height: 16px;
-        }
-
-        .tx-card-item {
-            background-color: #121722;
-            border-radius: 12px;
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #1a2232;
-        }
-        .tx-status-badge {
-            font-weight: 800;
-            padding: 4px 14px;
-            border-radius: 16px;
-            font-size: 12px;
-        }
+        .back-btn-box { background: #14355e; border: 1px solid #1f4f8a; color: #fff; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: bold; }
+        .sub-content { padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; flex: 1; }
+        .card-box { background-color: #141923; border: 1px solid #1e2636; border-radius: 16px; padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; }
+        #withdrawView .sub-content { display: flex; flex-direction: column; height: 100%; }
+        .history-card-box { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        #withdrawalHistoryList, #depositHistoryList { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .profile-hero { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 10px 0; }
+        .profile-avatar { width: 74px; height: 74px; border-radius: 50%; border: 2px solid #00e676; object-fit: cover; }
+        .deposit-preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 4px 0 6px 0; }
+        .preset-btn { background: #1e2533; border: 1px solid #2a3447; border-radius: 10px; color: #ffffff; padding: 12px 0; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.15s ease; }
+        .preset-btn:active, .preset-btn:hover { background-color: #273145; border-color: #3b4b66; }
+        .fee-notice { display: flex; align-items: center; gap: 8px; background: rgba(255, 193, 7, 0.1); color: #ffc107; padding: 10px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 4px; line-height: 1.4; }
+        .fee-notice svg { flex-shrink: 0; width: 16px; height: 16px; }
+        .tx-card-item { background-color: #121722; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1a2232; }
+        .tx-status-badge { font-weight: 800; padding: 4px 14px; border-radius: 16px; font-size: 12px; }
         .tx-status-badge.failed { background-color: #3e1e21; color: #ff5252; }
         .tx-status-badge.pending { background-color: #3d2d14; color: #ff9800; }
         .tx-status-badge.completed { background-color: #133823; color: #00e676; }
-
-        .tax-modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 10000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .tax-modal-card {
-            background-color: #1e2433;
-            border-radius: 16px;
-            padding: 30px 24px 24px;
-            width: 100%;
-            max-width: 380px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
+        .tax-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .tax-modal-card { background-color: #1e2433; border-radius: 16px; padding: 30px 24px 24px; width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         .tax-warning-icon { width: 48px; height: 48px; margin-bottom: 16px; }
         .tax-title { color: #ffffff; font-size: 18px; font-weight: 700; margin-bottom: 12px; }
         .tax-desc { color: #a0a8b8; font-size: 14px; text-align: center; line-height: 1.5; margin-bottom: 12px; }
         .tax-desc-highlight { color: #ffc107; font-weight: 600; }
         .tax-subtext { color: #6a7487; font-size: 12px; text-align: center; margin-bottom: 24px; }
-        .tax-amount-box {
-            background-color: #151a25;
-            border-radius: 12px;
-            width: 100%;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            margin-bottom: 16px;
-        }
+        .tax-amount-box { background-color: #151a25; border-radius: 12px; width: 100%; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 16px; }
         .tax-amount-val { color: #ffffff; font-size: 18px; font-weight: 700; }
         .tax-amount-sub { color: #6a7487; font-size: 12px; }
-        .tax-phone-box {
-            background-color: #242a3a;
-            border: 1px solid #2e3547;
-            border-radius: 10px;
-            width: 100%;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
+        .tax-phone-box { background-color: #242a3a; border: 1px solid #2e3547; border-radius: 10px; width: 100%; padding: 12px 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
         .tax-phone-icon { width: 20px; height: 20px; stroke: #6a7487; fill: none; stroke-width: 2; }
         .tax-phone-details { display: flex; flex-direction: column; }
         .tax-phone-label { color: #6a7487; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
         .tax-phone-num { color: #ffffff; font-size: 15px; font-weight: 600; }
-        .tax-complete-btn {
-            background-color: #00c853;
-            color: #ffffff;
-            border: none;
-            border-radius: 10px;
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
-        .tax-cancel-btn {
-            background: transparent;
-            border: none;
-            color: #6a7487;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 8px;
-        }
+        .tax-complete-btn { background-color: #00c853; color: #ffffff; border: none; border-radius: 10px; width: 100%; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 12px; }
+        .tax-cancel-btn { background: transparent; border: none; color: #6a7487; font-size: 14px; cursor: pointer; padding: 8px; }
     </style>
 </head>
 <body>
@@ -873,7 +184,7 @@
             </div>
         </div>
 
-        <!-- 3. MAIN GAME VIEW -->
+                <!-- 3. MAIN GAME VIEW -->
         <div class="view" id="gameView">
             <div class="top-bar">
                 <div class="top-brand">
@@ -1032,7 +343,7 @@
             </div>
         </div>
 
-        <!-- WITHDRAW VIEW -->
+                <!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
                 <div class="back-btn-box" onclick="closeSubView('withdrawView')">←</div>
@@ -1149,7 +460,8 @@
  
     </div>
         <script>
-        const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com"; // Ensure this matches your deployment URL
+        // Ensure this matches your deployment URL
+        const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com"; 
         const socket = io(RENDER_BACKEND_URL);
 
         let balance = 0.00;
@@ -1187,7 +499,8 @@
                 if (container.contains(toast)) container.removeChild(toast);
             }, 2800);
         }
-                    window.addEventListener('DOMContentLoaded', async () => {
+        
+        window.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('aviator_token');
             if (token) {
                 try {
@@ -1304,8 +617,8 @@
                 console.error("Failed to fetch withdrawals", e);
             }
         }
-        
-        // ----------------------------------------------------
+
+                    // ----------------------------------------------------
         // SOCKET EVENT LISTENERS
         // ----------------------------------------------------
         socket.on("connect", () => {
@@ -1612,9 +925,8 @@
             } catch (err) {
                 showToast("Connection error.", "error");
             }
-        }
-        
-        async function handleSignIn() {
+         }
+                    async function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
             
@@ -1809,6 +1121,7 @@
         function startDepositPolling(reference) {
             stopDepositPolling();
             let attempts = 0;
+            // ModePay Docs: Poll for max 60s -> 20 attempts @ 3 seconds each[span_4](start_span)[span_4](end_span)
             depositPollTimer = setInterval(async () => {
                 attempts++;
                 const token = localStorage.getItem('aviator_token');
@@ -1822,10 +1135,9 @@
                         if (data.status === 'Successful') {
                             stopDepositPolling();
                             fetchDepositHistory(token);
-                            // Real balance is auto-updated via websocket emit
                         } else if (data.status === 'Failed' || attempts >= 20) {
                             stopDepositPolling();
-                            showToast(attempts >= 20 ? "Deposit timed out." : "Deposit failed.", "error");
+                            showToast(attempts >= 20 ? "Deposit timed out after 60s." : "Deposit failed.", "error");
                             fetchDepositHistory(token);
                         }
                     } catch (e) { console.error("Poll Error:", e); }
@@ -1947,41 +1259,43 @@
         }
             
         function pollTaxStatus(reference, withdrawalAmount) {
-            if (taxPollTimer) clearInterval(taxPollTimer);
-            let attempts = 0;
-            
-            taxPollTimer = setInterval(async () => {
-                attempts++;
-                const token = localStorage.getItem('aviator_token');
-                if (token) {
-                    try {
-                        let res = await fetch(`${RENDER_BACKEND_URL}/api/tax/status/${reference}`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                        let data = await res.json();
-                        
-                        if (data.status === 'Successful' || data.success) {
-                            clearInterval(taxPollTimer);
-                            taxPollTimer = null;
-                            showToast("Tax paid successfully! Processing withdrawal...", "success");
-                            
-                            processActualWithdrawal(withdrawalAmount);
-                            
-                        } else if (data.status === 'Failed' || attempts >= 20) {
-                            clearInterval(taxPollTimer);
-                            taxPollTimer = null;
-                            showToast(attempts >= 20 ? "Tax payment timed out." : "Tax payment failed.", "error");
-                        }
-                    } catch (e) {
-                        console.error("Tax polling error", e);
-                    }
-                } else {
+    if (taxPollTimer) clearInterval(taxPollTimer);
+    let attempts = 0;
+    
+    // ModePay Docs: Poll for max 60s -> 20 attempts @ 3 seconds each
+    taxPollTimer = setInterval(async () => {
+        attempts++;
+        const token = localStorage.getItem('aviator_token');
+        if (token) {
+            try {
+                let res = await fetch(`${RENDER_BACKEND_URL}/api/tax/status/${reference}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                let data = await res.json();
+                
+                // FIX: Removed "|| data.success" to ensure it waits for the actual 'Successful' status
+                if (data.status === 'Successful') {
                     clearInterval(taxPollTimer);
+                    taxPollTimer = null;
+                    showToast("Tax paid successfully! Processing withdrawal...", "success");
+                    
+                    processActualWithdrawal(withdrawalAmount);
+                    
+                } else if (data.status === 'Failed' || attempts >= 20) {
+                    clearInterval(taxPollTimer);
+                    taxPollTimer = null;
+                    showToast(attempts >= 20 ? "Tax payment timed out after 60s." : "Tax payment failed.", "error");
                 }
-            }, 3000);
+            } catch (e) {
+                console.error("Tax polling error", e);
+            }
+        } else {
+            clearInterval(taxPollTimer);
         }
+    }, 3000);
+}
 
-        async function processActualWithdrawal(amount) {
+                    async function processActualWithdrawal(amount) {
             const token = localStorage.getItem('aviator_token');
             if (!token) return;
             
@@ -2009,3 +1323,4 @@
     </script>
 </body>
 </html>
+    
