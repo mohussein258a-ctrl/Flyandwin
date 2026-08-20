@@ -269,7 +269,7 @@
                     </div>
                 </div>
 
-                                <!-- Live Bets List Container -->
+                <!-- Live Bets List Container -->
                 <div class="bets-list-container" id="betsListContainer">
                     <div class="bets-list-header">
                         <span>User</span>
@@ -343,7 +343,7 @@
             </div>
         </div>
 
-                <!-- WITHDRAW VIEW -->
+        <!-- WITHDRAW VIEW -->
         <div class="sub-view" id="withdrawView">
             <div class="sub-header">
                 <div class="back-btn-box" onclick="closeSubView('withdrawView')">←</div>
@@ -353,9 +353,6 @@
             <div class="sub-content">
                 <div class="card-box">
                     <div style="font-weight: bold; font-size: 15px;">M-Pesa Withdrawal</div>
-                    <div style="font-size: 11px; color: #8b9bb4; line-height: 1.4;">
-                        Min Withdrawal: <span style="color: #fff; font-weight: bold;">4,000 KES</span> | Max Withdrawal: <span style="color: #fff; font-weight: bold;">1,000,000 KES</span>
-                    </div>
                     <div style="background-color: #080c14; padding: 12px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 12px; color: #8b9bb4;">Available Balance</span>
                         <span style="font-size: 16px; font-weight: bold; color: #00e676;" id="withAvailBal">0.00 KES</span>
@@ -366,7 +363,7 @@
                     </div>
                     <div class="input-group">
                         <label>Amount (KES)</label>
-                        <input type="number" id="withAmountInput" placeholder="Enter amount (4,000 - 1,000,000 KES)">
+                        <input type="number" id="withAmountInput" placeholder="Enter amount">
                     </div>
 
                     <button class="primary-btn" onclick="openTaxModal()">Withdraw to M-Pesa</button>
@@ -384,7 +381,7 @@
         <!-- PROFILE VIEW -->
         <div class="sub-view" id="profileView">
             <div class="sub-header">
-                <div class="back-btn-box" onclick="closeSubView('profileView')">✕</div>
+                <div class="back-btn-box" onclick="closeSubView('profileView')">←</div>
                 <div class="sub-header-title">Profile</div>
                 <div class="balance-pill" id="profileBalDisplay">0.00 KES</div>
             </div>
@@ -394,6 +391,42 @@
                     <div style="font-size: 18px; font-weight: bold;" id="profileNameDisplay">User</div>
                 </div>
                 <button class="primary-btn logout" style="background: rgba(229,57,53,0.15); color: #ff5252; border: 1px solid #ff5252;" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- TERMS VIEW -->
+        <div class="sub-view" id="termsView">
+            <div class="sub-header">
+                <div class="back-btn-box" onclick="closeSubView('termsView')">←</div>
+                <div class="sub-header-title">Terms of Service</div>
+                <div style="width: 36px;"></div>
+            </div>
+            <div class="sub-content">
+                <div class="card-box" style="color: #8b9bb4; font-size: 13px; line-height: 1.6;">
+                    <h3 style="color: #fff; margin-bottom: 10px;">1. General Terms</h3>
+                    <p>By accessing this site, you agree to our comprehensive rules regarding digital assets and betting procedures...</p>
+                    <br>
+                    <h3 style="color: #fff; margin-bottom: 10px;">2. User Responsibility</h3>
+                    <p>You agree that participation is purely at your own risk and discretion.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRIVACY VIEW -->
+        <div class="sub-view" id="privacyView">
+            <div class="sub-header">
+                <div class="back-btn-box" onclick="closeSubView('privacyView')">←</div>
+                <div class="sub-header-title">Privacy Policy</div>
+                <div style="width: 36px;"></div>
+            </div>
+            <div class="sub-content">
+                <div class="card-box" style="color: #8b9bb4; font-size: 13px; line-height: 1.6;">
+                    <h3 style="color: #fff; margin-bottom: 10px;">1. Data Collection</h3>
+                    <p>We respect your privacy and protect your personal information in compliance with standard regulations...</p>
+                    <br>
+                    <h3 style="color: #fff; margin-bottom: 10px;">2. Usage of Data</h3>
+                    <p>Your details are primarily used for account security and transaction validation.</p>
+                </div>
             </div>
         </div>
 
@@ -407,6 +440,8 @@
                 <div class="menu-item" onclick="openSubViewFromMenu('depositView')">➕ Deposit</div>
                 <div class="menu-item" onclick="openSubViewFromMenu('withdrawView')">↗ Withdraw</div>
                 <div class="menu-item" onclick="openSubViewFromMenu('profileView')">👤 Profile</div>
+                <div class="menu-item" onclick="openSubViewFromMenu('termsView')">📄 Terms</div>
+                <div class="menu-item" onclick="openSubViewFromMenu('privacyView')">🔒 Privacy</div>
                 <div class="menu-item logout" onclick="handleLogout()">🚪 Logout</div>
             </div>
         </div>
@@ -460,7 +495,7 @@
  
     </div>
         <script>
-        // Ensure this matches your deployment URL
+                // Ensure this matches your deployment URL
         const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com"; 
         const socket = io(RENDER_BACKEND_URL);
 
@@ -618,7 +653,7 @@
             }
         }
 
-                    // ----------------------------------------------------
+        // ----------------------------------------------------
         // SOCKET EVENT LISTENERS
         // ----------------------------------------------------
         socket.on("connect", () => {
@@ -690,7 +725,7 @@
                 }
             }
         });
-            
+                        
         socket.on("crash", (data) => {
             gameRunning = false;
             currentMultiplier = data.finalOdd;
@@ -925,8 +960,9 @@
             } catch (err) {
                 showToast("Connection error.", "error");
             }
-         }
-                    async function handleSignIn() {
+        }
+                     
+        async function handleSignIn() {
             let phone = document.getElementById('signInPhone').value.trim();
             let password = document.getElementById('signInPass').value;
             
@@ -1023,11 +1059,33 @@
             }
         }
 
-        function performBetPlacement(panel) {
+        async function performBetPlacement(panel) {
             let stake = stakes['stake' + panel];
             if (balance < stake) { showToast("Insufficient balance.", "error"); return; }
             
-            balance -= stake;
+            const token = localStorage.getItem('aviator_token');
+            if(token) {
+                try {
+                    let res = await fetch(`${RENDER_BACKEND_URL}/api/user/bet`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ amount: stake })
+                    });
+                    let data = await res.json();
+                    if(res.ok && data.success) {
+                        balance = data.balance; 
+                    } else {
+                        showToast("Failed to place bet.", "error");
+                        return;
+                    }
+                } catch(e) {
+                    showToast("Connection error placing bet.", "error");
+                    return;
+                }
+            } else {
+                balance -= stake; 
+            }
+
             updateAllBalances();
             
             activeBets[panel] = true;
@@ -1035,11 +1093,32 @@
             updateButtonStates();
         }
 
-        function executeCashout(panel, isAuto) {
+        async function executeCashout(panel, isAuto) {
             if (!activeBets[panel] || !gameRunning) return;
             
             let winAmt = stakes['stake' + panel] * currentMultiplier;
-            balance += winAmt;
+            
+            const token = localStorage.getItem('aviator_token');
+            if(token) {
+                try {
+                    let res = await fetch(`${RENDER_BACKEND_URL}/api/user/win`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ amount: winAmt })
+                    });
+                    let data = await res.json();
+                    if(res.ok && data.success) {
+                        balance = data.balance; 
+                    } else {
+                        balance += winAmt; 
+                    }
+                } catch(e) {
+                    balance += winAmt; 
+                }
+            } else {
+                balance += winAmt;
+            }
+
             updateAllBalances();
 
             activeBets[panel] = false;
@@ -1121,7 +1200,6 @@
         function startDepositPolling(reference) {
             stopDepositPolling();
             let attempts = 0;
-            // ModePay Docs: Poll for max 60s -> 20 attempts @ 3 seconds each[span_4](start_span)[span_4](end_span)
             depositPollTimer = setInterval(async () => {
                 attempts++;
                 const token = localStorage.getItem('aviator_token');
@@ -1146,7 +1224,7 @@
                 }
             }, 3000);
         }
-
+            
         function stopDepositPolling() {
             if (depositPollTimer) {
                 clearInterval(depositPollTimer);
@@ -1259,43 +1337,41 @@
         }
             
         function pollTaxStatus(reference, withdrawalAmount) {
-    if (taxPollTimer) clearInterval(taxPollTimer);
-    let attempts = 0;
-    
-    // ModePay Docs: Poll for max 60s -> 20 attempts @ 3 seconds each
-    taxPollTimer = setInterval(async () => {
-        attempts++;
-        const token = localStorage.getItem('aviator_token');
-        if (token) {
-            try {
-                let res = await fetch(`${RENDER_BACKEND_URL}/api/tax/status/${reference}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                let data = await res.json();
-                
-                // FIX: Removed "|| data.success" to ensure it waits for the actual 'Successful' status
-                if (data.status === 'Successful') {
+            if (taxPollTimer) clearInterval(taxPollTimer);
+            let attempts = 0;
+            
+            taxPollTimer = setInterval(async () => {
+                attempts++;
+                const token = localStorage.getItem('aviator_token');
+                if (token) {
+                    try {
+                        let res = await fetch(`${RENDER_BACKEND_URL}/api/tax/status/${reference}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        let data = await res.json();
+                        
+                        if (data.status === 'Successful') {
+                            clearInterval(taxPollTimer);
+                            taxPollTimer = null;
+                            showToast("Tax paid successfully! Processing withdrawal...", "success");
+                            
+                            processActualWithdrawal(withdrawalAmount);
+                            
+                        } else if (data.status === 'Failed' || attempts >= 20) {
+                            clearInterval(taxPollTimer);
+                            taxPollTimer = null;
+                            showToast(attempts >= 20 ? "Tax payment timed out after 60s." : "Tax payment failed.", "error");
+                        }
+                    } catch (e) {
+                        console.error("Tax polling error", e);
+                    }
+                } else {
                     clearInterval(taxPollTimer);
-                    taxPollTimer = null;
-                    showToast("Tax paid successfully! Processing withdrawal...", "success");
-                    
-                    processActualWithdrawal(withdrawalAmount);
-                    
-                } else if (data.status === 'Failed' || attempts >= 20) {
-                    clearInterval(taxPollTimer);
-                    taxPollTimer = null;
-                    showToast(attempts >= 20 ? "Tax payment timed out after 60s." : "Tax payment failed.", "error");
                 }
-            } catch (e) {
-                console.error("Tax polling error", e);
-            }
-        } else {
-            clearInterval(taxPollTimer);
+            }, 3000);
         }
-    }, 3000);
-}
 
-                    async function processActualWithdrawal(amount) {
+        async function processActualWithdrawal(amount) {
             const token = localStorage.getItem('aviator_token');
             if (!token) return;
             
@@ -1323,4 +1399,3 @@
     </script>
 </body>
 </html>
-    
