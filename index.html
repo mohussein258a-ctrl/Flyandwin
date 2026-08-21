@@ -184,7 +184,7 @@
             </div>
         </div>
 
-                <!-- 3. MAIN GAME VIEW -->
+                                <!-- 3. MAIN GAME VIEW -->
         <div class="view" id="gameView">
             <div class="top-bar">
                 <div class="top-brand">
@@ -377,7 +377,7 @@
                 </div>
             </div>
         </div>
-
+      
         <!-- PROFILE VIEW -->
         <div class="sub-view" id="profileView">
             <div class="sub-header">
@@ -495,7 +495,7 @@
  
     </div>
         <script>
-                // Ensure this matches your deployment URL
+        // Ensure this matches your deployment URL
         const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com"; 
         const socket = io(RENDER_BACKEND_URL);
 
@@ -573,7 +573,7 @@
                 }
             }
         });
-
+            
         // ----------------------------------------------------
         // FETCH TRANSACTION HISTORIES
         // ----------------------------------------------------
@@ -611,9 +611,7 @@
                 } else {
                     historyContainer.innerHTML = '<div style="font-size: 12px; color: #556680; text-align: center; padding: 16px;" id="noDepositsText">No recent deposits</div>';
                 }
-            } catch(e) {
-                console.error("Failed to fetch deposits", e);
-            }
+            } catch(e) { console.error("Failed to fetch deposits", e); }
         }
 
         async function fetchWithdrawalHistory(token) {
@@ -648,21 +646,14 @@
                 } else {
                      historyContainer.innerHTML = '<div style="font-size: 11px; color: #556680; text-align: center;" id="noWithdrawalsText">No recent withdrawals</div>';
                 }
-            } catch(e) {
-                console.error("Failed to fetch withdrawals", e);
-            }
+            } catch(e) { console.error("Failed to fetch withdrawals", e); }
         }
 
         // ----------------------------------------------------
         // SOCKET EVENT LISTENERS
         // ----------------------------------------------------
-        socket.on("connect", () => {
-            document.getElementById('gameStatusText').innerText = "CONNECTED";
-        });
-
-        socket.on("disconnect", () => {
-            document.getElementById('gameStatusText').innerText = "RECONNECTING...";
-        });
+        socket.on("connect", () => { document.getElementById('gameStatusText').innerText = "CONNECTED"; });
+        socket.on("disconnect", () => { document.getElementById('gameStatusText').innerText = "RECONNECTING..."; });
 
         socket.on("sync", (gameState) => {
             gameRunning = gameState.isFlying;
@@ -694,8 +685,10 @@
             renderLiveBetsList();
 
             for (let i = 1; i <= 2; i++) {
-                if (autoMode[i] && autoBetActive[i] && !activeBets[i]) {
-                    performBetPlacement(i);
+                if (hasPlacedBetCurrentRound[i] && !activeBets[i]) {
+                    activeBets[i] = true;
+                } else if (autoMode[i] && autoBetActive[i] && !activeBets[i]) {
+                    queueOrPlaceBet(i);
                 }
             }
             updateButtonStates();
@@ -708,14 +701,11 @@
           
             updatePlanePosition();
 
-            if (activeBets[1]) {
-                document.getElementById('betSubText1').innerText = (stakes.stake1 * currentMultiplier).toFixed(2) + " KES";
-            }
-            if (activeBets[2]) {
-                document.getElementById('betSubText2').innerText = (stakes.stake2 * currentMultiplier).toFixed(2) + " KES";
-            }
+            if (activeBets[1]) document.getElementById('betSubText1').innerText = (stakes.stake1 * currentMultiplier).toFixed(2) + " KES";
+            if (activeBets[2]) document.getElementById('betSubText2').innerText = (stakes.stake2 * currentMultiplier).toFixed(2) + " KES";
 
             updateBotCashouts();
+            
             for (let i = 1; i <= 2; i++) {
                 if (activeBets[i] && autoMode[i]) {
                     let autoTarget = parseFloat(document.getElementById('autoCashoutInp' + i).value);
@@ -743,8 +733,10 @@
             renderLiveBetsList();
 
             for (let i = 1; i <= 2; i++) {
-                activeBets[i] = false;
-                hasPlacedBetCurrentRound[i] = false;
+                if (activeBets[i]) {
+                    activeBets[i] = false;
+                    hasPlacedBetCurrentRound[i] = false;
+                }
             }
             updateButtonStates();
         });
@@ -792,18 +784,26 @@
             plane.style.bottom = (20 + progress * (h - 75)) + "px";
         }
 
+        // Expanded players lists
+        const sampleNames = [
+            "Alex_88", "Kipchumba", "Mwangi", "Sarah_M", "Brian_K", "Wanjiku", "David_O",
+            "Jemo_254", "Chichi", "Ochieng", "DanTheMan", "Kip_1", "Mercy_L", "Kelvin_99",
+            "NjoroWa", "Aisha_X", "Mbugua", "Nelly_K", "Erick_B", "Fatuma_2", "Kamau_7",
+            "Joy_Joy", "Ian_T", "Shirleen", "Musa_G", "Tina_W", "Victor_M", "Gladys_N",
+            "Kimani_D", "Zippy_S", "Peter_P"
+        ];
+
         function generateLiveBets() {
-            const sampleNames = ["Alex_88", "Kipchumba", "Mwangi", "Sarah_M", "Brian_K", "Wanjiku", "David_O"];
             liveBetsData = [];
-            let count = Math.floor(Math.random() * 4) + 4;
+            let count = Math.floor(Math.random() * 20) + 20; 
             for(let i=0; i<count; i++) {
                 let name = sampleNames[Math.floor(Math.random()*sampleNames.length)];
-                let stake = [10, 20, 50, 100, 200, 500][Math.floor(Math.random()*6)];
-                let target = 1.10 + (Math.random() * 4.0);
+                let stake = [10, 20, 50, 100, 200, 500, 1000, 2000][Math.floor(Math.random()*8)];
+                let target = 1.05 + (Math.random() * 10.0);
                 liveBetsData.push({ name, stake, target, cashedOut: false, winAmt: 0, crashed: false });
             }
-        }
-
+       }
+            
         function updateBotCashouts() {
             let changed = false;
             liveBetsData.forEach(b => {
@@ -1032,102 +1032,118 @@
         }
 
         function adjustStake(key, amount) {
+            let panel = key.replace('stake', '');
+            if (activeBets[panel] || hasPlacedBetCurrentRound[panel]) return; // INPUT LOCK ACTIVE
+
             let newVal = stakes[key] + amount;
             if (newVal >= 10 && newVal <= 500000) {
                 stakes[key] = newVal;
                 document.getElementById(key + 'Val').innerText = stakes[key];
-                document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
+                document.getElementById('betSubText' + panel).innerText = stakes[key] + ".00 KES";
             }
         }
 
         function setStake(key, amount) {
+            let panel = key.replace('stake', '');
+            if (activeBets[panel] || hasPlacedBetCurrentRound[panel]) return; // INPUT LOCK ACTIVE
+
             stakes[key] = amount;
             document.getElementById(key + 'Val').innerText = stakes[key];
-            document.getElementById('betSubText' + key.replace('stake', '')).innerText = stakes[key] + ".00 KES";
+            document.getElementById('betSubText' + panel).innerText = stakes[key] + ".00 KES";
         }
 
         function handleBetAction(panel) {
             if (activeBets[panel]) {
-                if (gameRunning) executeCashout(panel, false);
+                if (gameRunning) {
+                    executeCashout(panel, false);
+                } else {
+                    cancelQueuedBet(panel); // Cancel before takeoff
+                }
             } else {
-                if (!gameRunning && !hasPlacedBetCurrentRound[panel]) {
+                if (hasPlacedBetCurrentRound[panel]) {
+                    if (gameRunning) {
+                        cancelQueuedBet(panel); // Cancel queued next round bet
+                    }
+                } else {
                     if (autoMode[panel]) {
                         autoBetActive[panel] = !autoBetActive[panel];
                         updateButtonStates();
-                    } else { performBetPlacement(panel); }
+                    } else { 
+                        queueOrPlaceBet(panel); 
+                    }
                 }
             }
-        }
-
-        async function performBetPlacement(panel) {
+       }
+            
+        function queueOrPlaceBet(panel) {
             let stake = stakes['stake' + panel];
             if (balance < stake) { showToast("Insufficient balance.", "error"); return; }
             
-            const token = localStorage.getItem('aviator_token');
-            if(token) {
-                try {
-                    let res = await fetch(`${RENDER_BACKEND_URL}/api/user/bet`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ amount: stake })
-                    });
-                    let data = await res.json();
-                    if(res.ok && data.success) {
-                        balance = data.balance; 
-                    } else {
-                        showToast("Failed to place bet.", "error");
-                        return;
-                    }
-                } catch(e) {
-                    showToast("Connection error placing bet.", "error");
-                    return;
-                }
-            } else {
-                balance -= stake; 
-            }
-
+            balance -= stake; // Optimistic logic
             updateAllBalances();
             
-            activeBets[panel] = true;
             hasPlacedBetCurrentRound[panel] = true;
+            if (!gameRunning) activeBets[panel] = true;
             updateButtonStates();
+
+            const token = localStorage.getItem('aviator_token');
+            if (token) {
+                fetch(`${RENDER_BACKEND_URL}/api/user/bet`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ amount: stake })
+                }).then(res => res.json()).then(data => {
+                    if(data.success) { balance = data.balance; updateAllBalances(); }
+                }).catch(e => console.error(e));
+            }
         }
 
-        async function executeCashout(panel, isAuto) {
-            if (!activeBets[panel] || !gameRunning) return;
+        function cancelQueuedBet(panel) {
+            let stake = stakes['stake' + panel];
             
-            let winAmt = stakes['stake' + panel] * currentMultiplier;
+            balance += stake; // Refund Optimistic Update
+            updateAllBalances();
+            hasPlacedBetCurrentRound[panel] = false;
+            activeBets[panel] = false;
+            updateButtonStates();
             
             const token = localStorage.getItem('aviator_token');
-            if(token) {
-                try {
-                    let res = await fetch(`${RENDER_BACKEND_URL}/api/user/win`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ amount: winAmt })
-                    });
-                    let data = await res.json();
-                    if(res.ok && data.success) {
-                        balance = data.balance; 
-                    } else {
-                        balance += winAmt; 
-                    }
-                } catch(e) {
-                    balance += winAmt; 
-                }
-            } else {
-                balance += winAmt;
+            if (token) {
+                fetch(`${RENDER_BACKEND_URL}/api/user/win`, {
+                    method: 'POST', // Repurposing /win to bounce amount safely back locally if canceled manually
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ amount: stake })
+                }).then(res => res.json()).then(data => {
+                    if(data.success) { balance = data.balance; updateAllBalances(); }
+                }).catch(e => console.error(e));
             }
+        }
 
+        function executeCashout(panel, isAuto) {
+            if (!activeBets[panel] || !gameRunning) return;
+            activeBets[panel] = false; // PREVENTS MULTIPLE CALLS INSTANTLY
+
+            let winAmt = stakes['stake' + panel] * currentMultiplier;
+            
+            balance += winAmt; // Optimistic sync
             updateAllBalances();
-
-            activeBets[panel] = false;
             playSound('cashout');
             showToast(`Cashed out: ${winAmt.toFixed(2)} KES`, 'success');
             
             myHistoricalBets.push({ stake: stakes['stake'+panel], win: winAmt.toFixed(2) });
             renderLiveBetsList();
             updateButtonStates();
+            
+            const token = localStorage.getItem('aviator_token');
+            if(token) {
+                fetch(`${RENDER_BACKEND_URL}/api/user/win`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ amount: winAmt })
+                }).then(res => res.json()).then(data => {
+                    if(data.success) { balance = data.balance; updateAllBalances(); }
+                }).catch(e => console.error(e));
+            }
         }
 
         function updateButtonStates() {
@@ -1137,6 +1153,9 @@
                 let sub = document.getElementById(`betSubText${i}`);
                 
                 btn.className = 'action-bet-btn';
+                btn.style.background = '';
+                
+                let defaultStakeText = stakes[`stake${i}`] + ".00 KES";
 
                 if (activeBets[i]) {
                     if (gameRunning) {
@@ -1144,24 +1163,30 @@
                         txt.innerText = "CASHOUT";
                         sub.innerText = (stakes[`stake${i}`] * currentMultiplier).toFixed(2) + " KES";
                     } else {
-                        btn.classList.add('disabled-state');
-                        txt.innerText = "WAITING...";
-                        sub.innerText = stakes[`stake${i}`] + ".00 KES";
+                        btn.style.background = "#e53935"; // Red cancel
+                        txt.innerText = "CANCEL";
+                        sub.innerText = defaultStakeText;
                     }
                 } else {
-                    if (gameRunning || hasPlacedBetCurrentRound[i]) {
-                        btn.classList.add('disabled-state');
-                        txt.innerText = "WAIT NEXT ROUND";
-                        sub.innerText = stakes[`stake${i}`] + ".00 KES";
+                    if (hasPlacedBetCurrentRound[i]) {
+                        if (gameRunning) {
+                            btn.style.background = "#e53935"; // Queue Cancel Mode
+                            txt.innerText = "CANCEL";
+                            sub.innerText = "Waiting for next round";
+                        } else {
+                            btn.classList.add('disabled-state');
+                            txt.innerText = "WAITING...";
+                            sub.innerText = defaultStakeText;
+                        }
                     } else {
                         if (autoMode[i]) {
-                            btn.style.background = autoBetActive[i] ? "#ff5252" : "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
+                            btn.style.background = autoBetActive[i] ? "#e53935" : "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
                             txt.innerText = autoBetActive[i] ? "CANCEL AUTO" : "START AUTO";
                         } else {
                             btn.style.background = "linear-gradient(135deg, #00e676 0%, #00c853 100%)";
                             txt.innerText = "BET NEXT";
                         }
-                        sub.innerText = stakes[`stake${i}`] + ".00 KES";
+                        sub.innerText = defaultStakeText;
                     }
                 }
             }
@@ -1223,8 +1248,8 @@
                     stopDepositPolling();
                 }
             }, 3000);
-        }
-            
+       }
+                        
         function stopDepositPolling() {
             if (depositPollTimer) {
                 clearInterval(depositPollTimer);
