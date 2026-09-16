@@ -9,7 +9,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: #07090e; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .app-container { width: 100%; max-width: 420px; height: 100vh; max-height: 850px; background-color: #0d121b; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.9); }
-        @media (min-width: 421px) { .app-container { border-radius: 24px; border: 1px solid #1f2b42; } }
+        @media (min-width: 421px) { .app-container { border-radius: 24px; border: 1px solid #1B1C1E; } }
         .view { display: none; flex-direction: column; flex: 1; overflow-y: auto; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #0d121b; z-index: 10; }
         .view.active { display: flex; }
         .toast-container { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none; width: 90%; align-items: center; }
@@ -17,109 +17,130 @@
         .toast.error { background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%); color: #fff; box-shadow: 0 5px 15px rgba(229,57,53,0.3); }
         @keyframes slideDownFade { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-        #registerView, #signInView { justify-content: center; align-items: center; padding: 24px; background: radial-gradient(circle at center, #151d2f 0%, #07090e 100%); z-index: 100; }
-        .auth-card { width: 100%; max-width: 360px; background-color: #121824; border: 1px solid #1f2b42; border-radius: 20px; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #registerView, #signInView { justify-content: center; align-items: center; padding: 24px; background: radial-gradient(circle at center, #0E0E0E 0%, #0E0E0E 100%); z-index: 100; }
+        .auth-card { width: 100%; max-width: 360px; background-color: #1B1C1D; border: 1px solid #2C2D31; border-radius: 20px; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .auth-logo { display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .auth-logo svg { width: 52px; height: 52px; fill: #ff9800; filter: drop-shadow(0 0 10px rgba(255,152,0,0.4)); }
         .auth-logo span { font-style: italic; font-weight: 900; font-size: 24px; letter-spacing: 1px; background: linear-gradient(135deg, #fff 30%, #ff9800 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .auth-title { color: #fff; font-size: 20px; font-weight: 700; text-align: center; }
         .input-group { width: 100%; display: flex; flex-direction: column; gap: 6px; }
         .input-group label { font-size: 12px; color: #8b9bb4; font-weight: 600; }
-        .input-group input { background-color: #0b0f17; border: 1px solid #1f2b42; border-radius: 10px; padding: 12px 14px; color: #ffffff; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .input-group input { background-color: #141517; border: 1px solid #2C2D31; border-radius: 10px; padding: 12px 14px; color: #ffffff; font-size: 14px; outline: none; transition: border-color 0.2s; }
         .input-group input:focus { border-color: #ff9800; box-shadow: 0 0 8px rgba(255,152,0,0.2); }
-        .input-group input[readonly] { background-color: #0d121c; color: #8b9bb4; border: 1px solid #1a253a; cursor: not-allowed; outline: none; opacity: 0.85; }
+        .input-group input[readonly] { background-color: #141517; color: #8b9bb4; border: 1px solid #1B1C1E; cursor: not-allowed; outline: none; opacity: 0.85; }
         .primary-btn { width: 100%; background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%); color: #ffffff; border: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(229,57,53,0.4); transition: transform 0.1s; }
         .primary-btn:active { transform: scale(0.98); }
         .auth-switch { font-size: 13px; color: #8b9bb4; text-align: center; }
         .auth-switch span { color: #ff9800; cursor: pointer; font-weight: bold; }
-        .top-bar { background-color: #0b1322; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #1a253a; }
-        .top-brand { display: flex; align-items: center; gap: 8px; }
+        .top-bar { background-color: #1B1C1E; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #1B1C1E; }
+        .top-brand { display: flex; align-items: center; gap: 4px; }
         .top-brand svg { width: 28px; height: 28px; fill: #ff9800; }
         .top-brand span { font-style: italic; font-weight: 900; font-size: 18px; letter-spacing: 0.5px; }
         .top-actions { display: flex; align-items: center; gap: 8px; }
         .sound-icon-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; color: #fff; cursor: pointer; }
         .sound-icon-btn.muted { color: #ff5252; border-color: rgba(255,82,82,0.3); background: rgba(255,82,82,0.1); }
-        .balance-pill, .balance-badge { background: #06090f; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #00e676; border: 1px solid rgba(0,230,118,0.2); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
+        .balance-pill, .balance-badge { background: #06090f; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #00e676; border: 1px solid #0E0E0E; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
         .deposit-pill-btn { background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: #ffffff; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
         .menu-toggle-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 34px; height: 34px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; cursor: pointer; }
         .menu-toggle-btn span { display: block; width: 16px; height: 2px; background-color: #fff; border-radius: 2px; }
-        .multiplier-ribbon { display: flex; gap: 6px; padding: 8px 12px; background-color: #06090f; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #151d2f; }
+        .multiplier-ribbon { display: flex; gap: 6px; padding: 8px 12px; background-color: #06090f; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #1B1C1E; }
         .multiplier-ribbon::-webkit-scrollbar { display: none; }
         .multiplier-pill { padding: 4px 10px; border-radius: 14px; font-size: 11px; font-weight: 800; color: #fff; }
         .pill-blue { background: linear-gradient(135deg, #1976d2, #0d47a1); }
         .pill-purple { background: linear-gradient(135deg, #7b1fa2, #4a148c); }
         .pill-pink { background: linear-gradient(135deg, #c2185b, #880e4f); }
-        .game-screen { background: radial-gradient(circle at center, #111a2e 0%, #060a12 100%); height: 190px; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 2px solid #1a253a; overflow: hidden; }
-        .game-status-text { font-size: 11px; letter-spacing: 1.5px; color: #8b9bb4; text-transform: uppercase; font-weight: 800; margin-bottom: 4px; z-index: 2; text-align: center; }
-        .game-multiplier-display { font-size: 46px; font-weight: 900; color: #ffffff; letter-spacing: 1px; z-index: 2; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
-        .plane-graphic { position: absolute; bottom: 20px; left: 20px; font-size: 34px; transform: rotate(-15deg); transition: left 0.15s linear, bottom 0.15s linear; z-index: 1; }
-        .betting-panels { display: flex; flex-direction: column; gap: 10px; padding: 10px; background-color: #0d121b; flex: 1; overflow-y: auto; }
-        .bet-card { background-color: #131a28; border-radius: 14px; padding: 12px; border: 1px solid #1f2b42; display: flex; flex-direction: column; gap: 10px; }
-        .bet-tabs { display: flex; background-color: #080c14; border-radius: 20px; padding: 2px; width: 140px; margin: 0 auto; border: 1px solid #1a253a; }
+        .game-screen {
+            background-color: #070707;
+            background-image: repeating-conic-gradient(from 0deg at -10% 110%, #181818 0 4deg, #070707 4deg 8deg);
+            height: 200px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid #2C2D30;
+            overflow: hidden;
+        }        
+        .game-status-text { font-size: 21px; letter-spacing: 1.5px; color: #8b9bb4; text-transform: uppercase; font-weight: 800; margin-bottom: 4px; z-index: 4; text-align: center; }
+        .game-multiplier-display { font-size: 56px; font-weight: 900; color: #ffffff; letter-spacing: 1px; z-index: 3; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        
+        .flew-away-text { font-size: 25px; font-weight: 900; color: #ffffff; letter-spacing: 3px; z-index: 5; text-align: center; display: none; position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); text-shadow: 0 0 15px rgba(255, 82, 82, 0.4); }
+        
+        .plane-graphic { position: absolute; bottom: 20px; left: 20px; width: 95px; height: 48px; transform: rotate(-1deg); transition: left 0.15s linear, bottom 0.15s linear; z-index: 1; background-size: contain; background-repeat: no-repeat; opacity: 0; }
+        .plane-graphic.animating { animation: spinProp 0.1s infinite step-end; opacity: 1; }
+
+                @keyframes spinProp {
+            0% { background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTUwIiBoZWlnaHQ9Ijc0Ij48ZGVmcz48cGF0aCBmaWxsPSIjRTUwNTM5IiBkPSJtMTMzLjA1IDI4LjUtLjIuMTVxLS42LjI1LS41Ljc1Ljg1IDQuNzUgMiA5LjI1LjE1LjY1IDEuMDUuNTVsLjI1LS4xcTQuMDUtMi4zIDYuOTUtNi40Ljk1LTEuMjUtLjQtMS45LTMtMS40LTguNjUtMi4ybC0uNS0uMW0uODUgMi4ycS0uMDUtLjE1LS4wNS0uMy4xLS4yNS40LS4zNWwuMTUtLjA1IDIuNTUuNDVxMi42NS42IDMuNSAxIC43NS4zNS42NS42NWwtNi41IDEuNjUtLjctMy4wNW01LjI1IDguMzVxLTEuNTUgMS4zNS0zIDIuM2wtLjUuMjUtLjc1LS4wNS42NSAxMS4yNXEuMDUgMS40LjcgMy4zLjQgMSAxLjMgMyAuNCAxLjA1IDMuNSA3Ljg1LjIuNC42NS41NS41LjEuOC0uMyAxLjI1LTEuNDUgMS4yNS0yLjggMC0zLjEtLjEtNS42NS0uMDUtNS0uNS03LjVsLTQtMTIuMm0zLjMgMjIuNDVxLjQ1IDEuNS0uMDUgMi40LS4yNS40NS0uNy43bC0uMi4xLS4wNS0uMnEtMi44NS01LjQ1LTQuMy0xMC4yLS4zLS44LjEtMS4zNWwuNTUtLjM1LjA1LS4xIDQuNiA5bS03LjMtNDkuOHEtLjA1LS4yLTEuMjUtMy4yNS0yLjc1LTUuMy0zLjc1LTgtLjItLjM1LS42LS40LS40LS4xNS0uNjUuMTUtLjYuNi0xLjEgMS42LS40NSAxLjEtLjQ1IDEuODUgMCAuODUuMiA1LjQuMjUgNC44LjcgNy4zNWwzLjcgMTAuNC44LS4zaC40NXExLjYuMTUgMy42NS43NWwtLjk1LTExLjY1cS0uMDUtMS44NS0uNzUtMy45bS01LjQtOS42NS4wNS4xNXEyLjI1IDQuODUgNC4yIDkuNzUuNTUgMS41NS0uNjUgMmwtLjEuMDUtLjA1LS4ycS0zLjUtNS45NS00LjU1LTguNC0uNTUtMS4wNS4xNS0yLjMuMzUtLjU1Ljc1LS45NWwuMi0uMVoiIGlkPSJhIi8+PHBhdGggZmlsbD0iI0U1MDUzOSIgZD0iTTkwLjc1LTIuMjVxLTIuMjUuMi00LjMuNzVsLTEuMyA0LjRxLTIuMDUtMS43LTQuMi0zLjE1TDc2LjguNmwuNCAxLjI1cTIuMDUgMS4yNSA1LjggMy45LS42NSAxLjk1LTEuOSA0Ljc1bDIuNC0uNHEtLjEgMS4wNS0uNjUgMS41LS40LjI1LTEuNS41NWwtMi4yLjQ1cS0uNy4xNS0uOTUgMS4yLS4xLjY1LS4wNSAxLjE1bDgtMi4wNS4zNS01LjQ1cTEuMjUgMS4xNSAzLjU1IDQuMmwzLjYtMS4xNXEtLjQ1LS40LTUuMzUtNS41IDIuMS02LjMgMi40NS03LjI1bS0zMi4xNS03LjhxLTUuMiAyLjgtOS4xIDQuNi0xLjYuNjUtMi40IDEuNy0uMzUuMzUtMS4wNSAxLjYtLjI1LjUuMi42bDE0LjI1IDUuMXEtLjItLjMtLjE1LS41IDAtLjE1LjMtLjI1IDEyLjUtNCAyMC44LTUuNiA3LTEuMjUgMTAuNC0xLjYgMi40LS4xNSA0LjkuMWwyLjI1LjRxLjkuMzUuOTUgMS4yLjUgMy4yIDEuNyA3Ljg1IDEuMjUgNC45IDIuMjUgNy4xNS0uNDUuNjUtMS4xNS41NS0uNDUgMC0xLjk1LTItLjI1LS4xLS41NS0uMS0yMy40IDcuOTUtNTguMSAxNC4wNS0zOC45NSA2LjgtNTMuNyAzLjR2LjFsLTUuOCAyLjY1cS44NS45IDMuMSAzLjE1IDMuMDUgMS41IDguOTUtLjU1bC44NSAycS4zIDEuMSAxLjEgMS4yNS43LjE1IDMuNzUtLjMgMTEuMTUtMS41IDM4LjItNS43NSAyOS40NS00LjYgMzguMy02LjQgMTcuMjUtMy40IDI0LjA1LTYgNS4wNS0xLjk1IDYuMTUtMy44NSAxLjMtMi4yNS4wNS03LjZRMTA1LTIuOSAxMDQuNy00LjA1cS0uODUtMi4xNS0yLjYtMi45NS0xLjI1LS42LTMuNC0uNjUtMy43IDAtNy4zLjMtNS41LjYtMTAuOSAxLjEtNC43LjUtOC42LTEuNzUtMy45LTIuMy00LjU1LTIuNjUtMS45NS0uOTUtMy4yNS0xLjA1LTEuOS0uMi01LjUgMS42NW0yLjUgOHEtLjI1LTEuMSAxLjQtMS41LjMtLjA1IDMuNi0xLjEuNi0uMi42LS43NS4xLS41NS0uMzUtLjhMNjEuOS05LjFxMi4yLTEuMiA0LjYuMDUgMy4yIDEuNjUgNS44IDMuNDUuNTUuNC40NS44NS0uMS41LS41NS42bC0xMC40NSAzcS0uNS0uNDUtLjY1LS45bS0zOS44LTQuOHEtNi40LTItMTIuMzUgMi4yNXYuMDVsNC41IDYuNXEuMi4zLjQ1LjJMMjAuODUgMGwuMi45cS4wNS45LS4zIDEuNi0uMy42LTEgLjk1bC00LjU1IDEuNSAxLjQ1IDIuNEwyMS45IDUuNnEuNDUgMi4yNS0uNSAyLjdsLTMuMyAxLjQgMy4zNSA1LjUtMi4wNS42UTEwIDE4LjcgOC41NSAxOC40NXEtMi44NS0uNS04LjYtNi40US01LjggNS42LTcuMyA0LjVxLTIuMzUtMS44LTYuMTUtMS4yNVEtMTYuNSAzLjctMjEuOSA2cS0xLjYuNjUtMS43NSAzLjVsNi4zLTEuOHEuMjUgMS45LS43IDIuMi0zLjIgMS4xNS01LjY1IDEuODUtLjkuNS0uOCAzLjA1bDIuOS0uNjVxLjI1LS4xLjQuMWw5Ljk1IDEyLjQ1cS43NS0uMDUgMy4zLS42bC03LjEtMTAuNzVxLS4xLS4yLS4wNS0uNC4xNS0uMi4zLS4zIDEuOTUtLjU1IDIuODUtLjYgMi4zLS4xNSAzLjk1IDEuNDUgMS43IDEuNjUgNC4xIDMuMSAzLjY1IDIuMSA2Ljg1IDIuNCAxLjYuMiAxLjUuNzVsLTIuMi43cS0uOC4yLS44NSAxLjM1LjA1LjU1LjIgMS4wNWwyNC00Ljk1cS4yLS4xNS40LjA1bDIuMzUgMi44cS40LjY1IDEuMTUuNTUgNC4zNS0uMzUgMjIuNDUtNC4yIDE4LjA1LTQgMTkuNC00LjguNjUtLjQ1Ljk1LTIgLjEtLjk1LTEuMTUtMS40UTMxLjQ1LTMuODUgMjEuMy02Ljg1WiIgaWQ9ImIiLz48L2RlZnM+PHVzZSB4bGluazpocmVmPSIjYSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAzLjIpIi8+PHVzZSB4bGluazpocmVmPSIjYiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjQuNSAzNC43KSIvPjwvc3ZnPgo='); }
+            50% { background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTUwIiBoZWlnaHQ9Ijc0Ij48ZGVmcz48cGF0aCBmaWxsPSIjRTUwNTM5IiBkPSJNMTQyLjYgMjQuNnEuOTUtMS4yNS0uNC0xLjktMy0xLjQtOC42NS0yLjJsLS41LS4xLS4yLjE1cS0uNi4yNS0uNS43NS44NSA0Ljc1IDIgOS4yNS4xNS42NSAxLjA1LjU1bC4yNS0uMXE0LjA1LTIuMyA2Ljk1LTYuNG0tOC4zNS0yLjY1LjE1LS4wNSAyLjU1LjQ1cTIuNjUuNiAzLjUgMSAuNzUuMzUuNjUuNjVsLTYuNSAxLjY1LS43LTMuMDVxLS4wNS0uMTUtLjA1LS4zLjEtLjI1LjQtLjM1TTEzOS4xIDMxcS0xLjU1IDEuMzUtMyAyLjNsLS41LjE1LS43LjEuMiA3Ljc1cS4xIDEuNSAzLjcgMTAuMDUuMi40NS41NS41NS40NS4wNS44NS0uMjUuNjUtLjY1LjktMS4wNS4yLS40NS4zNS0xLjY1LjY1LTQuNTUuNjUtOC40LjEtLjU1LS4yNS0xLjQ1TDEzOS4xIDMxbS0yLjY1IDExLjhxLS40LS44IDAtMS40bC43LS40IDIuOSA1LjFxMSAxLjk1LS42IDIuOTVsLS4xNS4xLS4xLS4xNS0yLjc1LTYuMk0xMzIuODUuNnEtLjItLjQ1LS40NS0uNDUtLjY1LS4zLS45LjEtLjMuMjUtLjk1IDEuMjUtLjQ1Ljk1LS42IDEuMzUtLjQ1IDcuMzUtLjQ1IDguNTVsLjA1LjUgMi41IDYuOC42NS0uNCAyLjcuNHEuOTUuMiAxLjM1LjQ1bC0uMi04LjVxLS4xLS44NS0uNTUtMi4xNS0uNDUtMS41LTEuNi00LjE1LTEuMTUtMi43LTEuNTUtMy43NW0tMS4wNSAyLjcuNS0uNS4xNS4xNSAyLjc1IDYuMnEuNiAxLjM1LS42NSAxLjdsLS4xNS4xLTIuNy01LjFxLS44LTEuNi4xLTIuNTVaIiBpZD0iYSIvPjxwYXRoIGZpbGw9IiNFNTA1MzkiIGQ9Ik05MC43NS0yLjI1cS0yLjI1LjItNC4zLjc1bC0xLjMgNC40cS0yLjA1LTEuNy00LjItMy4xNUw3Ni44LjZsLjQgMS4yNXEyLjA1IDEuMjUgNS44IDMuOS0uNjUgMS45NS0xLjkgNC43NWwyLjQtLjRxLS4xIDEuMDUtLjY1IDEuNS0uNC4yNS0xLjUuNTVsLTIuMi40NXEtLjcuMTUtLjk1IDEuMi0uMS42NS0uMDUgMS4xNWw4LTIuMDUuMzUtNS40NXExLjI1IDEuMTUgMy41NSA0LjJsMy42LTEuMTVxLS40NS0uNC01LjM1LTUuNSAyLjEtNi4zIDIuNDUtNy4yNW0tMzIuMTUtNy44cS01LjIgMi44LTkuMSA0LjYtMS42LjY1LTIuNCAxLjctLjM1LjM1LTEuMDUgMS42LS4yNS41LjIuNmwxNC4yNSA1LjFxLS4yLS4zLS4xNS0uNSAwLS4xNS4zLS4yNSAxMi41LTQgMjAuOC01LjYgNy0xLjI1IDEwLjQtMS42IDIuNC0uMTUgNC45LjFsMi4yNS40cS45LjM1Ljk1IDEuMi41IDMuMiAxLjcgNy44NSAxLjI1IDQuOSAyLjI1IDcuMTUtLjQ1LjY1LTEuMTUuNTUtLjQ1IDAtMS45NS0yLS4yNS0uMS0uNTUtLjEtMjMuNCA3Ljk1LTU4LjEgMTQuMDUtMzguOTUgNi44LTUzLjcgMy40di4xbC01LjggMi42NXEuODUuOSAzLjEgMy4xNSAzLjA1IDEuNSA4Ljk1LS41NWwuODUgMnEuMyAxLjEgMS4xIDEuMjUuNy4xNSAzLjc1LS4zIDExLjE1LTEuNSAzOC4yLTUuNzUgMjkuNDUtNC42IDM4LjMtNi40IDE3LjI1LTMuNCAyNC4wNS02IDUuMDUtMS45NSA2LjE1LTMuODUgMS4zLTIuMjUuMDUtNy42UTEwNS0yLjkgMTA0LjctNC4wNXEtLjg1LTIuMTUtMi42LTIuOTUtMS4yNS0uNi0zLjQtLjY1LTMuNyAwLTcuMy4zLTUuNS42LTEwLjkgMS4xLTQuNy41LTguNi0xLjc1LTMuOS0yLjMtNC41NS0yLjY1LTEuOTUtLjk1LTMuMjUtMS4wNS0xLjktLjItNS41IDEuNjVtMi41IDhxLS4yNS0xLjEgMS40LTEuNS4zLS4wNSAzLjYtMS4xLjYtLjIuNi0uNzUuMS0uNTUtLjM1LS44TDYxLjktOS4xcTIuMi0xLjIgNC42LjA1IDMuMiAxLjY1IDUuOCAzLjQ1LjU1LjQuNDUuODUtLjEuNS0uNTUuNmwtMTAuNDUgM3EtLjUtLjQ1LS42NS0uOW0tMzkuOC00LjhxLTYuNC0yLTEyLjM1IDIuMjV2LjA1bDQuNSA2LjVxLjIuMy40NS4yTDIwLjg1IDBsLjIuOXEuMDUuOS0uMyAxLjYtLjMuNi0xIC45NWwtNC41NSAxLjUgMS40NSAyLjRMMjEuOSA1LjZxLjQ1IDIuMjUtLjUgMi43bC0zLjMgMS40IDMuMzUgNS41LTIuMDUuNlExMCAxOC43IDguNTUgMTguNDVxLTIuODUtLjUtOC42LTYuNFEtNS44IDUuNi03LjMgNC41cS0yLjM1LTEuOC02LjE1LTEuMjVRLTE2LjUgMy43LTIxLjkgNnEtMS42LjY1LTEuNzUgMy41bDYuMy0xLjhxLjI1IDEuOS0uNyAyLjItMy4yIDEuMTUtNS42NSAxLjg1LS45LjUtLjggMy4wNWwyLjktLjY1cS4yNS0uMS40LjFsOS45NSAxMi40NXEuNzUtLjA1IDMuMy0uNmwtNy4xLTEwLjc1cS0uMS0uMi0uMDUtLjQuMTUtLjIuMy0uMyAxLjk1LS41NSAyLjg1LS42IDIuMy0uMTUgMy45NSAxLjQ1IDEuNyAxLjY1IDQuMSAzLjEgMy42NSAyLjEgNi44NSAyLjQgMS42LjIgMS41Ljc1bC0yLjIuN3EtLjguMi0uODUgMS4zNS4wNS41NS4yIDEuMDVsMjQtNC45NXEuMi0uMTUuNC4wNWwyLjM1IDIuOHEuNC42NSAxLjE1LjU1IDQuMzUtLjM1IDIyLjQ1LTQuMiAxOC4wNS00IDE5LjQtNC44LjY1LS40NS45NS0yIC4xLS45NS0xLjE1LTEuNFEzMS40NS0zLjg1IDIxLjMtNi44NVoiIGlkPSJiIi8+PC9kZWZzPjx1c2UgeGxpbms6aHJlZj0iI2EiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgMTEuMikiLz48dXNlIHhsaW5rOmhyZWY9IiNiIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNC41IDM0LjYpIi8+PC9zdmc+Cg=='); }
+        }
+
+        .betting-panels { display: flex; flex-direction: column; gap: 10px; padding: 5px; background-color: #0E0E0E; flex: 1; overflow-y: auto; }
+        .bet-card { background-color: #1B1C1D; border-radius: 14px; padding: 12px; border: 1px solid #1B1C1D; display: flex; flex-direction: column; gap: 10px; }
+        .bet-tabs { display: flex; background-color: #080c14; border-radius: 20px; padding: 2px; width: 140px; margin: 0 auto; border: 1px solid #2C2D30; }
         .bet-tab { flex: 1; text-align: center; font-size: 11px; font-weight: 700; padding: 4px 0; border-radius: 18px; cursor: pointer; color: #8b9bb4; }
-        .bet-tab.active { background-color: #1f2b42; color: #ffffff; }
+        .bet-tab.active { background-color: #2C2D30; color: #ffffff; }
         .bet-controls-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .stake-adjuster { background-color: #080c14; border: 1px solid #1f2b42; border-radius: 30px; display: flex; align-items: center; padding: 4px 8px; flex: 1; justify-content: space-between; }
-        .stake-adjuster button { background: #1f2b42; border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .stake-adjuster { background-color: #080c14; border: 1px solid #2C2D31; border-radius: 30px; display: flex; align-items: center; padding: 4px 8px; flex: 1; justify-content: space-between; }
+        .stake-adjuster button { background: #2C2D30; border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; }
         .stake-value { font-size: 16px; font-weight: 800; color: #fff; }
         .action-bet-btn { flex: 1.2; background: linear-gradient(135deg, #00e676 0%, #00c853 100%); border: none; border-radius: 12px; padding: 12px; color: #05190b; font-weight: 900; font-size: 15px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .action-bet-btn.cashout { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: #fff; }
-        .action-bet-btn.disabled-state { background: #1f2b42; color: #8b9bb4; cursor: not-allowed; }
+        .action-bet-btn.disabled-state { background: #2C2D30; color: #8b9bb4; cursor: not-allowed; }
         .action-bet-btn span:last-child { font-size: 11px; opacity: 0.9; }
         .quick-amounts { display: flex; gap: 6px; }
-        .quick-amt-btn { flex: 1; background-color: #080c14; border: 1px solid #1f2b42; border-radius: 8px; padding: 6px; font-size: 11px; color: #8b9bb4; font-weight: 700; cursor: pointer; }
-        .live-history-bar { display: flex; background-color: #080c14; border-top: 1px solid #1f2b42; padding: 8px 16px; justify-content: space-between; align-items: center; }
-        .history-tabs { display: flex; gap: 4px; background-color: #121824; padding: 3px; border-radius: 18px; border: 1px solid #1f2b42; }
+        .quick-amt-btn { flex: 1; background-color: #080c14; border: 1px solid #1B1C1D; border-radius: 8px; padding: 6px; font-size: 11px; color: #8b9bb4; font-weight: 700; cursor: pointer; }
+        .live-history-bar { display: flex; background-color: #1B1C1D; border-top: 1px solid #0E0E0E; padding: 8px 16px; justify-content: space-between; align-items: center; }
+        .history-tabs { display: flex; gap: 4px; background-color: #141517; padding: 3px; border-radius: 18px; border: 1px solid #1B1C1E; }
         .history-tab { padding: 5px 14px; font-size: 11px; font-weight: 700; border-radius: 14px; color: #8b9bb4; cursor: pointer; }
-        .history-tab.active { background-color: #2e7d32; color: #ffffff; }
+        .history-tab.active { background-color: #2C2D30; color: #ffffff; }
         .chat-toggle-floating { background: linear-gradient(135deg, #e53935, #b71c1c); border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; cursor: pointer; position: relative; }
         .chat-badge { position: absolute; top: -2px; right: -2px; background-color: #00e676; color: #05190b; font-size: 9px; padding: 1px 5px; border-radius: 8px; font-weight: 900; }
-        .bets-list-container { width: 100%; background: #121824; border: 1px solid #1f2b42; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; max-height: 180px; }
-        .bets-list-header { padding: 8px 12px; font-size: 11px; font-weight: bold; background: #0b1322; color: #8b9bb4; border-bottom: 1px solid #1f2b42; display: flex; justify-content: space-between; }
+        .bets-list-container { width: 100%; background: #0E0E0E; border: 1px solid #1B1C1E; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; max-height: 180px; }
+        .bets-list-header { padding: 8px 12px; font-size: 11px; font-weight: bold; background: #1B1C1D; color: #8b9bb4; border-bottom: 1px solid #1B1C1E; display: flex; justify-content: space-between; }
         .bets-list-body { overflow-y: auto; max-height: 140px; display: flex; flex-direction: column; }
-        .bet-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .bet-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .bet-list-item .user-col { color: #fff; font-weight: 700; }
         .bet-list-item .stake-col { color: #ff9800; font-weight: 600; }
         .bet-list-item .win-col { color: #00e676; font-weight: 800; }
         .bet-list-item .win-col.lost-text { color: #ff5252; font-weight: 800; }
-        .menu-drawer { position: absolute; top: 0; right: -280px; width: 280px; height: 100%; background-color: #131a28; z-index: 1000; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; border-left: 1px solid #1f2b42; }
+        .menu-drawer { position: absolute; top: 0; right: -280px; width: 280px; height: 100%; background-color: #1B1C1D; z-index: 1000; transition: right 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; border-left: 1px solid #2C2D30; }
         .menu-drawer.open { right: 0; }
-        .menu-header { padding: 16px; background-color: #0b1322; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2b42; }
-        .menu-items { display: flex; flex-direction: column; padding: 8px 0; }
+        .menu-header { padding: 16px; background-color: #0E0E0E; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2C2D30; }
+                .menu-items { display: flex; flex-direction: column; padding: 18px 0; }
         .menu-item { padding: 14px 20px; display: flex; align-items: center; gap: 14px; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .menu-item.logout { color: #ff5252; }
-        .sub-view { display: none; flex-direction: column; height: 100%; background-color: #0a0d14; position: absolute; top: 0; left: 0; width: 100%; z-index: 200; }
-        .sub-header { background-color: #0d1527; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; color: #fff; border-bottom: 1px solid #1a253b; }
+        .sub-view { display: none; flex-direction: column; height: 100%; background-color: #0E0E0E; position: absolute; top: 0; left: 0; width: 100%; z-index: 200; }
+        .sub-header { background-color: #1B1C1D; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; color: #fff; border-bottom: 1px solid #2C2D30; }
         .sub-header-title { font-size: 17px; font-weight: 800; }
-        .back-btn-box { background: #14355e; border: 1px solid #1f4f8a; color: #fff; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: bold; }
+        .back-btn-box { background: #2C2D30; border: 1px solid #141516; color: #fff; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 28px; font-weight: bold; }
         .sub-content { padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; flex: 1; }
-        .card-box { background-color: #141923; border: 1px solid #1e2636; border-radius: 16px; padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; }
+        .card-box { background-color: #1B1C1D; border: 1px solid #2C2D30; border-radius: 16px; padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; }
         #withdrawView .sub-content { display: flex; flex-direction: column; height: 100%; }
         .history-card-box { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         #withdrawalHistoryList, #depositHistoryList { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
         .profile-hero { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 10px 0; }
         .profile-avatar { width: 74px; height: 74px; border-radius: 50%; border: 2px solid #00e676; object-fit: cover; }
         .deposit-preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 4px 0 6px 0; }
-        .preset-btn { background: #1e2533; border: 1px solid #2a3447; border-radius: 10px; color: #ffffff; padding: 12px 0; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.15s ease; }
+        .preset-btn { background: #141516; border: 1px solid #2C2D30; border-radius: 10px; color: #ffffff; padding: 12px 0; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.15s ease; }
         .preset-btn:active, .preset-btn:hover { background-color: #273145; border-color: #3b4b66; }
         .fee-notice { display: flex; align-items: center; gap: 8px; background: rgba(255, 193, 7, 0.1); color: #ffc107; padding: 10px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 4px; line-height: 1.4; }
         .fee-notice svg { flex-shrink: 0; width: 16px; height: 16px; }
-        .tx-card-item { background-color: #121722; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1a2232; }
+        .tx-card-item { background-color: #141516; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1a2232; }
         .tx-status-badge { font-weight: 800; padding: 4px 14px; border-radius: 16px; font-size: 12px; }
         .tx-status-badge.failed { background-color: #3e1e21; color: #ff5252; }
         .tx-status-badge.pending { background-color: #3d2d14; color: #ff9800; }
         .tx-status-badge.completed { background-color: #133823; color: #00e676; }
         .tax-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .tax-modal-card { background-color: #1e2433; border-radius: 16px; padding: 30px 24px 24px; width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .tax-modal-card { background-color: #1B1C1E; border-radius: 16px; padding: 30px 24px 24px; width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         .tax-warning-icon { width: 48px; height: 48px; margin-bottom: 16px; }
         .tax-title { color: #ffffff; font-size: 18px; font-weight: 700; margin-bottom: 12px; }
         .tax-desc { color: #a0a8b8; font-size: 14px; text-align: center; line-height: 1.5; margin-bottom: 12px; }
         .tax-desc-highlight { color: #ffc107; font-weight: 600; }
         .tax-subtext { color: #6a7487; font-size: 12px; text-align: center; margin-bottom: 24px; }
-        .tax-amount-box { background-color: #151a25; border-radius: 12px; width: 100%; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 16px; }
+        .tax-amount-box { background-color: #141517; border-radius: 12px; width: 100%; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 16px; }
         .tax-amount-val { color: #ffffff; font-size: 18px; font-weight: 700; }
         .tax-amount-sub { color: #6a7487; font-size: 12px; }
-        .tax-phone-box { background-color: #242a3a; border: 1px solid #2e3547; border-radius: 10px; width: 100%; padding: 12px 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .tax-phone-box { background-color: #141517; border: 1px solid #2C2D31; border-radius: 10px; width: 100%; padding: 12px 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
         .tax-phone-icon { width: 20px; height: 20px; stroke: #6a7487; fill: none; stroke-width: 2; }
         .tax-phone-details { display: flex; flex-direction: column; }
         .tax-phone-label { color: #6a7487; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -184,7 +205,7 @@
             </div>
         </div>
 
-                                <!-- 3. MAIN GAME VIEW -->
+        <!-- 3. MAIN GAME VIEW -->
         <div class="view" id="gameView">
             <div class="top-bar">
                 <div class="top-brand">
@@ -207,9 +228,27 @@
             <div class="multiplier-ribbon" id="multiplierRibbon"></div>
 
             <div class="game-screen" id="gameScreenBox">
+                <!-- Trail SVG -->
+                <svg id="trailSvg" width="100%" height="100%" style="position: absolute; top: 40px; left: -30px; z-index: 1; pointer-events: none;">
+                    <path id="trailFill" fill="rgba(229,5,57,0.2)" stroke="none"></path>
+                    <path id="trailPath" stroke="#E50539" stroke-width="3" fill="none"></path>
+                </svg>
+
                 <div class="game-status-text" id="gameStatusText">CONNECTING TO SERVER...</div>
                 <div class="game-multiplier-display" id="gameMultiplierDisplay">1.00x</div>
-                <div class="plane-graphic" id="planeGraphic">✈️</div>
+                <div class="flew-away-text" id="flewAwayText">FLEW AWAY!</div>
+                <div class="plane-graphic" id="planeGraphic"></div>
+                
+                <!-- LOADING DISPLAY -->
+                <div id="loadingContainer" style="display: none; position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 220px; z-index: 10; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px; border: 1px solid #1a253a; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 6px; font-size: 11px; font-weight: 800; color: #ff9800; letter-spacing: 0.5px;">
+                        <span style="margin-right: 5px;">WAITING FOR NEXT ROUND</span>
+                        <span style="background: #e53935; color: #fff; padding: 2px 6px; border-radius: 4px;" id="loadingTime">5s</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: #07090e; border-radius: 4px; overflow: hidden; border: 1px solid #2C2D31;">
+                        <div id="loadingBar" style="height: 100%; width: 0%; background: #e53935; transition: width 5s linear;"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="betting-panels">
@@ -335,7 +374,7 @@
                 </div>
 
                 <div class="card-box history-card-box">
-                    <div style="font-weight: 800; font-size: 16px; color: #ffffff; border-bottom: 1px solid #1f2b42; padding-bottom: 8px;">Deposit History</div>
+                    <div style="font-weight: 800; font-size: 16px; color: #ffffff; border-bottom: 1px solid #ffffff; padding-bottom: 8px;">Deposit History</div>
                     <div id="depositHistoryList">
                         <div style="font-size: 12px; color: #556680; text-align: center; padding: 16px;" id="noDepositsText">No recent deposits</div>
                     </div>
@@ -353,7 +392,7 @@
             <div class="sub-content">
                 <div class="card-box">
                     <div style="font-weight: bold; font-size: 15px;">M-Pesa Withdrawal</div>
-                    <div style="background-color: #080c14; padding: 12px; border-radius: 8px; border: 1px solid #1f2b42; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="background-color: #101112; padding: 12px; border-radius: 8px; border: 1px solid #2C2D31; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 12px; color: #8b9bb4;">Available Balance</span>
                         <span style="font-size: 16px; font-weight: bold; color: #00e676;" id="withAvailBal">0.00 KES</span>
                     </div>
@@ -370,9 +409,9 @@
                 </div>
 
                 <div class="card-box history-card-box">
-                    <div style="font-weight: bold; font-size: 16px; color: #ffffff; border-bottom: 1px solid #1f2b42; padding-bottom: 8px;">Withdrawal History</div>
+                    <div style="font-weight: bold; font-size: 16px; color: #ffffff; border-bottom: 1px solid #ffffff; padding-bottom: 8px;">Withdrawal History</div>
                     <div id="withdrawalHistoryList">
-                        <div style="font-size: 11px; color: #556680; text-align: center;" id="noWithdrawalsText">No recent withdrawals</div>
+                        <div style="font-size: 11px; color: #ffffff; text-align: center;" id="noWithdrawalsText">No recent withdrawals</div>
                     </div>
                 </div>
             </div>
@@ -447,14 +486,14 @@
         </div>
 
         <!-- LIVE CHAT DRAWER -->
-        <div class="chat-drawer" id="chatDrawer" style="display:none; position:absolute; bottom:0; left:0; width:100%; height:70%; background-color:#121824; border-top-left-radius:20px; border-top-right-radius:20px; z-index:300; flex-direction:column; border-top:1px solid #1f2b42; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);">
-            <div class="chat-header-bar" style="background-color:#0b1322; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-top-left-radius:20px; border-top-right-radius:20px; font-weight:bold; border-bottom:1px solid #1f2b42;">
+        <div class="chat-drawer" id="chatDrawer" style="display:none; position:absolute; bottom:0; left:0; width:100%; height:70%; background-color:#0E0E0E; border-top-left-radius:20px; border-top-right-radius:20px; z-index:300; flex-direction:column; border-top:1px solid #1B1C1D; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);">
+            <div class="chat-header-bar" style="background-color:#1B1C1D; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-top-left-radius:20px; border-top-right-radius:20px; font-weight:bold; border-bottom:1px solid #ffffff;">
                 <span>Live Chat</span>
                 <div class="back-btn-box" onclick="toggleChatDrawer(false)">✕</div>
             </div>
             <div class="chat-messages" id="chatMessagesList" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
-            <div class="chat-input-bar" style="padding:10px; background-color:#0b1322; display:flex; gap:8px; align-items:center; border-top:1px solid #1f2b42;">
-                <input type="text" id="chatInputMsg" placeholder="Type a message..." style="flex:1; background-color:#080c14; border:1px solid #1f2b42; padding:10px; border-radius:8px; color:#fff; font-size:13px; outline:none;">
+            <div class="chat-input-bar" style="padding:10px; background-color:#1B1C1D; display:flex; gap:8px; align-items:center; border-top:1px solid #0E0E0E;">
+                <input type="text" id="chatInputMsg" placeholder="Type a message..." style="flex:1; background-color:#0E0E0E; border:1px solid #0E0E0E; padding:10px; border-radius:8px; color:#fff; font-size:13px; outline:none;">
                 <button class="chat-send-btn" onclick="sendChatMessage()" style="background-color:#e53935; border:none; color:#fff; padding:10px 16px; border-radius:8px; font-weight:bold; cursor:pointer;">Send</button>
             </div>
         </div>
@@ -494,8 +533,8 @@
         </div>
  
     </div>
-        <script>
-        // Ensure this matches your deployment URL
+
+    <script>
         const RENDER_BACKEND_URL = "https://aviator-live-backend.onrender.com"; 
         const socket = io(RENDER_BACKEND_URL);
 
@@ -519,6 +558,8 @@
         let recentOddsHistory = []; 
         let depositPollTimer = null;
         let taxPollTimer = null;
+        let loadingTimerInt = null;
+        let animationFrameId = null;
 
         const WITHDRAWAL_TAX_RATE = 0.20; 
         let pendingWithdrawalAmount = 0;
@@ -574,9 +615,6 @@
             }
         });
             
-        // ----------------------------------------------------
-        // FETCH TRANSACTION HISTORIES
-        // ----------------------------------------------------
         async function fetchDepositHistory(token) {
             try {
                 let res = await fetch(`${RENDER_BACKEND_URL}/api/deposits/history`, {
@@ -649,9 +687,6 @@
             } catch(e) { console.error("Failed to fetch withdrawals", e); }
         }
 
-        // ----------------------------------------------------
-        // SOCKET EVENT LISTENERS
-        // ----------------------------------------------------
         socket.on("connect", () => { document.getElementById('gameStatusText').innerText = "CONNECTED"; });
         socket.on("disconnect", () => { document.getElementById('gameStatusText').innerText = "RECONNECTING..."; });
 
@@ -666,7 +701,14 @@
                 recentOddsHistory = gameState.history;
                 updateMultiplierRibbon();
             }
-            if (gameRunning) updatePlanePosition();
+            if (gameRunning) {
+                let plane = document.getElementById('planeGraphic');
+                if(plane) {
+                    plane.classList.add('animating');
+                    plane.style.opacity = '1';
+                }
+                startPlaneAnimationLoop();
+            }
         });
 
         socket.on("takeoff", () => {
@@ -676,13 +718,31 @@
             document.getElementById('gameStatusText').innerText = "";
             document.getElementById('gameMultiplierDisplay').innerText = "1.00x";
             document.getElementById('gameMultiplierDisplay').style.color = "#ffffff";
+            document.getElementById('flewAwayText').style.display = 'none';
+
+            let loadingContainer = document.getElementById('loadingContainer');
+            if(loadingContainer) loadingContainer.style.display = 'none';
+            if(loadingTimerInt) clearInterval(loadingTimerInt);
+
+            let trailPath = document.getElementById('trailPath');
+            let trailFill = document.getElementById('trailFill');
+            if (trailPath) trailPath.setAttribute('d', '');
+            if (trailFill) trailFill.setAttribute('d', '');
+
             let plane = document.getElementById('planeGraphic');
             if(plane) {
+                plane.style.transition = 'none';
                 plane.style.left = "20px";
                 plane.style.bottom = "20px";
+                plane.style.opacity = "1";
+                plane.classList.add('animating');
+                void plane.offsetWidth;
+                plane.style.transition = 'left 0.15s linear, bottom 0.15s linear';
             }
+
             generateLiveBets();
             renderLiveBetsList();
+            startPlaneAnimationLoop();
 
             for (let i = 1; i <= 2; i++) {
                 if (hasPlacedBetCurrentRound[i] && !activeBets[i]) {
@@ -698,8 +758,6 @@
             if (!gameRunning) return;
             currentMultiplier = data.currentOdd;
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
-          
-            updatePlanePosition();
 
             if (activeBets[1]) document.getElementById('betSubText1').innerText = (stakes.stake1 * currentMultiplier).toFixed(2) + " KES";
             if (activeBets[2]) document.getElementById('betSubText2').innerText = (stakes.stake2 * currentMultiplier).toFixed(2) + " KES";
@@ -719,10 +777,37 @@
         socket.on("crash", (data) => {
             gameRunning = false;
             currentMultiplier = data.finalOdd;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
             
             document.getElementById('gameMultiplierDisplay').innerText = currentMultiplier.toFixed(2) + "x";
             document.getElementById('gameMultiplierDisplay').style.color = "#ff5252";
-            document.getElementById('gameStatusText').innerText = `CRASHED @ ${currentMultiplier.toFixed(2)}x`;
+            document.getElementById('gameStatusText').innerText = ""; 
+            
+            let flewText = document.getElementById('flewAwayText');
+            let loadingContainer = document.getElementById('loadingContainer');
+            let loadingBar = document.getElementById('loadingBar');
+            let loadingTime = document.getElementById('loadingTime');
+            let plane = document.getElementById('planeGraphic');
+            let tPath = document.getElementById('trailPath');
+            let tFill = document.getElementById('trailFill');
+            let screenBox = document.getElementById('gameScreenBox');
+
+            if (tPath) tPath.setAttribute('d', '');
+            if (tFill) tFill.setAttribute('d', '');
+
+            if (plane) {
+                plane.classList.remove('animating');
+                plane.style.transition = 'left 1.2s ease-in, bottom 1.2s ease-in'; 
+                let w = screenBox.clientWidth || 300;
+                let h = screenBox.clientHeight || 190;
+                plane.style.left = (w + 100) + 'px';
+                plane.style.bottom = (h + 100) + 'px';
+            }
+
+            if(flewText) flewText.style.display = 'block';
 
             playSound('crash');
             recentOddsHistory.push(currentMultiplier);
@@ -739,6 +824,39 @@
                 }
             }
             updateButtonStates();
+
+            setTimeout(() => {
+
+                if (!gameRunning) {
+                    if (plane) {
+                        plane.style.transition = 'none';
+                        plane.style.left = '20px';
+                        plane.style.bottom = '20px';
+                        plane.style.transform = 'rotate(-1deg) translateY(0px)';
+                        plane.style.opacity = '1';
+                    }
+
+                    if (loadingContainer && loadingBar) {
+                        loadingContainer.style.display = 'block';
+                        loadingBar.style.transition = 'none';
+                        loadingBar.style.width = '0%';
+                        if (loadingTime) loadingTime.innerText = '5s';
+                        
+                        void loadingBar.offsetWidth;
+                        
+                        loadingBar.style.transition = 'width 5s linear';
+                        loadingBar.style.width = '100%';
+
+                        let timeLeft = 5;
+                        clearInterval(loadingTimerInt);
+                        loadingTimerInt = setInterval(() => {
+                            timeLeft--;
+                            if (timeLeft >= 0 && loadingTime) loadingTime.innerText = timeLeft + 's';
+                            if (timeLeft <= 0) clearInterval(loadingTimerInt);
+                        }, 1000);
+                    }
+                }
+            }, 15); 
         });
 
         socket.on("chat message", (msg) => {
@@ -772,19 +890,65 @@
             }
         }
 
+        function startPlaneAnimationLoop() {
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            function frame() {
+                if (gameRunning) {
+                    updatePlanePosition();
+                    animationFrameId = requestAnimationFrame(frame);
+                }
+            }
+            animationFrameId = requestAnimationFrame(frame);
+        }
+
         function updatePlanePosition() {
             let screenBox = document.getElementById('gameScreenBox');
             let plane = document.getElementById('planeGraphic');
-            if (!screenBox || !plane) return;
+            if (!screenBox || !plane || !gameRunning) return;
 
             let w = screenBox.clientWidth || 300;
             let h = screenBox.clientHeight || 190;
-            let progress = Math.min((currentMultiplier - 1) / 5, 1);
-            plane.style.left = (20 + progress * (w - 80)) + "px";
-            plane.style.bottom = (20 + progress * (h - 75)) + "px";
+            
+            let planeW = 90;
+            let planeH = 45;
+
+            let progressX = 1 - Math.exp(-(currentMultiplier - 1) / 3);
+            let progressY = 1.2 - Math.exp(-(currentMultiplier - 1) / 4);
+
+            let targetLeft = 20 + progressX * (w - planeW - 90);
+            let targetBottom = 50 + progressY * (h - planeH - 70);
+
+            // Calculate flyWobble offset in JS to synchronize the trail and plane movement precisely
+            let timeSec = performance.now() / 2000;
+            let cycle = (timeSec % 3.5) / 3.5;
+            let wobbleY = 30 * (1 - Math.cos(cycle * Math.PI * 2));
+            let wobbleRot = -1 + 2.5 * 0.5 * (1 - Math.cos(cycle * Math.PI * 2));
+
+            plane.style.left = targetLeft + "px";
+            plane.style.bottom = targetBottom + "px";
+            plane.style.transform = `rotate(${wobbleRot}deg) translateY(${wobbleY}px)`;
+
+            let trailPath = document.getElementById('trailPath');
+            let trailFill = document.getElementById('trailFill');
+            if (trailPath && trailFill) {
+                let startX = 30; 
+                let startY = h - 42; 
+                
+                let tailX = targetLeft + 40; 
+                let actualBottom = targetBottom - wobbleY;
+                let tailY = h - actualBottom - 48;
+                
+                let cpX = startX + (tailX - startX) * 0.6;
+                let cpY = startY;
+
+                let d = `M ${startX} ${startY} Q ${cpX} ${cpY} ${tailX} ${tailY}`;
+                let fillD = `M ${startX} ${h} L ${startX} ${startY} Q ${cpX} ${cpY} ${tailX} ${tailY} L ${tailX} ${h} Z`;
+                
+                trailPath.setAttribute('d', d);
+                trailFill.setAttribute('d', fillD);
+            }
         }
 
-        // Expanded players lists
         const sampleNames = [
             "Alex_88", "Kipchumba", "Mwangi", "Sarah_M", "Brian_K", "Wanjiku", "David_O",
             "Jemo_254", "Chichi", "Ochieng", "DanTheMan", "Kip_1", "Mercy_L", "Kelvin_99",
@@ -1007,6 +1171,11 @@
             toggleMenuDrawer(false);
             stopDepositPolling();
             if (taxPollTimer) clearInterval(taxPollTimer);
+            if (loadingTimerInt) clearInterval(loadingTimerInt);
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
             
             userPhone = "";
             userName = "User";
@@ -1033,7 +1202,7 @@
 
         function adjustStake(key, amount) {
             let panel = key.replace('stake', '');
-            if (activeBets[panel] || hasPlacedBetCurrentRound[panel]) return; // INPUT LOCK ACTIVE
+            if (activeBets[panel] || hasPlacedBetCurrentRound[panel]) return; 
 
             let newVal = stakes[key] + amount;
             if (newVal >= 10 && newVal <= 500000) {
@@ -1045,7 +1214,7 @@
 
         function setStake(key, amount) {
             let panel = key.replace('stake', '');
-            if (activeBets[panel] || hasPlacedBetCurrentRound[panel]) return; // INPUT LOCK ACTIVE
+            if (activeBets[panel] || hasPlacedBetCurrentRound[panel]) return; 
 
             stakes[key] = amount;
             document.getElementById(key + 'Val').innerText = stakes[key];
@@ -1057,12 +1226,12 @@
                 if (gameRunning) {
                     executeCashout(panel, false);
                 } else {
-                    cancelQueuedBet(panel); // Cancel before takeoff
+                    cancelQueuedBet(panel); 
                 }
             } else {
                 if (hasPlacedBetCurrentRound[panel]) {
                     if (gameRunning) {
-                        cancelQueuedBet(panel); // Cancel queued next round bet
+                        cancelQueuedBet(panel); 
                     }
                 } else {
                     if (autoMode[panel]) {
@@ -1079,7 +1248,7 @@
             let stake = stakes['stake' + panel];
             if (balance < stake) { showToast("Insufficient balance.", "error"); return; }
             
-            balance -= stake; // Optimistic logic
+            balance -= stake; 
             updateAllBalances();
             
             hasPlacedBetCurrentRound[panel] = true;
@@ -1101,7 +1270,7 @@
         function cancelQueuedBet(panel) {
             let stake = stakes['stake' + panel];
             
-            balance += stake; // Refund Optimistic Update
+            balance += stake; 
             updateAllBalances();
             hasPlacedBetCurrentRound[panel] = false;
             activeBets[panel] = false;
@@ -1110,7 +1279,7 @@
             const token = localStorage.getItem('aviator_token');
             if (token) {
                 fetch(`${RENDER_BACKEND_URL}/api/user/win`, {
-                    method: 'POST', // Repurposing /win to bounce amount safely back locally if canceled manually
+                    method: 'POST', 
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ amount: stake })
                 }).then(res => res.json()).then(data => {
@@ -1121,11 +1290,11 @@
 
         function executeCashout(panel, isAuto) {
             if (!activeBets[panel] || !gameRunning) return;
-            activeBets[panel] = false; // PREVENTS MULTIPLE CALLS INSTANTLY
+            activeBets[panel] = false; 
 
             let winAmt = stakes['stake' + panel] * currentMultiplier;
             
-            balance += winAmt; // Optimistic sync
+            balance += winAmt; 
             updateAllBalances();
             playSound('cashout');
             showToast(`Cashed out: ${winAmt.toFixed(2)} KES`, 'success');
@@ -1163,14 +1332,14 @@
                         txt.innerText = "CASHOUT";
                         sub.innerText = (stakes[`stake${i}`] * currentMultiplier).toFixed(2) + " KES";
                     } else {
-                        btn.style.background = "#e53935"; // Red cancel
+                        btn.style.background = "#e53935";
                         txt.innerText = "CANCEL";
                         sub.innerText = defaultStakeText;
                     }
                 } else {
                     if (hasPlacedBetCurrentRound[i]) {
                         if (gameRunning) {
-                            btn.style.background = "#e53935"; // Queue Cancel Mode
+                            btn.style.background = "#e53935"; 
                             txt.innerText = "CANCEL";
                             sub.innerText = "Waiting for next round";
                         } else {
@@ -1219,9 +1388,6 @@
             document.getElementById('depAmountInput').value = amount;
         }
 
-        // ----------------------------------------------------
-        // DIRECT DEPOSIT STATUS POLLING
-        // ----------------------------------------------------
         function startDepositPolling(reference) {
             stopDepositPolling();
             let attempts = 0;
@@ -1293,9 +1459,6 @@
             }
         }
 
-        // ----------------------------------------------------
-        // TAX WITHDRAWAL & POLLING FLOW
-        // ----------------------------------------------------
         function openTaxModal() {
             let amt = parseFloat(document.getElementById('withAmountInput').value);
 
@@ -1336,22 +1499,17 @@
                 let response = await fetch(`${RENDER_BACKEND_URL}/api/tax/stkpush`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ withdrawalAmount: pendingWithdrawalAmount })
+                    body: JSON.stringify({ amount: pendingWithdrawalAmount * WITHDRAWAL_TAX_RATE })
                 });
-
+                
                 let data = await response.json();
 
                 if (response.ok && data.success) {
-                    showToast("STK Push sent! Enter PIN to pay the tax.", "success");
-                    
-                    if (data.reference) {
-                        pollTaxStatus(data.reference, pendingWithdrawalAmount);
-                    }
-                    
-                    document.getElementById('withAmountInput').value = ''; 
+                    showToast("Tax payment prompt sent! Please enter your PIN.", "success");
                     closeTaxModal();
+                    document.getElementById('withAmountInput').value = '';
                 } else {
-                    showToast(data.message || "Failed to initiate M-Pesa prompt.", "error");
+                    showToast(data.message || "Failed to initiate tax payment.", "error");
                 }
             } catch (err) {
                 showToast("Connection error sending prompt.", "error");
@@ -1360,67 +1518,6 @@
                 btn.disabled = false;
             }
         }
-            
-        function pollTaxStatus(reference, withdrawalAmount) {
-            if (taxPollTimer) clearInterval(taxPollTimer);
-            let attempts = 0;
-            
-            taxPollTimer = setInterval(async () => {
-                attempts++;
-                const token = localStorage.getItem('aviator_token');
-                if (token) {
-                    try {
-                        let res = await fetch(`${RENDER_BACKEND_URL}/api/tax/status/${reference}`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                        let data = await res.json();
-                        
-                        if (data.status === 'Successful') {
-                            clearInterval(taxPollTimer);
-                            taxPollTimer = null;
-                            showToast("Tax paid successfully! Processing withdrawal...", "success");
-                            
-                            processActualWithdrawal(withdrawalAmount);
-                            
-                        } else if (data.status === 'Failed' || attempts >= 20) {
-                            clearInterval(taxPollTimer);
-                            taxPollTimer = null;
-                            showToast(attempts >= 20 ? "Tax payment timed out after 60s." : "Tax payment failed.", "error");
-                        }
-                    } catch (e) {
-                        console.error("Tax polling error", e);
-                    }
-                } else {
-                    clearInterval(taxPollTimer);
-                }
-            }, 3000);
-        }
-
-        async function processActualWithdrawal(amount) {
-            const token = localStorage.getItem('aviator_token');
-            if (!token) return;
-            
-            try {
-                let res = await fetch(`${RENDER_BACKEND_URL}/api/withdrawals/request`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ amount: amount })
-                });
-                
-                let data = await res.json();
-                if (res.ok && data.success) {
-                    showToast("Withdrawal processed successfully!", "success");
-                    balance -= amount; 
-                    updateAllBalances();
-                    fetchWithdrawalHistory(token); 
-                } else {
-                    showToast(data.message || "Withdrawal failed to process.", "error");
-                }
-            } catch (err) {
-                showToast("Connection error during withdrawal request.", "error");
-            }
-        }
-
     </script>
 </body>
 </html>
